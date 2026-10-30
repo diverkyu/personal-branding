@@ -1,0 +1,7 @@
+# Preserve the exact initial site bytes across platforms.
+dist/** -text
+.openai/hosting.json -text
+# Documentation and tooling use LF.
+*.md text eol=lf
+*.mjs text eol=lf
+package.json text eol=lf
