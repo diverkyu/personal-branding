@@ -1,8 +1,12 @@
 # diverkyu.com 제품 요구사항 명세서 (PRD) — Phase 1
 
-작성일: 2026-11-07 · 상태: **초안 (규강 검토 전)** · 작성: 규강 + Claude
+| 문서 버전 | 최종 수정 | 상태 | 작성 |
+| --- | --- | --- | --- |
+| **0.2.0** | 2026-11-07 | 초안 (규강 검토 전) | 규강 + Claude |
 
-> 이 문서는 요구사항을 정리한 초안이다. 스펀지 클럽 스타터 키트(블로그 자동 발행, GEO 등)는 아직 확인하지 못했으므로 **재사용 가능 여부를 가정하지 않았다.** 해당 부분은 §10에 "확인 필요"로 표시한다.
+변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [CONCEPT.md](CONCEPT.md)
+
+> 이 문서는 요구사항을 정리한 초안이다. 스펀지클럽 스타터 키트는 검토를 마쳤고 결과는 §10, 저장소·브랜치 전략은 §11에 있다. 키트 파일은 저장소에 복사하지 않는다.
 
 ## 1. 배경과 목표
 
@@ -104,7 +108,7 @@
 
 | ID | 요구사항 | 우선순위 |
 | --- | --- | --- |
-| W-1 | 내비게이션: Freediving(투어·장비·후기), Story, About, Contact. 기존 시안의 브랜드(딥블루/라임/페이퍼, DM Sans/Noto Sans KR) 계승 | P0 |
+| W-1 | 내비게이션 순서: About, Story, Freediving(투어·장비·후기), Contact. 기존 시안의 브랜드(딥블루/라임/페이퍼, DM Sans/Noto Sans KR) 계승 | P0 |
 | W-2 | 홈: 슬로건, 진행 예정 투어, 대표 후기, 최신 스토리 | P0 |
 | W-3 | 반응형(모바일 우선), 키보드 접근성, 동작 줄이기 대응(기존 시안 수준 유지) | P0 |
 | W-4 | SEO: 페이지별 title/description/OG 이미지, sitemap, 구조화 데이터 | P0 |
@@ -209,4 +213,4 @@
   - 새 앱: `app/` (자체 `package.json` 포함). 루트 `package.json`·`README.md`·`CHANGELOG.md`·`.gitignore`는 충돌이 잦으니 꼭 필요할 때 별도의 작은 PR로만 수정한다.
   - 새 문서: `docs/phase1/` (기존 `docs/`와 파일명이 겹치지 않게)
 - **`main`에 직접 커밋하지 않는다.** 기능 단위 브랜치 → PR → 규강 검토 후 병합. 브랜치명 예: `feat/phase1-docs`, `feat/phase1-schema`.
-- **용어 정합성**: 규강의 `PRODUCT-CONCEPT.md`는 메뉴를 `Dive · Films · About · Contact`로 제안했고, 이 문서는 `Freediving · Story · About · Contact`다. 병합 전에 하나로 맞춘다. (제안: Dive = Freediving 허브. Films는 Phase 2)
+- **용어 정합성**: 규강의 `PRODUCT-CONCEPT.md`는 메뉴를 `Dive · Films · About · Contact`로 제안했고, 이 문서는 `About · Story · Freediving · Contact` 순서다. 병합 전에 하나로 맞춘다. (제안: Dive = Freediving 허브. Films는 Phase 2)
