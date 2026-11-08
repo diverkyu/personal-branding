@@ -4,11 +4,11 @@
  * - 발행된 글을 고치면 수정 내용은 draft 칸에 쌓이고, "수정 내용 발행"을 눌러야 공개 내용에 반영된다.
  * - 발행·예약 전에는 점검(제목·본문·요약 길이·자동 생성 글 검토)을 통과해야 한다.
  */
-import { and, count, desc, eq, ilike, isNull, or, sql, type SQL } from "drizzle-orm";
-import { contents, publishJobs, type ContentRow, type PublishJobRow } from "@/db/schema";
+import { and, count, desc, eq, ilike, inArray, isNull, or, sql, type SQL } from "drizzle-orm";
+import { contents, media, publishJobs, type ContentRow, type PublishJobRow } from "@/db/schema";
 import { AppError } from "@/lib/errors";
 import type { AdminSession } from "@/lib/auth/types";
-import { EMPTY_BODY, isBodyEmpty, plainTextFromBody, sanitizeBody, type BodyDoc } from "@/content/body";
+import { EMPTY_BODY, collectMediaIds, isBodyEmpty, plainTextFromBody, sanitizeBody, type BodyDoc } from "@/content/body";
 import {
   ORIGINS,
   STATUSES,
@@ -220,9 +220,38 @@ function isUniqueViolation(error: unknown): boolean {
   return e?.code === "23505" || e?.cause?.code === "23505";
 }
 
+/** 본문에 넣은 이미지가 모두 라이브러리에 있는지(삭제되지 않았는지) 확인한다 */
+async function assertBodyMedia(db: AdminDb, doc: BodyDoc): Promise<void> {
+  const ids = collectMediaIds(doc);
+  if (ids.length === 0) return;
+  const found = await db.select({ id: media.id }).from(media).where(and(inArray(media.id, ids), isNull(media.deletedAt)));
+  if (found.length !== ids.length) throw new AppError("validation", "본문에 삭제되었거나 없는 이미지가 있습니다. 이미지를 지우고 다시 넣어 주세요.");
+}
+
+/**
+ * 발행 전 점검 전체: 글 내용 점검 + 본문 이미지의 대체 텍스트(없으면 막는다).
+ * 수정 중인 내용이 있으면 그것을 기준으로 한다. 편집 화면의 점검 표시와 발행·예약·수정 내용 반영이 같은 함수를 쓴다.
+ */
+export async function publishProblems(db: AdminDb, admin: AdminSession, row: ContentRow, reviewed: boolean): Promise<string[]> {
+  void admin;
+  const problems = publishChecks(checkInput(row, reviewed));
+  const body = sanitizeBody(editableView(row).body);
+  if (body.ok) {
+    const ids = collectMediaIds(body.doc);
+    if (ids.length > 0) {
+      const rows = await db.select({ id: media.id, alt: media.alt }).from(media).where(and(inArray(media.id, ids), isNull(media.deletedAt)));
+      if (rows.length !== ids.length) problems.push("본문에 삭제되었거나 없는 이미지가 있습니다.");
+      const missing = rows.filter((r) => !r.alt || !r.alt.trim()).length;
+      if (missing > 0) problems.push(`본문 이미지 ${missing}개에 대체 텍스트가 없습니다. 어드민 > 미디어에서 입력해 주세요.`);
+    }
+  }
+  return problems;
+}
+
 export async function saveContent(db: AdminDb, admin: AdminSession, id: string, version: number, input: ContentEdit): Promise<{ version: number; savedAsDraft: boolean }> {
   if (!isUuid(id)) throw new AppError("not_found", "대상을 찾을 수 없습니다.");
   const edit = cleanEdit(input);
+  await assertBodyMedia(db, edit.body);
   const current = await getContent(db, admin, id);
   if (!current) throw new AppError("not_found", "대상을 찾을 수 없습니다.");
   const published = current.status === "published";
@@ -285,7 +314,7 @@ export async function transitionContent(
   if (!canTransition(from, to)) throw new AppError("validation", "이 상태에서는 선택한 상태로 바꿀 수 없습니다.");
 
   if (to === "published" || to === "scheduled") {
-    const problems = publishChecks(checkInput(row, from === "review"));
+    const problems = await publishProblems(db, admin, row, from === "review");
     if (problems.length > 0) throw new AppError("validation", problems.join(" "));
   }
   if (to === "scheduled") {
@@ -354,7 +383,7 @@ export async function discardDraft(db: AdminDb, admin: AdminSession, id: string,
 export async function publishDraft(db: AdminDb, admin: AdminSession, id: string, version: number): Promise<{ version: number }> {
   const row = await getContent(db, admin, id);
   if (!row || row.status !== "published" || row.draft === null) throw new AppError("validation", "반영할 수정 내용이 없습니다.");
-  const problems = publishChecks(checkInput(row, true));
+  const problems = await publishProblems(db, admin, row, true);
   if (problems.length > 0) throw new AppError("validation", problems.join(" "));
   const clean = cleanEdit({ ...editableView(row), slug: row.slug });
   const updated = await db

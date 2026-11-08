@@ -2,8 +2,8 @@
  * 어드민의 미디어 라이브러리 데이터 함수 (ADMIN-DESIGN §9). 모든 함수는 `admin: AdminSession`을 받고,
  * 업로드·대체 텍스트 수정·삭제는 활동 기록에 남는다 (파일명·대체 텍스트 내용은 기록하지 않는다).
  */
-import { and, count, desc, eq, isNull } from "drizzle-orm";
-import { media, type MediaRow } from "@/db/schema";
+import { and, count, desc, eq, inArray, isNull, or, sql } from "drizzle-orm";
+import { contents, media, type MediaRow } from "@/db/schema";
 import { AppError } from "@/lib/errors";
 import type { AdminSession } from "@/lib/auth/types";
 import { recordAudit } from "./audit";
@@ -75,15 +75,43 @@ export async function updateMediaAlt(db: AdminDb, admin: AdminSession, id: strin
 }
 
 /**
- * 이 미디어를 쓰는 콘텐츠의 수. 지금은 이미지를 참조하는 콘텐츠가 아직 없어 0이다.
- * 콘텐츠(스토리·투어·장비 등)가 미디어를 참조하게 되는 단계(AD-5~6)에서 실제 집계로 바꾼다 —
- * 그때까지 삭제 경고(사용 중이면 막기)는 이 값에 연결돼 있다.
+ * 이 미디어를 쓰는 콘텐츠의 수: 삭제되지 않은 콘텐츠의 본문·수정 중인 내용·대표 이미지에서 이 이미지 id 를 찾는다.
+ * 본문 JSON 은 id 를 소문자로만 저장하므로(검사기가 정리) 글자 검색으로 충분하고, id 에는 와일드카드 문자가 없다.
+ * 영상·여행 추천 같은 새 유형이 이미지를 다른 곳에 두게 되면 여기에 함께 추가한다.
  */
 export async function mediaUsageCount(db: AdminDb, admin: AdminSession, id: string): Promise<number> {
-  void db;
   void admin;
-  void id;
-  return 0;
+  if (!isUuid(id)) return 0;
+  const pattern = `%${id.toLowerCase()}%`;
+  const [row] = await db
+    .select({ value: count() })
+    .from(contents)
+    .where(and(isNull(contents.deletedAt), or(eq(contents.coverMediaId, id), sql`${contents.body}::text like ${pattern}`, sql`${contents.draft}::text like ${pattern}`)));
+  return row?.value ?? 0;
+}
+
+export interface PickerMedia {
+  id: string;
+  url: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
+/** 편집기의 이미지 고르기 목록 (최근 60개) */
+export async function listMediaForPicker(db: AdminDb, admin: AdminSession): Promise<PickerMedia[]> {
+  void admin;
+  const rows = await db.select().from(media).where(isNull(media.deletedAt)).orderBy(desc(media.createdAt)).limit(60);
+  return rows.map((r) => ({ id: r.id, url: r.url, alt: r.alt ?? "", width: r.width, height: r.height }));
+}
+
+/** id 로 미디어를 가져온다 (본문 렌더링·점검용). 삭제된 것은 빠진다 */
+export async function getMediaByIds(db: AdminDb, admin: AdminSession, ids: string[]): Promise<PickerMedia[]> {
+  void admin;
+  const valid = ids.filter(isUuid);
+  if (valid.length === 0) return [];
+  const rows = await db.select().from(media).where(and(inArray(media.id, valid), isNull(media.deletedAt)));
+  return rows.map((r) => ({ id: r.id, url: r.url, alt: r.alt ?? "", width: r.width, height: r.height }));
 }
 
 /** 라이브러리에서 숨긴다(soft delete). 파일 자체의 정리는 휴지통 단계(AD-6)에서 30일 뒤 한다 */

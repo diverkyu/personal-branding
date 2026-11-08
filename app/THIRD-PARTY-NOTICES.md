@@ -30,6 +30,10 @@ OFL에 따라 글꼴 자체를 단독으로 판매하지 않으며, 수정본을
 
 `@vercel/blob`(Apache-2.0, 이미지 저장소 연결)과 `sharp`(Apache-2.0, 업로드 이미지의 형식 확인·위치정보 제거·WebP 변환)를 쓴다. sharp는 libvips(LGPL-3.0-or-later)를 미리 빌드한 바이너리로 함께 쓰며 동적으로 연결된다. 각 패키지의 `license` 필드로 2026-11-08에 확인했다. 이미지 파서의 취약점 소식은 의존성 점검에 포함한다 (SECURITY §7).
 
+## 본문 편집기
+
+`@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit`(Tiptap, MIT)과 그 하위 확장·ProseMirror(MIT)를 어드민 본문 편집기에 쓴다. 시험용으로 `jsdom`(MIT)을 쓴다. 각 패키지의 `license` 필드로 2026-11-08에 확인했다. Tiptap의 유료 확장(클라우드·AI·협업 등)은 쓰지 않는다.
+
 ## 확인 방법
 
 글꼴은 Google Fonts 저장소의 `METADATA.pb`·`OFL.txt`, 아이콘은 Lucide 저장소의 `LICENSE`로 2026-11-08에 확인했다 ([CONCEPT §7.8](../docs/phase1/CONCEPT.md)).

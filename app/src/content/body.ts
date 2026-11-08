@@ -240,3 +240,17 @@ export function plainEditableText(doc: BodyDoc): string | null {
   }
   return plainTextFromBody(doc);
 }
+
+/** 본문이 쓰는 미디어 id 목록 (중복 제거). 발행 점검·저장 검증·사용 중 삭제 방지에 쓴다 */
+export function collectMediaIds(doc: BodyDoc): string[] {
+  const ids = new Set<string>();
+  const walk = (blocks: BlockNode[]) => {
+    for (const b of blocks) {
+      if (b.type === "image") ids.add(b.attrs.mediaId);
+      else if (b.type === "blockquote") walk(b.content);
+      else if (b.type === "bulletList" || b.type === "orderedList") b.content.forEach((li) => walk(li.content));
+    }
+  };
+  walk(doc.content);
+  return [...ids];
+}

@@ -7,15 +7,12 @@ import {
   createContent,
   deleteContent,
   discardDraft,
-  editableView,
-  getContent,
   publishDraft,
   retryPublishJob,
   saveContent,
   transitionContent,
   type ContentEdit,
 } from "@/data/admin/contents";
-import { bodyFromPlainText } from "@/content/body";
 import { STATUSES, parseKstLocal, type ContentOrigin, type ContentStatus } from "@/content/publish";
 import { AppError, errorKindOf } from "@/lib/errors";
 import { requireAdmin } from "@/lib/auth/session";
@@ -62,14 +59,19 @@ export async function createContentAction(_: ContentState, formData: FormData): 
   redirect(`/admin/contents/${id}`);
 }
 
-/** 화면의 입력을 ContentEdit 으로 만든다. 서식이 있는 본문(plainBody=0)은 건드리지 않고 그대로 둔다 */
-async function editFromForm(formData: FormData, currentBody: unknown): Promise<ContentEdit> {
-  const plainBody = text(formData, "plainBody", 2) === "1";
+/** 화면의 입력을 ContentEdit 으로 만든다. 본문은 편집기가 보낸 JSON 이며 서버가 다시 검사한다 */
+function editFromForm(formData: FormData): ContentEdit {
+  let body: unknown;
+  try {
+    body = JSON.parse(text(formData, "bodyJson", 900_000));
+  } catch {
+    throw new AppError("validation", "본문을 읽을 수 없습니다. 새로고침한 뒤 다시 시도해 주세요.");
+  }
   return {
     title: text(formData, "title", 300),
     slug: text(formData, "slug", 200),
     summary: text(formData, "summary", 1000),
-    body: plainBody ? bodyFromPlainText(text(formData, "body", 120_000)) : currentBody,
+    body,
     tags: text(formData, "tags", 400).split(/[,\n]/),
     answers: text(formData, "answers", 2000).split("\n"),
     seoTitle: text(formData, "seoTitle", 300),
@@ -82,12 +84,10 @@ async function editFromForm(formData: FormData, currentBody: unknown): Promise<C
 export async function saveContentAction(_: ContentState, formData: FormData): Promise<ContentState> {
   const admin = await requireAdmin();
   const id = text(formData, "id", 64);
-  const values = Object.fromEntries(["title", "slug", "summary", "body", "tags", "answers", "seoTitle", "seoDescription", "origin", "originNote"].map((k) => [k, text(formData, k, 120_000)]));
+  const values = Object.fromEntries(["title", "slug", "summary", "tags", "answers", "seoTitle", "seoDescription", "origin", "originNote"].map((k) => [k, text(formData, k, 5000)]));
   try {
     const db = adminDb();
-    const current = await getContent(db, admin, id);
-    if (!current) return { error: "대상을 찾을 수 없습니다." };
-    const saved = await saveContent(db, admin, id, versionOf(formData), await editFromForm(formData, editableView(current).body));
+    const saved = await saveContent(db, admin, id, versionOf(formData), editFromForm(formData));
     revalidatePath(`/admin/contents/${id}`);
     revalidatePath("/admin/contents");
     return { ok: true, message: saved.savedAsDraft ? "수정 내용을 저장했습니다. 공개 내용은 '수정 내용 발행'을 눌러야 바뀝니다." : "저장했습니다." };

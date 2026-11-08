@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Textarea, TextField } from "@/components/ui/Field";
+import { RichEditor, type PickerMedia } from "@/editor/RichEditor";
 import {
   createContentAction,
   deleteContentAction,
@@ -54,8 +55,8 @@ export interface EditInitial {
   slug: string;
   slugLocked: boolean;
   summary: string;
-  /** 서식 없는 본문이면 글자, 서식이 있으면 null(편집기 단계에서 고칠 수 있다) */
-  bodyText: string | null;
+  /** 본문 문서(JSON). 편집기가 이것으로 시작한다 */
+  bodyDoc: unknown;
   tags: string;
   answers: string;
   seoTitle: string;
@@ -70,7 +71,7 @@ const ORIGIN_OPTIONS = [
   { value: "automated", label: "자동 생성" },
 ];
 
-export function EditForm({ initial }: { initial: EditInitial }) {
+export function EditForm({ initial, media }: { initial: EditInitial; media: PickerMedia[] }) {
   const [state, action, pending] = useActionState<ContentState, FormData>(saveContentAction, {});
   const v = state.error ? state.values : undefined;
   const pick = (key: keyof EditInitial & string, name: string = key) => (v?.[name] ?? (initial[key] as string));
@@ -80,7 +81,6 @@ export function EditForm({ initial }: { initial: EditInitial }) {
       <Notice state={state} />
       <input type="hidden" name="id" value={initial.id} />
       <input type="hidden" name="version" value={initial.version} />
-      <input type="hidden" name="plainBody" value={initial.bodyText === null ? "0" : "1"} />
       <TextField key={`t-${k}`} id="c-title" name="title" label="제목" defaultValue={pick("title")} maxLength={85} required surface="light" />
       <TextField
         key={`s-${k}`}
@@ -95,11 +95,12 @@ export function EditForm({ initial }: { initial: EditInitial }) {
       />
       {initial.slugLocked ? <input type="hidden" name="slug" value={initial.slug} /> : null}
       <Textarea key={`su-${k}`} id="c-summary" name="summary" label="요약 (160자 이하)" rows={2} defaultValue={pick("summary")} hint="발행 전 점검에서 160자를 넘으면 막힙니다. 비우면 본문 앞부분을 씁니다." surface="light" />
-      {initial.bodyText !== null ? (
-        <Textarea key={`b-${k}`} id="c-body" name="body" label="본문" rows={16} defaultValue={v?.body ?? initial.bodyText} hint="빈 줄로 문단을 나눕니다. 제목·목록·이미지 같은 서식은 다음 단계(편집기)에서 쓸 수 있습니다." surface="light" />
-      ) : (
-        <p className={styles.alert}>이 글의 본문에는 서식(제목·목록·이미지 등)이 있어 지금 화면에서는 고칠 수 없습니다. 본문은 그대로 보존되며, 편집기가 추가되면 고칠 수 있습니다.</p>
-      )}
+      <div>
+        <p className={styles.fieldLabel} id="body-label">
+          본문
+        </p>
+        <RichEditor initial={initial.bodyDoc} media={media} resetKey={initial.version} />
+      </div>
       <TextField key={`tg-${k}`} id="c-tags" name="tags" label="태그 (쉼표로 구분, 5개까지)" defaultValue={pick("tags")} surface="light" />
       <Textarea key={`a-${k}`} id="c-answers" name="answers" label="이 글이 답하는 질문 (한 줄에 하나, 10개까지)" rows={3} defaultValue={pick("answers")} surface="light" />
       <TextField key={`st-${k}`} id="c-seo-title" name="seoTitle" label="검색 제목 (비우면 제목)" defaultValue={pick("seoTitle")} maxLength={75} surface="light" />

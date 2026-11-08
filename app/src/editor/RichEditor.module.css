@@ -1,0 +1,208 @@
+/* 어드민 본문 편집기. 디자인 토큰만 쓴다. 편집 영역의 글꼴은 공개 화면의 본문과 비슷하게 둔다. */
+.wrap {
+  border: 1px solid var(--kyu-line);
+  background: var(--kyu-white);
+}
+.loading {
+  padding: 16px;
+  font-size: 14px;
+  color: var(--kyu-ink-sub);
+  border: 1px solid var(--kyu-line);
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  border-bottom: 1px solid var(--kyu-line);
+  background: var(--kyu-paper);
+}
+.tool {
+  min-height: var(--kyu-touch);
+  min-width: var(--kyu-touch);
+  padding: 0 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--kyu-line);
+  background: var(--kyu-white);
+  color: var(--kyu-navy);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.tool[aria-pressed="true"] {
+  background: var(--kyu-navy);
+  color: var(--kyu-paper);
+  border-color: var(--kyu-navy);
+}
+.tool:disabled {
+  color: var(--kyu-ink-faint);
+  cursor: default;
+}
+.tool:focus-visible,
+.apply:focus-visible,
+.plain:focus-visible,
+.pick:focus-visible {
+  outline: 2px solid var(--kyu-focus);
+  outline-offset: 2px;
+}
+.panel {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid var(--kyu-line);
+}
+.panelLabel {
+  font-size: 13px;
+  color: var(--kyu-ink-sub);
+}
+.panelRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.input {
+  min-height: var(--kyu-touch);
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 10px;
+  border: 1px solid var(--kyu-line);
+  font: inherit;
+  font-size: 14px;
+  color: var(--kyu-navy);
+}
+.apply {
+  min-height: var(--kyu-touch);
+  padding: 0 16px;
+  border: 1px solid var(--kyu-navy);
+  background: var(--kyu-navy);
+  color: var(--kyu-paper);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  justify-self: start;
+}
+.plain {
+  background: none;
+  border: 0;
+  color: var(--kyu-navy);
+  text-decoration: underline;
+  font: inherit;
+  font-size: 14px;
+  min-height: var(--kyu-touch);
+  cursor: pointer;
+}
+.hint {
+  margin: 0;
+  font-size: 14px;
+  color: var(--kyu-ink-sub);
+}
+.error {
+  margin: 0;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--kyu-navy);
+  background: var(--kyu-paper);
+  font-size: 14px;
+}
+.pickGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+  max-height: 260px;
+  overflow: auto;
+}
+.pick {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--kyu-line);
+  background: var(--kyu-white);
+  cursor: pointer;
+  text-align: left;
+}
+.pick img {
+  display: block;
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+}
+.pickWarn {
+  display: block;
+  padding: 2px 6px;
+  font-size: 11px;
+  background: var(--kyu-lime);
+}
+.content {
+  min-height: 320px;
+  padding: 16px;
+  font-size: 16px;
+  line-height: 1.8;
+  outline: none;
+}
+.content :global(p) {
+  margin: 0 0 1em;
+}
+.content :global(h2) {
+  margin: 1.4em 0 0.5em;
+  font-size: 24px;
+  line-height: 1.3;
+}
+.content :global(h3) {
+  margin: 1.2em 0 0.5em;
+  font-size: 19px;
+  line-height: 1.3;
+}
+.content :global(ul),
+.content :global(ol) {
+  margin: 0 0 1em;
+  padding-left: 1.4em;
+}
+.content :global(blockquote) {
+  margin: 0 0 1em;
+  padding-left: 14px;
+  border-left: 3px solid var(--kyu-navy);
+  color: var(--kyu-ink-sub);
+}
+.content :global(hr) {
+  border: 0;
+  border-top: 1px solid var(--kyu-line);
+  margin: 1.4em 0;
+}
+.content :global(a) {
+  color: var(--kyu-navy);
+  text-decoration: underline;
+}
+.content :global(.ProseMirror-selectednode) {
+  outline: 2px solid var(--kyu-focus);
+}
+.embed {
+  margin: 0 0 1em;
+  padding: 8px;
+  border: 1px dashed var(--kyu-line);
+  background: var(--kyu-paper);
+}
+.embed[data-selected="true"] {
+  outline: 2px solid var(--kyu-focus);
+}
+.embedImg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: 320px;
+}
+.embedMissing,
+.embedVideo {
+  display: block;
+  font-size: 13px;
+  color: var(--kyu-ink-sub);
+  word-break: break-all;
+}
+.embedWarn {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 6px;
+  font-size: 12px;
+  background: var(--kyu-lime);
+}

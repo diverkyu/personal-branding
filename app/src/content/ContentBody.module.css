@@ -1,0 +1,51 @@
+/* 콘텐츠 본문 렌더링 (미리보기·공개 화면 공용). 토큰만 쓴다. */
+.body {
+  font-size: 17px;
+  line-height: 1.85;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+.body p {
+  margin: 0 0 1.1em;
+}
+.body h2 {
+  margin: 1.6em 0 0.6em;
+  font-size: 26px;
+  line-height: 1.3;
+}
+.body h3 {
+  margin: 1.4em 0 0.5em;
+  font-size: 20px;
+  line-height: 1.3;
+}
+.body ul,
+.body ol {
+  margin: 0 0 1.1em;
+  padding-left: 1.5em;
+}
+.body li > p {
+  margin: 0;
+}
+.body blockquote {
+  margin: 0 0 1.1em;
+  padding-left: 16px;
+  border-left: 3px solid currentColor;
+  opacity: 0.85;
+}
+.body hr {
+  border: 0;
+  border-top: 1px solid var(--kyu-line);
+  margin: 2em 0;
+}
+.body a {
+  color: inherit;
+  text-decoration: underline;
+}
+.figure {
+  margin: 0 0 1.4em;
+}
+.figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
