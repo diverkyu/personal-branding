@@ -1,6 +1,6 @@
 # 어드민 기술 설계
 
-> 문서 버전 **0.20.0** (PRD·CONCEPT·SCREEN-SPEC 등과 같은 세트 버전, [CHANGELOG](CHANGELOG.md)) · 상태: 검토 중
+> 문서 버전 **0.21.0** (PRD·CONCEPT·SCREEN-SPEC 등과 같은 세트 버전, [CHANGELOG](CHANGELOG.md)) · 상태: 검토 중
 
 [SCREEN-SPEC §7](SCREEN-SPEC.md)이 어드민 **화면·필드**를 정했다면, 이 문서는 그것을 **어떻게 만들지**를 정한다. 인증, 권한, 데이터 모델, 편집기, 이미지, 저장·충돌 처리, 구현 순서를 다룬다. 화면 필드와 제약은 SCREEN-SPEC을 따르고 여기서 반복하지 않는다.
 
@@ -14,6 +14,9 @@
 | ORM·DB | Drizzle + Neon (기존) | 콘텐츠 테이블을 같은 DB에 추가 |
 | 변경 방식 | Next.js 서버 액션 + 서버 검증 | 공개 폼과 같은 패턴 (`lib/forms`) |
 | 권한 | 관리자 1역할 (Phase 1) | SECURITY §3 |
+| 어드민 성격 | **콘텐츠 발행 관리 + 백오피스 복합** (메뉴 6그룹, §3) | 2026-11-08 결정. 스토리·AI 영상·여행 추천·자동 발행까지 확장 |
+| 콘텐츠 모델 | **통합 `contents` 테이블 + 유형 정의**. 투어·장비·후기는 별도 테이블이되 발행 절차는 공통 | 2026-11-08 결정 (§5.0, §14) |
+| 발행 절차 | 공통 5단계(임시저장·검토 필요·예약·발행·보관). **예약 발행은 필수** | 2026-11-08 결정. 기존 "후순위"에서 변경 |
 
 **버전 고정**: 구현 시작 때 Better Auth·Tiptap·`@vercel/blob`의 현재 버전과 Next.js 16 호환을 다시 확인하고, DEVELOPMENT §의 의존성 유예 규칙(공개 후 일정 기간 경과)을 따른다.
 
@@ -25,7 +28,24 @@
 4. **실패해도 데이터는 안 잃는다.** 저장 실패는 화면에 표시하고 입력을 보존한다. 외부 서비스(Blob, 메일) 실패가 콘텐츠 저장을 막지 않는다.
 5. **쉬운 한국어.** 개발 용어(slug, draft)는 화면에서 "주소 이름", "임시저장"으로 푼다.
 
-## 3. 경로와 코드 구조
+## 3. 메뉴와 경로, 코드 구조
+
+### 3.1 메뉴 (6그룹)
+
+| 그룹 | 항목 (경로) | 성격 | 단계 |
+| --- | --- | --- | --- |
+| 홈 | 대시보드 (`/admin`) | 오늘 처리할 일: 신규 신청, 검토 필요, 예약, 실패 알림 | AD-2 |
+| 콘텐츠 | 전체 콘텐츠 (`/admin/contents`), 스토리 (`/admin/contents?type=story`), 영상 (`type=video`), 여행 추천 (`type=travel`), 발행 일정 (`/admin/schedule`), 자동화 (`/admin/automation`), 휴지통 (`/admin/trash`) | 발행 | AD-5·6, 자동화는 후속 |
+| 운영 | 투어 (`/admin/tours`), 신청·문의 (`/admin/inquiries`), 후기 (`/admin/reviews`), 장비 (`/admin/equipment`) | 백오피스 (개인정보·동의·모집) | AD-2·6 |
+| 자산 | 미디어 (`/admin/media`), 태그·카테고리 (`/admin/taxonomy`) | 공용 자원 | AD-4·5 |
+| 사이트 | 페이지 (`/admin/pages`), 사이트 설정 (`/admin/settings`), 동의·방침 (`/admin/legal`) | 사이트 제어 (문구·연락처만, 레이아웃 변경 없음) | AD-3·6 |
+| 시스템 | 사용자·보안 (`/admin/users`), 활동 기록 (`/admin/audit`), 알림·연동 (`/admin/integrations`), 백업·내보내기 (`/admin/backup`) | 관리자 기능 | AD-1·2, 나머지 후속 |
+
+- 콘텐츠 유형을 늘릴 때 **콘텐츠 그룹에 항목 하나**만 추가하면 된다 (유형 정의, §14.1). 목록·발행 절차·휴지통은 모든 유형이 공유한다.
+- 시안: 2026-11-08 대화에서 확정한 메뉴 구조 (세션 시안, 필요 시 `mockup/`에 정식 시안으로 추가).
+- 단계에 없는 메뉴(후속)는 **화면을 만들 때까지 메뉴에 노출하지 않는다.** 빈 화면을 배포하지 않는다.
+
+### 3.2 코드 구조
 
 ```
 app/src/app/admin/
@@ -34,9 +54,15 @@ app/src/app/admin/
   setup-2fa/             # 첫 로그인 시 TOTP 등록 (2차 인증 미등록 계정은 여기서 막힘)
   (console)/             # 로그인 필수 영역. layout에서 세션 확인
     page.tsx             # 대시보드
-    stories/ tours/ inquiries/ equipment/ reviews/ media/ about/ settings/
+    contents/ schedule/ automation/ trash/
+    tours/ inquiries/ reviews/ equipment/
+    media/ taxonomy/ pages/ settings/ legal/
+    users/ audit/ integrations/ backup/
 app/src/app/api/auth/[...all]/route.ts   # Better Auth 핸들러
+app/src/app/api/ingest/route.ts          # 자동화 입력 (토큰 인증, 항상 초안으로만 저장, 후속)
 app/src/lib/auth/        # auth 인스턴스, requireAdmin(), 세션 헬퍼
+app/src/content/types/   # 콘텐츠 유형 정의 (story, video, travel ...)
+app/src/content/publish/ # 발행 상태 전이, 예약, 발행 작업
 app/src/admin/           # 어드민 전용 컴포넌트·서버 액션·검증 스키마
 app/src/data/admin/      # 어드민 조회·변경 함수 (모두 requireAdmin 선행)
 app/src/data/public/     # 공개 조회 함수 (공개 상태만)
@@ -91,12 +117,31 @@ app/src/data/public/     # 공개 조회 함수 (공개 상태만)
 | `deleted_at` | 휴지통. NULL이 아니면 삭제됨. 30일 뒤 영구 삭제 (§8) |
 | `updated_by` | 마지막 수정한 관리자 id (감사) |
 
+### 5.0 통합 콘텐츠 모델 (`contents`)
+
+발행형 콘텐츠(스토리, AI 영상, 여행 추천, 이후 유형)는 **한 테이블**에 둔다.
+
+| 컬럼 | 설명 |
+| --- | --- |
+| `type` | 유형 키 (`story`, `video`, `travel` …). 코드의 유형 정의에 등록된 값만 허용 |
+| 공통 | title, slug(유형 안에서 고유), summary, cover_media_id, cover_alt, body(JSON), tags(text[]), answers(text[]), seo_title, seo_description |
+| `fields` | JSON. **유형별 항목** (여행 추천: region, season, level, budget, place, checked_on / 영상: video_url, duration, has_captions). 유형 정의의 스키마로 서버가 검증 |
+| `status` | `draft` / `review` / `scheduled` / `published` / `archived` (§14.2) |
+| `publish_at` | 예약 시각 (`scheduled`일 때 필수) |
+| `published_at` | 실제 공개 시각 (서버 기록) |
+| `origin` | `manual` / `ai_assisted` / `automated` (제작 방식, 공개 표기·검토 기준에 사용) |
+| `origin_note` | 비공개 메모 (사용 도구·프롬프트 등) |
+
+- 유형별 항목을 JSON으로 두는 이유: 유형이 늘어도 테이블·마이그레이션을 늘리지 않는다. 대신 **유형 정의(`content/types/*`)가 스키마의 단일 출처**이고, 읽기·쓰기 모두 이 정의로 검증한다. 검색·정렬에 쓰는 항목(예: 지역)이 생기면 그때 컬럼으로 승격한다.
+- **별도 테이블로 두는 것**: `tours`(신청 폼·모집 상태와 결합), `equipment`, `reviews`(동의 확인·수정 이력), `about`, `site_settings`. 단 이들도 `status` 의미와 예약·휴지통·이력은 같은 발행 모듈을 쓴다 (§14).
+- 공개 조회 함수는 `type`별로 `status='published' AND deleted_at IS NULL AND publish_at<=now()`만 반환한다.
+
 ### 5.2 테이블
 
 | 테이블 | 핵심 컬럼 (SCREEN-SPEC §7.5 필드 기준) | 비고 |
 | --- | --- | --- |
-| `stories` | title, slug, summary, cover_media_id, cover_alt, body(JSON), tags(text[]), answers(text[]), status(`draft`/`published`), published_at, seo_title, seo_description | `published_at`은 발행 시 서버가 기록. 예약 발행은 후순위 (§12 결정 7) |
-| `tours` | name, slug, starts_on, ends_on, place, recruit_status(`upcoming`/`recruiting`/`closed`), capacity, cover_media_id, cover_alt, video_url, body(JSON), fee_note, status(`draft`/`published`) | `종료`는 저장하지 않고 날짜로 계산 (결정 2) |
+| `contents` | (§5.0 통합 모델 참조) | 스토리·영상·여행 추천 등 발행형 콘텐츠 전부 |
+| `tours` | name, slug, starts_on, ends_on, place, recruit_status(`upcoming`/`recruiting`/`closed`), capacity, cover_media_id, cover_alt, video_url, body(JSON), fee_note, status(`draft`/`review`/`scheduled`/`published`/`archived`), publish_at | `종료`는 저장하지 않고 날짜로 계산 (결정 2) |
 | `tour_gallery` | tour_id, media_id, caption, position | 0~30 |
 | `tour_videos` | tour_id, url, position | 0~5, 허용 도메인(`lib/video.ts`) |
 | `equipment` | name, slug, category_id, brand, reason_short, reason_body(JSON), features(text[]), thumb_media_id, thumb_alt, price_note, checked_on, action_type, buy_url, button_label, is_affiliate, status(`public`/`private`), sort_order | |
@@ -108,6 +153,8 @@ app/src/data/public/     # 공개 조회 함수 (공개 상태만)
 | `site_settings` | key, value(JSON), version, updated_by | 키-값. 키 목록과 기본값은 코드(스키마)에 정의, 비었거나 틀리면 기본값 사용 (SCREEN-SPEC §7.6) |
 | `consent_versions` | kind(`reservation`/`notice`/`privacy`), version, text, effective_from | 동의 문구를 바꾸면 새 버전 기록 (`CONSENT_VERSION`을 DB로 이전) |
 | `media` | id, blob_url, pathname, mime, bytes, width, height, alt, uploaded_by, created_at, deleted_at | 사용처 수는 조회로 계산 |
+| `publish_jobs` | id, target_type, target_id, run_at, state(`pending`/`running`/`done`/`failed`), attempts, last_error_kind, channel(`site`) | 예약 발행·자동 생성 작업 기록 (§14.3). 오류 메시지 원문은 저장하지 않음 |
+| `ingest_tokens` | id, label, hash, allowed_types(text[]), created_by, created_at, revoked_at | 자동화 입력용. 토큰 원문은 발급 때 한 번만 표시, DB에는 해시만 (후속) |
 | `audit_log` | at, actor_id, action, target_type, target_id, meta(JSON, 개인정보 제외) | 열람·내보내기·삭제·발행 등 (SECURITY §14) |
 | `inquiries` (기존) | + `status`, `memo`, `handled_at` 컬럼 추가 | 원본 필드는 읽기 전용 |
 
@@ -158,13 +205,13 @@ DASH-01~06은 모두 단순 집계/최근 목록 쿼리다 (인덱스: `inquirie
 
 | 단계 | 내용 | 완료 기준 |
 | --- | --- | --- |
-| AD-1 | Better Auth 연결, 스키마·마이그레이션, 계정 생성/재설정 스크립트, `/admin/login`, 2차 인증 등록·로그인, 보호 레이아웃, 속도 제한, 로그 | SEC-01·11·13 시험 통과(로컬·dev DB). 가입 경로가 막혀 있음 |
-| AD-2 | 어드민 셸(메뉴, 반응형), 대시보드(신청 집계), **신청·문의 관리**(목록·상세·상태·메모·파기·CSV) | 기존 공개 폼 접수분을 어드민에서 처리 가능 |
-| AD-3 | 사이트 설정 + `consent_versions` (기본값 폴백, 브랜드 문구 확인 대화상자) | 설정 변경이 공개 화면에 반영 |
+| AD-1 | Better Auth 연결, 스키마·마이그레이션, 계정 생성/재설정 스크립트, `/admin/login`, 2차 인증, 보호 레이아웃(메뉴 셸 포함), 속도 제한, 로그, **사용자·보안 화면** | SEC-01·11·13 시험 통과. 가입 경로가 막혀 있음 |
+| AD-2 | 어드민 셸(반응형 메뉴), 대시보드(신청 집계), **신청·문의 관리**, **활동 기록** | 공개 폼 접수분을 어드민에서 처리 가능, 열람·파기 기록 |
+| AD-3 | 사이트 설정, 동의·방침(`consent_versions`) | 설정 변경이 공개 화면에 반영 |
 | AD-4 | 미디어 라이브러리 (Blob 업로드·후처리·alt·삭제 경고) | 업로드→사용→삭제 경고 흐름 |
-| AD-5 | 스토리 (Tiptap, 임시저장·발행·미리보기·충돌 처리) + 공개 화면 DB 전환 | 규강이 코드 없이 글 발행 |
-| AD-6 | 투어·장비·후기·About + 휴지통·정리 작업 | PRD 어드민 요구사항(A-1~A-7) 충족 |
-| (별도) | Resend 알림 메일, 예약 발행, 비밀번호 재설정 메일화 | |
+| AD-5 | **통합 콘텐츠 기반**: `contents` + 유형 정의 + 발행 상태 전이 + **예약 발행(`publish_jobs`)** + 발행 일정 화면 + 전체 콘텐츠 목록 + **스토리 유형**(Tiptap, 미리보기, 충돌 처리) + 공개 화면 DB 전환 | 규강이 코드 없이 글을 예약·발행 |
+| AD-6 | 영상·여행 추천 유형, 투어·후기·장비·페이지 편집(발행 절차 공통 적용), 휴지통·정리 작업, 태그·카테고리 | PRD 어드민 요구사항 충족 |
+| 후속 | **자동화**(`/api/ingest`, 토큰, 검토 큐, 자동 생성 규칙), 알림·연동(Resend), 백업·내보내기, 뉴스레터·SNS 발행 위치 | 자동 입력은 항상 초안·검토 필요로만 저장 |
 
 각 단계는 vitest(단위·PGlite 통합)와 Playwright E2E를 갖춘다. 순서를 AD-1부터 지키는 이유: 인증이 없으면 이후 모든 화면이 열려 있게 된다 — **인증 없는 어드민 화면을 배포하지 않는다** (배포가 이미 공개 상태이므로 AD-1 전까지 `/admin` 하위에 화면을 추가하지 않는다).
 
@@ -184,6 +231,11 @@ DASH-01~06은 모두 단순 집계/최근 목록 쿼리다 (인덱스: `inquirie
 | 업로드 | 허용 외 형식·초과 크기·가짜 확장자 거부, EXIF 제거 확인 | AD-4 |
 | IME | 한국어 조합 입력 편집기 동작 (수동) | AD-5 |
 | 모바일 | 목록 확인·신청 상태 변경 (390px) | AD-2 |
+| 상태 전이 | 허용되지 않은 전이(예: 보관→예약 없이 발행) 거부, `scheduled`는 `publish_at` 필수 | AD-5 |
+| 예약 발행 | 예약 시각 도달 시 공개, 이전에는 공개 함수·sitemap·JSON-LD에 안 나옴, 실패 시 재시도 후 기록 | AD-5 |
+| 중복 실행 | 같은 작업이 두 번 실행돼도 한 번만 발행 (멱등) | AD-5 |
+| 유형 검증 | 유형 정의에 없는 `type`·`fields` 거부, 유형별 필수 항목 검증 | AD-5 |
+| 자동 입력(후속) | 토큰 없이/폐기된 토큰/허용 외 유형 거부, 항상 `draft`·`review`로만 저장, 직접 `published` 지정 불가 | 후속 |
 
 ## 13. 열린 질문
 
@@ -192,3 +244,47 @@ DASH-01~06은 모두 단순 집계/최근 목록 쿼리다 (인덱스: `inquirie
 3. 어드민 접속 허용 범위를 IP/지역으로 좁힐지 (Vercel 플랜 기능 의존, 보류)
 4. 투어 신청 CSV 내보내기에 포함할 열과 보관 방법 (개인정보 — 법률 확인과 함께)
 5. 이전에 정한 SECURITY §16의 "비밀번호 재설정(메일 vs 수동)"은 Phase 1 수동으로 시작하고 Resend 이후 재결정
+6. 자동 생성 AI 콘텐츠의 공개 표기 문구와 위치 (`origin=ai_assisted/automated`에 따라 표시할지)
+7. 뉴스레터·SNS 발행 위치를 도입할 시점과 서비스 (후속)
+
+## 14. 콘텐츠 발행 관리
+
+### 14.1 유형 정의
+
+`content/types/<type>.ts` 하나가 한 유형의 모든 것을 정한다: 키, 메뉴 이름, 공통 필드 중 쓰는 것, `fields` 스키마(검증), 발행 전 점검 항목, 공개 화면 라우트와 구조화 데이터 종류. 새 유형 = 정의 파일 추가 + 공개 라우트 연결.
+
+| 유형 | 키 | 공개 경로(안) | `fields` 예 |
+| --- | --- | --- | --- |
+| 스토리 | `story` | `/story/[slug]` | (공통만) |
+| 영상 | `video` | `/videos/[slug]` (경로는 AD-6에서 확정) | video_url, duration, has_captions |
+| 여행 추천 | `travel` | `/travel/[slug]` (경로는 AD-6에서 확정) | region, season, level, budget, place, checked_on |
+
+### 14.2 발행 상태와 전이
+
+`draft`(임시저장) → `review`(검토 필요) → `scheduled`(예약) → `published`(발행) → `archived`(보관). 
+
+| 전이 | 허용 | 비고 |
+| --- | --- | --- |
+| draft → review / scheduled / published | 예 | 발행 전 점검 통과 필요 (대표 이미지 alt, 요약 길이, 출처·AI 표기 확인) |
+| review → draft / scheduled / published | 예 | 자동 생성 글은 반드시 여기를 거친다 |
+| scheduled → draft / published | 예 | 예약 취소 = draft, 즉시 발행 가능 |
+| published → draft / archived | 예 | 공개에서 내림. 주소는 404 |
+| archived → draft | 예 | |
+| 그 외 | 거부 | 서버가 전이 규칙으로 검증, 이력 기록 |
+
+- 모든 전이는 `audit_log`에 남긴다(누가, 언제, 어디서 어디로).
+- `published`인 글을 편집할 때는 초안 영역에 저장하고 발행으로 반영한다 (§7, 열린 질문 §13.1).
+
+### 14.3 예약 발행
+
+- 예약된 항목은 `publish_jobs`에 작업으로 기록한다. 주기 실행(Vercel Cron, 5분 간격 시작 — 플랜별 최소 간격과 한도는 구현 시 확인)이 `run_at <= now()`인 작업을 가져와 발행한다.
+- **멱등**: 작업 선점(`pending→running`)을 조건부 UPDATE로 하고, 이미 `published`면 건너뛴다. 같은 작업이 두 번 와도 한 번만 발행.
+- **실패**: 최대 3회 재시도 후 `failed`. 대시보드 알림(DASH-04)에 표시, 오류 종류만 기록(원문 메시지·개인정보 제외).
+- 실행 요청은 비밀 헤더로 보호하고 어드민 세션과 무관하게 동작한다. 시각은 서버 기준 UTC 저장, 화면은 한국 시간(KST) 표시.
+- 발행 시 공개 화면 캐시를 갱신한다(태그 기반 재검증). sitemap·JSON-LD가 새 글을 포함하는지 시험.
+
+### 14.4 제작 방식과 자동화 원칙
+
+- `origin`으로 직접 / AI 도움 / 자동을 구분하고 목록에서 거를 수 있게 한다. 공개 화면 표기 여부는 열린 질문(§13.6).
+- **자동 입력은 사람 승인 없이 공개하지 않는다.** `/api/ingest`는 토큰 인증이며 항상 `draft` 또는 `review`로만 저장한다. 토큰은 허용 유형을 제한하고 해시만 저장하며 폐기할 수 있다. "승인 없이 자동 공개" 규칙은 기본 꺼짐이고, 켜려면 별도 설계·확인을 거친다.
+- 자동 생성 글은 사실 정보(가격, 일정, 위치)에 **출처·확인일**이 없으면 발행 전 점검에서 막는다 (CONCEPT §7.5 "가상 예시 금지" 원칙).
