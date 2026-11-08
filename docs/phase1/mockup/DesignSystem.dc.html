@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>KYU 디자인 시스템</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=Noto+Sans+KR:wght@400;500;700&amp;family=Lora:ital,wght@1,400&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'DM Sans','Noto Sans KR',sans-serif;background:#f4f4ec}
+a{color:inherit;text-decoration:none}
+</style>
+</helmet>
+<div style="background:#f4f4ec;color:#071e29;font-family:'DM Sans','Noto Sans KR',sans-serif;padding:72px 6%;box-sizing:border-box">
+<div style="max-width:1296px;margin:0 auto;display:flex;flex-direction:column;gap:72px">
+
+<header>
+<p style="margin:0 0 16px;font-size:11px;font-weight:600;letter-spacing:2px;color:#52666a">KYU DESIGN SYSTEM · 문서 v0.8.0</p>
+<h1 style="margin:0;font-size:56px;line-height:1.2;font-weight:500;letter-spacing:-2px">디자인 시스템</h1>
+<p style="margin:16px 0 0;max-width:620px;font-size:16px;line-height:1.9;color:#52666a">화면 시안에서 실제로 쓴 값만 토큰과 컴포넌트로 정리했습니다. 명세는 DESIGN-SYSTEM.md가 기준입니다.</p>
+</header>
+
+<section>
+<h2 style="margin:0 0 24px;font-size:28px;font-weight:500;letter-spacing:-1px">1. 색상</h2>
+<div style="display:flex;flex-wrap:wrap;gap:16px">
+<div style="flex:1 1 160px;min-width:0"><div style="height:96px;background:#071e29"></div><p style="margin:8px 0 0;font-size:13px;font-weight:700">navy</p><p style="margin:2px 0 0;font-size:12px;color:#52666a">#071e29 · 어두운 배경</p></div>
+<div style="flex:1 1 160px;min-width:0"><div style="height:96px;background:#10333b"></div><p style="margin:8px 0 0;font-size:13px;font-weight:700">teal</p><p style="margin:2px 0 0;font-size:12px;color:#52666a">#10333b · Contact, 입력창</p></div>
+<div style="flex:1 1 160px;min-width:0"><div style="height:96px;background:#d6f48a"></div><p style="margin:8px 0 0;font-size:13px;font-weight:700">lime</p><p style="margin:2px 0 0;font-size:12px;color:#52666a">#d6f48a · 버튼, 강조</p></div>
+<div style="flex:1 1 160px;min-width:0"><div style="height:96px;background:#f4f4ec;border:1px solid #bdc8c3;box-sizing:border-box"></div><p style="margin:8px 0 0;font-size:13px;font-weight:700">paper</p><p style="margin:2px 0 0;font-size:12px;color:#52666a">#f4f4ec · 밝은 배경</p></div>
+<div style="flex:1 1 160px;min-width:0"><div style="height:96px;background:#a0b4ba"></div><p style="margin:8px 0 0;font-size:13px;font-weight:700">muted</p><p style="margin:2px 0 0;font-size:12px;color:#52666a">#a0b4ba · 어두운 배경 보조</p></div>
+<div style="flex:1 1 160px;min-width:0"><div style="height:96px;background:#52666a"></div><p style="margin:8px 0 0;font-size:13px;font-weight:700">ink-sub</p><p style="margin:2px 0 0;font-size:12px;color:#52666a">#52666a · 밝은 배경 보조</p></div>
+<div style="flex:1 1 160px;min-width:0"><div style="height:96px;background:#bdc8c3"></div><p style="margin:8px 0 0;font-size:13px;font-weight:700">line</p><p style="margin:2px 0 0;font-size:12px;color:#52666a">#bdc8c3 · 구분선</p></div>
+<div style="flex:1 1 160px;min-width:0"><div style="height:96px;background:linear-gradient(180deg,#8dbdb4,#267786 50%,#062432)"></div><p style="margin:8px 0 0;font-size:13px;font-weight:700">sea</p><p style="margin:2px 0 0;font-size:12px;color:#52666a">그라디언트 · 썸네일</p></div>
+</div>
+</section>
+
+<section>
+<h2 style="margin:0 0 24px;font-size:28px;font-weight:500;letter-spacing:-1px">2. 타이포그래피</h2>
+<div style="display:flex;flex-direction:column;border-top:1px solid #bdc8c3">
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;padding:20px 0;border-bottom:1px solid #bdc8c3"><span style="flex:0 0 150px;font-size:12px;color:#52666a">Display 88 / -4</span><span style="flex:1 1 300px;min-width:0;font-size:88px;line-height:1.06;letter-spacing:-4px;font-weight:500">Dive deeper.</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;padding:20px 0;border-bottom:1px solid #bdc8c3"><span style="flex:0 0 150px;font-size:12px;color:#52666a">H1 72 / -3</span><span style="flex:1 1 300px;min-width:0;font-size:72px;line-height:1.2;letter-spacing:-3px;font-weight:500">처음 물에 들어가는 날.</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;padding:20px 0;border-bottom:1px solid #bdc8c3"><span style="flex:0 0 150px;font-size:12px;color:#52666a">H2 56 / -2</span><span style="flex:1 1 300px;min-width:0;font-size:56px;line-height:1.35;letter-spacing:-2px;font-weight:500">서로 다른 두 세계.</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;padding:20px 0;border-bottom:1px solid #bdc8c3"><span style="flex:0 0 150px;font-size:12px;color:#52666a">H3 44 / -2</span><span style="flex:1 1 300px;min-width:0;font-size:44px;line-height:1.3;letter-spacing:-2px;font-weight:500">제가 추천하는 장비.</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;padding:20px 0;border-bottom:1px solid #bdc8c3"><span style="flex:0 0 150px;font-size:12px;color:#52666a">H4 28 / -1</span><span style="flex:1 1 300px;min-width:0;font-size:28px;line-height:1.3;letter-spacing:-1px;font-weight:500">진행 예정 투어명</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;padding:20px 0;border-bottom:1px solid #bdc8c3"><span style="flex:0 0 150px;font-size:12px;color:#52666a">Body 16 / 1.9</span><span style="flex:1 1 300px;min-width:0;font-size:16px;line-height:1.9;color:#52666a">몸으로 경험하는 바다와 상상으로 만드는 세계.</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;padding:20px 0;border-bottom:1px solid #bdc8c3"><span style="flex:0 0 150px;font-size:12px;color:#52666a">Label 11 / 600</span><span style="flex:1 1 300px;min-width:0;font-size:11px;font-weight:600;letter-spacing:2px;color:#52666a">01 / ABOUT KYU</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;padding:20px 0;border-bottom:1px solid #bdc8c3"><span style="flex:0 0 150px;font-size:12px;color:#52666a">Accent (Lora Italic)</span><span style="flex:1 1 300px;min-width:0;font-family:'Lora',serif;font-style:italic;font-size:40px">beyond.</span></div>
+</div>
+</section>
+
+<section>
+<h2 style="margin:0 0 24px;font-size:28px;font-weight:500;letter-spacing:-1px">3. 버튼 · 링크 · 칩 · 뱃지</h2>
+<div style="display:flex;flex-wrap:wrap;gap:24px">
+<div style="flex:1 1 420px;min-width:0;background:#071e29;color:#f4f4ec;padding:32px;box-sizing:border-box;display:flex;flex-direction:column;gap:24px">
+<p style="margin:0;font-size:11px;font-weight:600;letter-spacing:2px;color:#a0b4ba">어두운 배경</p>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+<a href="DesignSystem.dc.html" style="display:inline-flex;align-items:center;min-height:52px;padding:0 24px;background:#d6f48a;color:#071e29;border-radius:2px;font-size:14px;font-weight:700">Primary L<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.15em;margin-left:0.3em"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+<a href="DesignSystem.dc.html" style="display:inline-flex;align-items:center;min-height:48px;padding:0 22px;background:#d6f48a;color:#071e29;border-radius:2px;font-size:14px;font-weight:700">Primary M</a>
+<a href="DesignSystem.dc.html" style="display:inline-flex;align-items:center;min-height:44px;padding:0 18px;background:#d6f48a;color:#071e29;border-radius:2px;font-size:13px;font-weight:700">Primary S</a>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+<a href="DesignSystem.dc.html" style="display:inline-flex;align-items:center;min-height:48px;padding:0 22px;border:1px solid #d6f48a;color:#d6f48a;border-radius:2px;font-size:14px;font-weight:700">Outline</a>
+<a href="DesignSystem.dc.html" style="font-size:14px;font-weight:700;color:#d6f48a;border-bottom:1px solid #d6f48a;padding-bottom:3px">Text link<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.15em;margin-left:0.3em"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<span style="padding:10px 20px;border-radius:30px;background:#d6f48a;color:#071e29;font-size:14px;font-weight:700">칩 active</span>
+<span style="padding:10px 20px;border-radius:30px;border:1px solid #ffffff40;font-size:14px">칩 inactive</span>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+<span style="background:#d6f48a;color:#071e29;font-size:11px;font-weight:700;padding:5px 10px">모집 중</span>
+<span style="border:1px solid #a0b4ba;color:#a0b4ba;font-size:11px;font-weight:700;padding:4px 10px">모집 예정</span>
+<span style="border:1px solid #a0b4ba;color:#a0b4ba;font-size:11px;font-weight:700;padding:4px 10px">마감</span>
+<span style="border:1px solid #52666a;color:#a0b4ba;font-size:11px;font-weight:700;padding:4px 10px">종료</span>
+</div>
+</div>
+<div style="flex:1 1 420px;min-width:0;background:#ffffff;border:1px solid #bdc8c3;padding:32px;box-sizing:border-box;display:flex;flex-direction:column;gap:24px">
+<p style="margin:0;font-size:11px;font-weight:600;letter-spacing:2px;color:#52666a">밝은 배경</p>
+<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+<a href="DesignSystem.dc.html" style="display:inline-flex;align-items:center;min-height:48px;padding:0 22px;background:#071e29;color:#f4f4ec;border-radius:2px;font-size:14px;font-weight:700">Dark</a>
+<a href="DesignSystem.dc.html" style="display:inline-flex;align-items:center;min-height:48px;padding:0 22px;border:1px solid #071e29;color:#071e29;border-radius:2px;font-size:14px;font-weight:700">Outline</a>
+<a href="DesignSystem.dc.html" style="font-size:14px;font-weight:700;border-bottom:1px solid #071e29;padding-bottom:3px">Text link<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.15em;margin-left:0.3em"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<span style="padding:10px 20px;border-radius:30px;background:#071e29;color:#f4f4ec;font-size:14px;font-weight:700">칩 active</span>
+<span style="padding:10px 20px;border-radius:30px;border:1px solid #bdc8c3;font-size:14px">칩 inactive</span>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+<span style="background:#d6f48a;padding:3px 10px;font-size:12px;font-weight:700">발행</span>
+<span style="border:1px solid #52666a;padding:2px 9px;font-size:12px;font-weight:700;color:#52666a">임시저장</span>
+<span style="background:#d6f48a;padding:3px 10px;font-size:12px;font-weight:700">신규</span>
+</div>
+</div>
+</div>
+</section>
+
+<section>
+<h2 style="margin:0 0 24px;font-size:28px;font-weight:500;letter-spacing:-1px">4. 카드</h2>
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+<div style="flex:1 1 260px;min-width:0;background:#071e29;color:#f4f4ec;padding:20px;box-sizing:border-box">
+<p style="margin:0 0 12px;font-size:11px;font-weight:600;letter-spacing:2px;color:#a0b4ba">StoryCard</p>
+<div style="height:240px;background:linear-gradient(160deg,#267786,#062432);border:1px solid #ffffff24"></div>
+<p style="margin:16px 0 6px;font-size:11px;color:#a0b4ba">2026.00.00 · 샘플</p>
+<p style="margin:0;font-size:19px;font-weight:500">스토리 제목</p>
+<p style="margin:8px 0 0;font-size:14px;line-height:1.7;color:#a0b4ba">요약 두 줄</p>
+</div>
+<div style="flex:1 1 260px;min-width:0;background:#071e29;color:#f4f4ec;padding:28px;box-sizing:border-box">
+<p style="margin:0 0 16px;font-size:11px;font-weight:600;letter-spacing:2px;color:#a0b4ba">TourCard</p>
+<span style="display:inline-block;background:#d6f48a;color:#071e29;font-size:11px;font-weight:700;padding:5px 10px">모집 중</span>
+<h3 style="margin:16px 0 12px;font-size:24px;font-weight:500;letter-spacing:-1px">투어명</h3>
+<p style="margin:0;font-size:13px;line-height:1.9;color:#a0b4ba">일정 · [시작일 – 종료일]<br>장소 · [장소]<br>정원 · [인원]</p>
+<a href="DesignSystem.dc.html" style="display:inline-flex;align-items:center;min-height:48px;margin-top:20px;padding:0 22px;background:#d6f48a;color:#071e29;border-radius:2px;font-size:14px;font-weight:700">자세히 보기<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.15em;margin-left:0.3em"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+</div>
+<div style="flex:1 1 260px;min-width:0;background:#071e29;color:#f4f4ec;padding:20px;box-sizing:border-box">
+<p style="margin:0 0 12px;font-size:11px;font-weight:600;letter-spacing:2px;color:#a0b4ba">EquipmentCard</p>
+<div style="height:180px;background:linear-gradient(160deg,#10333b,#267786)"></div>
+<p style="margin:16px 0 4px;font-size:11px;letter-spacing:1px;color:#a0b4ba">카테고리</p>
+<h3 style="margin:0;font-size:18px;font-weight:500">장비명</h3>
+<p style="margin:8px 0 16px;font-size:13px;line-height:1.7;color:#a0b4ba">추천 이유 한 줄</p>
+<span style="display:inline-block;padding:10px 16px;background:#d6f48a;color:#071e29;font-size:13px;font-weight:700">구매처 보기<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.15em;margin-left:0.3em"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span>
+</div>
+<figure style="flex:1 1 260px;min-width:0;margin:0;padding:28px;border:1px solid #bdc8c3;background:#ffffff;box-sizing:border-box">
+<p style="margin:0 0 12px;font-size:11px;font-weight:600;letter-spacing:2px;color:#52666a">ReviewCard</p>
+<blockquote style="margin:0;font-size:15px;line-height:1.85;color:#52666a">후기 원문이 가공 없이 표시됩니다.</blockquote>
+<figcaption style="margin-top:14px;font-size:12px;color:#52666a">수강생 표기 · 작성일 · 투어</figcaption>
+</figure>
+</div>
+</section>
+
+<section>
+<h2 style="margin:0 0 8px;font-size:28px;font-weight:500;letter-spacing:-1px">5. 아이콘</h2>
+<p style="margin:0 0 24px;font-size:14px;line-height:1.8;color:#52666a">Lucide (ISC) 선 1.5px, 둥근 끝. 크기 16 / 20 / 24px, 색은 글자색을 따라갑니다. 글자 기호(↗ ⧉ ☰)는 쓰지 않습니다.</p>
+<div style="display:flex;flex-wrap:wrap;gap:12px"><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg><span style="font-size:11px;color:#52666a">arrow-up-right</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg><span style="font-size:11px;color:#52666a">arrow-up</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14" /><path d="m19 12-7 7-7-7" /></svg><span style="font-size:11px;color:#52666a">arrow-down</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></svg><span style="font-size:11px;color:#52666a">menu</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg><span style="font-size:11px;color:#52666a">x</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg><span style="font-size:11px;color:#52666a">chevron-right</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg><span style="font-size:11px;color:#52666a">external-link</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg><span style="font-size:11px;color:#52666a">copy</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" /><rect x="2" y="4" width="20" height="16" rx="2" /></svg><span style="font-size:11px;color:#52666a">mail</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg><span style="font-size:11px;color:#52666a">check</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3" /><path d="M16 2v3" /><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18" /></svg><span style="font-size:11px;color:#52666a">calendar</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></svg><span style="font-size:11px;color:#52666a">map-pin</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg><span style="font-size:11px;color:#52666a">play</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 10a4 4 0 0 1-8 0" /><path d="M3.103 6.034h17.794" /><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z" /></svg><span style="font-size:11px;color:#52666a">shopping-bag</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" /><circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /></svg><span style="font-size:11px;color:#52666a">tag</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34" /><circle cx="11" cy="11" r="8" /></svg><span style="font-size:11px;color:#52666a">search</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg><span style="font-size:11px;color:#52666a">user</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg><span style="font-size:11px;color:#52666a">pencil</span></div><div style="flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0;border:1px solid #bdc8c3;background:#ffffff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#071e29" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg><span style="font-size:11px;color:#52666a">image</span></div></div>
+</section>
+
+<section>
+<h2 style="margin:0 0 24px;font-size:28px;font-weight:500;letter-spacing:-1px">6. 폼 · 섹션 헤더</h2>
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+<form onsubmit="return false" style="flex:1 1 360px;min-width:0;background:#071e29;color:#f4f4ec;padding:32px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px">
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:#a0b4ba">TextField<input type="text" style="height:44px;padding:0 12px;border:1px solid #ffffff40;background:#10333b;color:#f4f4ec;font-size:15px;box-sizing:border-box;font-family:inherit"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:#a0b4ba">Textarea<textarea rows="3" style="padding:12px;border:1px solid #ffffff40;background:#10333b;color:#f4f4ec;font-size:15px;box-sizing:border-box;font-family:inherit"></textarea></label>
+<label style="display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.7;color:#a0b4ba"><input type="checkbox" style="width:20px;height:20px;margin:0;flex:none">Checkbox · 동의 문구</label>
+<button type="submit" style="min-height:52px;border:0;background:#d6f48a;color:#071e29;font-size:15px;font-weight:700;font-family:inherit">제출 버튼</button>
+</form>
+<div style="flex:1.4 1 420px;min-width:0;background:#f4f4ec;border:1px solid #bdc8c3;padding:32px;box-sizing:border-box">
+<p style="margin:0 0 20px;font-size:11px;font-weight:600;letter-spacing:2px;color:#52666a">SectionLabel + SectionHeader</p>
+<p style="margin:0 0 16px;font-size:11px;font-weight:600;letter-spacing:2px;color:#52666a">03 / FREEDIVING</p>
+<div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:flex-end">
+<h3 style="margin:0;font-size:44px;line-height:1.3;font-weight:500;letter-spacing:-2px">섹션 제목.</h3>
+<a href="DesignSystem.dc.html" style="font-size:14px;font-weight:700;border-bottom:1px solid #071e29;padding-bottom:3px">전체 보기<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.15em;margin-left:0.3em"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+</div>
+<p style="margin:16px 0 0;max-width:380px;font-size:14px;line-height:1.9;color:#52666a">보조 문구는 제목 오른쪽 또는 아래에 둡니다.</p>
+</div>
+</div>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2700}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
