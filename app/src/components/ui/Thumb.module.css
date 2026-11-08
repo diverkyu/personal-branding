@@ -1,0 +1,29 @@
+.thumb {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.thumb[data-placeholder] {
+  border: 1px solid var(--kyu-line-dark);
+}
+
+.thumb[data-variant="sea-a"] {
+  background: linear-gradient(160deg, var(--kyu-sea-mid), var(--kyu-sea-deep));
+}
+
+.thumb[data-variant="sea-b"] {
+  background: linear-gradient(200deg, var(--kyu-sea-light), var(--kyu-teal));
+}
+
+.thumb[data-variant="sea-c"] {
+  background: linear-gradient(120deg, var(--kyu-teal), var(--kyu-muted));
+}
+
+.thumb[data-variant="sea-d"] {
+  background: linear-gradient(180deg, var(--kyu-sea-mid), var(--kyu-lime) 220%);
+}
+
+.image {
+  object-fit: cover;
+}

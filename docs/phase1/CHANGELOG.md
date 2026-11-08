@@ -10,6 +10,17 @@
 - PATCH: 오탈자, 표현 다듬기, 링크 수정
 - 상태: 초안 → 검토 중 → 확정
 
+## [0.12.0] — 2026-11-08 · 검토 중 (규강 확인 대기)
+
+개발 2단계: 공통 컴포넌트 구현.
+
+- **추가** `app/` 컴포넌트 21종 (DESIGN-SYSTEM §3): Button, TextLink, FilterChip(Group), StatusBadge, Section, SectionHeader(Label), Thumb, Icon, SmartLink, TextField, Textarea, Checkbox, FormNotice, StoryCard(큰 카드 포함), TourCard, TourArchiveCard, EquipmentCard, ReviewCard, InfoRow
+- **추가** 개발용 쇼케이스 `/dev/components` (운영 기본 404), 파비콘 `icon.svg`
+- **추가** 시험: 단위 58개(컴포넌트 상태·접근성 속성·링크 안전성), E2E 54개(3개 화면 폭 × 18: 가로 넘침·글자 잘림 검사, 필터 칩, 포커스 외곽선, 링크 속성, 카드 클릭 영역, 폼 접근성, 후기 원문, 아이콘)
+- **추가** DESIGN-SYSTEM §9 구현 현황과 구현 중 정한 것, DEVELOPMENT 기술 결정 로그 2건
+- **발견·수정** 콘솔의 404 오류는 파비콘 누락이 원인이었고 아이콘 추가로 해결. 투어 카드를 어두운 섹션에 놓으면 경계가 사라져 밝은 섹션 위로 배치를 바로잡음
+- **알려진 제한** `SITE_URL`·`SITE_INDEXING`·`ENABLE_COMPONENT_SHOWCASE`는 정적 페이지에 **빌드 때** 반영된다 (도메인이 바뀌면 다시 빌드해야 함). Chrome 한 종류에서만 시험했고 자동 접근성 검사(axe)와 스크린리더 확인은 아직 하지 않았다
+
 ## [0.11.0] — 2026-11-08 · 검토 중 (규강 확인 대기)
 
 구현 시작: 스택을 정하고 `app/` 기반(1단계)을 만들었다.

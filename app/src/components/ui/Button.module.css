@@ -1,0 +1,60 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  border: 1px solid transparent;
+  border-radius: var(--kyu-radius-btn);
+  font-family: inherit;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  text-align: center;
+  white-space: normal;
+}
+
+.button[data-size="L"] {
+  min-height: 52px;
+  padding: 0 24px;
+  font-size: 14px;
+}
+
+.button[data-size="M"] {
+  min-height: 48px;
+  padding: 0 22px;
+  font-size: 14px;
+}
+
+.button[data-size="S"] {
+  min-height: var(--kyu-touch);
+  padding: 0 18px;
+  font-size: 13px;
+}
+
+.button[data-variant="primary"] {
+  background: var(--kyu-lime);
+  color: var(--kyu-navy);
+}
+
+.button[data-variant="dark"] {
+  background: var(--kyu-navy);
+  color: var(--kyu-paper);
+}
+
+.button[data-variant="outline"][data-surface="dark"] {
+  border-color: var(--kyu-lime);
+  color: var(--kyu-lime);
+  background: transparent;
+}
+
+.button[data-variant="outline"][data-surface="light"] {
+  border-color: var(--kyu-navy);
+  color: var(--kyu-navy);
+  background: transparent;
+}
+
+.button:disabled,
+.button[aria-busy="true"] {
+  cursor: progress;
+  opacity: 0.6;
+}

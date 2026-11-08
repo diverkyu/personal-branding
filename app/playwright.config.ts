@@ -37,6 +37,7 @@ export default defineConfig({
       SITE_URL: `http://127.0.0.1:${PORT}`,
       SITE_INDEXING: "off",
       LOG_LEVEL: "info",
+      ENABLE_COMPONENT_SHOWCASE: "on",
     },
   },
 });

@@ -1,0 +1,49 @@
+.card {
+  position: relative;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--kyu-line-dark);
+  color: var(--kyu-paper);
+}
+
+.category {
+  margin: 16px 0 4px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  line-height: 1.5;
+  color: var(--kyu-muted);
+}
+
+.name {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+}
+
+.reason {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--kyu-muted);
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+/* 행동 버튼은 카드 전체 링크 위에 있어야 따로 눌린다 */
+.action {
+  position: relative;
+  z-index: 1;
+  margin-top: 16px;
+}
+
+.notice {
+  margin-top: 10px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--kyu-muted);
+}

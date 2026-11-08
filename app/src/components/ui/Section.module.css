@@ -1,0 +1,28 @@
+.section {
+  padding: var(--kyu-section-y) var(--kyu-section-x);
+}
+
+.section[data-sub] {
+  padding-block: var(--kyu-section-y-sub);
+}
+
+.section[data-tone="dark"] {
+  background: var(--kyu-navy);
+  color: var(--kyu-paper);
+}
+
+.section[data-tone="light"] {
+  background: var(--kyu-paper);
+  color: var(--kyu-navy);
+}
+
+.section[data-tone="teal"] {
+  background: var(--kyu-teal);
+  color: var(--kyu-paper);
+}
+
+.container {
+  max-width: var(--kyu-container);
+  margin: 0 auto;
+  min-width: 0;
+}

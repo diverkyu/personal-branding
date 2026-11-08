@@ -33,7 +33,7 @@ E2E는 설치된 Chrome을 쓴다. 번들 Chromium을 쓰려면 `PW_CHANNEL= npx
 ```text
 src/
 ├── app/          # 라우트 (얇게 유지)
-├── components/   # UI 컴포넌트 (2단계부터)
+├── components/   # ui/ (기본 요소), site/ (카드 등) — 쇼케이스: /dev/components
 ├── config/       # 상수·환경변수 해석 (단일 출처)
 ├── lib/          # 비즈니스 로직·로거·오류 (순수 함수)
 ├── styles/       # 디자인 토큰 (DESIGN-SYSTEM.md §2)
@@ -46,3 +46,5 @@ tests/e2e/        # Playwright 시나리오
 ## 환경변수
 
 [.env.example](.env.example) 참고. 핵심은 `SITE_URL`(사이트 주소 단일 출처)과 `SITE_INDEXING`(공개 전에는 색인 금지, 기본 꺼짐).
+
+**주의**: 정적 페이지에는 `SITE_URL`, `SITE_INDEXING`, `ENABLE_COMPONENT_SHOWCASE`가 **빌드 때** 반영된다. 값을 바꾸면 다시 빌드해야 한다 (도메인이 바뀔 때도 마찬가지).

@@ -63,6 +63,15 @@ test.describe("보안 기본값", () => {
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
   });
 
+  test("파비콘이 있어 브라우저가 404 를 내지 않는다", async ({ page, request }) => {
+    await page.goto("/");
+    const href = await page.locator('link[rel~="icon"]').first().getAttribute("href");
+    expect(href).toBeTruthy();
+    const response = await request.get(href!);
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toContain("image/svg+xml");
+  });
+
   test("없는 주소는 404 를 돌려준다", async ({ request }) => {
     const response = await request.get("/this-page-does-not-exist");
     expect(response.status()).toBe(404);

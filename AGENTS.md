@@ -34,6 +34,7 @@ npm run test:e2e     # 실제 Chrome, 화면 폭 390/768/1440, 운영 빌드를 
 ```
 
 E2E 캡처는 `app/artifacts/`에 저장된다 (git 무시). 캡처는 **파일을 열어서 읽는다.**
+컴포넌트 모양은 개발 서버의 `/dev/components`(쇼케이스)에서 확인한다. 운영에서는 기본 404다.
 
 ## 5. 변경 루프 ([DEVELOPMENT §2](docs/phase1/DEVELOPMENT.md))
 

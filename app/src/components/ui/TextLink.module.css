@@ -1,0 +1,22 @@
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  min-height: var(--kyu-touch);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.link span {
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 3px;
+}
+
+.link[data-surface="dark"] {
+  color: var(--kyu-lime);
+}
+
+.link[data-surface="light"] {
+  color: var(--kyu-navy);
+}

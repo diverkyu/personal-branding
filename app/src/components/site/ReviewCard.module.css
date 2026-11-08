@@ -1,0 +1,33 @@
+.card {
+  margin: 0;
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid var(--kyu-line);
+  background: var(--kyu-white);
+  color: var(--kyu-ink-sub);
+}
+
+.text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.85;
+  overflow-wrap: break-word;
+  white-space: pre-line;
+}
+
+.caption {
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.tour {
+  color: var(--kyu-navy);
+  text-decoration: underline;
+}
+
+@media (max-width: 680px) {
+  .card {
+    padding: 22px;
+  }
+}
