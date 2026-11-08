@@ -16,7 +16,7 @@ export const siteConfig = {
  */
 export const contactConfig = {
   email: "contact@example.com",
-  intro: "당신의 이야기를 들려주세요.",
+  intro: ["프리다이빙 문의부터 새로운 크리에이티브 협업까지.", "당신의 이야기를 들려주세요."],
   subjects: [
     { label: "강습·투어 문의", subject: "[KYU] 강습·투어 문의" },
     { label: "협업 문의", subject: "[KYU] 협업 문의" },

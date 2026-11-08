@@ -8,16 +8,20 @@
 
 .bar {
   max-width: var(--kyu-max-width);
-  height: 85px;
+  height: 92px;
   margin: 0 auto;
   padding: 0 var(--kyu-header-x);
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 24px;
 }
 
-.desktop ul {
+.contactWrap {
+  justify-self: end;
+}
+
+.desktop > ul {
   display: flex;
   align-items: center;
   gap: 8px 40px;
@@ -111,6 +115,12 @@
 }
 
 /* 모바일 */
+@media (max-width: 680px) {
+  .desktopOnly {
+    display: none;
+  }
+}
+
 .menuButton,
 .panel,
 .backdrop {
@@ -120,6 +130,8 @@
 @media (max-width: 680px) {
   .bar {
     height: 76px;
+    display: flex;
+    justify-content: space-between;
   }
 
   .desktop {

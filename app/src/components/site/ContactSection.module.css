@@ -1,19 +1,37 @@
-.body {
-  margin-top: 48px;
+.title {
+  font-size: clamp(52px, 7.3vw, 105px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+}
+
+.accent {
+  color: var(--kyu-lime);
+}
+
+.row {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px 40px;
+  margin-top: 56px;
+}
+
+.intro {
+  color: var(--kyu-teal-text);
+  line-height: 1.9;
 }
 
 .email {
-  font-size: clamp(22px, 3.4vw, 36px);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: var(--kyu-lime);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding-bottom: 4px;
+  font-size: clamp(20px, 2.4vw, 28px);
   overflow-wrap: anywhere;
-  text-decoration: underline;
-  text-underline-offset: 8px;
+  border-bottom: 1px solid #809b98;
 }
 
 .copy {
@@ -27,11 +45,11 @@
   align-items: center;
   gap: 8px;
   min-height: var(--kyu-touch);
-  padding: 0 20px;
-  border: 1px solid var(--kyu-lime);
-  border-radius: var(--kyu-radius-btn);
+  padding: 0 22px;
+  border: 1px solid var(--kyu-teal-text);
+  border-radius: 0;
   background: none;
-  color: var(--kyu-lime);
+  color: var(--kyu-teal-text);
   font: inherit;
   font-size: 14px;
   font-weight: 600;
@@ -50,10 +68,10 @@
 }
 
 .subjects {
+  margin-top: 32px;
   display: flex;
   flex-wrap: wrap;
   gap: 4px 28px;
-  margin: 0;
   padding: 0;
   list-style: none;
 }

@@ -13,7 +13,8 @@ export function TourInquiryCard({ status }: { status: TourStatus }) {
   if (status === "closed") {
     return (
       <section className={styles.card} aria-labelledby="inquiry-title">
-        <h2 id="inquiry-title" className={styles.title}>
+        <p className={styles.label}>RESERVATION</p>
+      <h2 id="inquiry-title" className={styles.title}>
           예약 문의
         </h2>
         <p>이번 투어는 마감되었습니다.</p>
@@ -27,7 +28,8 @@ export function TourInquiryCard({ status }: { status: TourStatus }) {
   if (status === "upcoming") {
     return (
       <section className={styles.card} aria-labelledby="inquiry-title">
-        <h2 id="inquiry-title" className={styles.title}>
+        <p className={styles.label}>RESERVATION</p>
+      <h2 id="inquiry-title" className={styles.title}>
           예약 문의
         </h2>
         <p>모집이 시작되면 안내해 드립니다.</p>
@@ -46,6 +48,7 @@ export function TourInquiryCard({ status }: { status: TourStatus }) {
 
   return (
     <section className={styles.card} aria-labelledby="inquiry-title">
+      <p className={styles.label}>RESERVATION</p>
       <h2 id="inquiry-title" className={styles.title}>
         예약 문의
       </h2>
@@ -58,7 +61,7 @@ export function TourInquiryCard({ status }: { status: TourStatus }) {
         <TextField id="inq-experience" name="experience" label="프리다이빙 경험·자격" maxLength={100} />
         <Textarea id="inq-message" name="message" label="문의 내용" maxLength={1000} />
         <Checkbox id="inq-consent" name="consent" required label="개인정보 수집·이용에 동의합니다." />
-        <Button type="button" size="L" disabled>
+        <Button type="button" size="L" disabled className={styles.submit}>
           예약 문의하기
         </Button>
         <FormNotice>접수 기능은 아직 연결되지 않았습니다.</FormNotice>

@@ -7,7 +7,6 @@ import { TourArchiveCard } from "@/components/site/TourArchiveCard";
 import { TourCard } from "@/components/site/TourCard";
 import { AFFILIATE_NOTICE, equipmentCard, reviewCard, tourArchiveCard, tourCard } from "@/components/site/mappers";
 import { PageIntro } from "@/components/layout/PageIntro";
-import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { TextLink } from "@/components/ui/TextLink";
@@ -30,34 +29,48 @@ export default function FreedivingPage() {
 
   return (
     <>
-      <PageIntro label="03 / FREEDIVING" title="처음 물에 들어가는 날." description="바다를 만나고, 호흡에 집중하고, 물속에서 새로운 감각을 발견하는 시간.">
+      <PageIntro
+        label="03 / FREEDIVING"
+        title="처음 물에 들어가는 날."
+        lead={
+          <>
+            바다를 만나고, 호흡에 집중하고,
+            <br />
+            물속에서 새로운 감각을 발견하는 시간.
+          </>
+        }
+      >
         <nav className={pages.chips} aria-label="Freediving 영역 이동">
-          <Button href="#tours" variant="outline" size="S">
+          <a href="#tours" className={pages.pillDark}>
             투어
-          </Button>
-          <Button href="#equipment" variant="outline" size="S">
+          </a>
+          <a href="#equipment" className={pages.pillDark}>
             장비 추천
-          </Button>
-          <Button href="#reviews" variant="outline" size="S">
+          </a>
+          <a href="#reviews" className={pages.pillDark}>
             수강 후기
-          </Button>
+          </a>
         </nav>
       </PageIntro>
 
       <Section tone="light" id="tours" labelledBy="fd-tours">
-        <SectionHeader surface="light" titleId="fd-tours" title="투어" />
+        <SectionHeader surface="light" titleId="fd-tours" title="투어" action={<span className={pages.eyebrow}>UPCOMING · 진행 예정</span>} />
         {upcoming.length === 0 ? (
           <p className={pages.emptyLight}>다음 투어를 준비하고 있습니다. 소식이 궁금하시면 문의를 남겨주세요.</p>
         ) : (
           <ul className={pages.grid2} style={{ listStyle: "none", padding: 0 }}>
             {upcoming.slice(0, UPCOMING_LIMIT).map((t) => (
               <li key={t.slug}>
-                <TourCard {...tourCard(t)} cta="자세히 보기" />
+                <TourCard {...tourCard(t)} split />
               </li>
             ))}
           </ul>
         )}
         {past.length > 0 ? (
+          <>
+            <p className={pages.eyebrow} style={{ marginTop: 64 }}>
+              ARCHIVE · 지난 투어
+            </p>
           <ul className={pages.grid3} style={{ listStyle: "none", padding: 0 }}>
             {past.slice(0, PAST_LIMIT).map((t) => (
               <li key={t.slug}>
@@ -65,6 +78,7 @@ export default function FreedivingPage() {
               </li>
             ))}
           </ul>
+          </>
         ) : null}
         {upcoming.length + past.length > UPCOMING_LIMIT ? (
           <div className={pages.after}>
@@ -98,7 +112,16 @@ export default function FreedivingPage() {
 
       {reviews.length > 0 ? (
         <Section tone="light" id="reviews" labelledBy="fd-reviews">
-          <SectionHeader surface="light" titleId="fd-reviews" title="함께 물에 들어간 사람들의 이야기." />
+          <SectionHeader
+            surface="light"
+            titleId="fd-reviews"
+            title="함께 물에 들어간 사람들의 이야기."
+            action={
+              <TextLink href="/freediving/reviews" surface="light">
+                후기 전체 보기
+              </TextLink>
+            }
+          />
           <ul className={pages.grid3} style={{ listStyle: "none", padding: 0 }}>
             {reviews.map((r) => (
               <li key={r.id}>
@@ -106,11 +129,6 @@ export default function FreedivingPage() {
               </li>
             ))}
           </ul>
-          <div className={pages.after}>
-            <TextLink href="/freediving/reviews" surface="light">
-              후기 전체 보기
-            </TextLink>
-          </div>
         </Section>
       ) : null}
     </>

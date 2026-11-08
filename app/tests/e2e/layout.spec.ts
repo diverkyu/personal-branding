@@ -74,8 +74,8 @@ test.describe("데스크톱 메뉴", () => {
     await page.goto("/");
     const nav = page.getByRole("navigation", { name: "주 메뉴" });
     const labels = await nav.locator("> ul > li").evaluateAll((items) => items.map((li) => (li.querySelector("a")?.textContent ?? "").trim()));
-    expect(labels).toEqual(["About", "Story", "Freediving", "Contact"]);
-    await expect(nav.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/contact");
+    expect(labels).toEqual(["About", "Story", "Freediving"]);
+    await expect(page.getByRole("banner").getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/contact");
     await expect(page.getByRole("button", { name: /MENU/ })).toBeHidden();
   });
 

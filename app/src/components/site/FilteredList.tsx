@@ -10,6 +10,8 @@ export interface FilteredItem {
   /** 이 항목이 속한 필터 값 (예: 태그, 카테고리). 여러 값이면 배열 */
   values: string[];
   node: ReactNode;
+  /** 격자의 한 줄을 모두 차지한다 (예: 큰 카드) */
+  wide?: boolean;
 }
 
 interface FilteredListProps {
@@ -52,9 +54,11 @@ export function FilteredList({ label, param, options, items, surface = "dark", l
       {shown.length === 0 ? (
         <div role="status">{empty}</div>
       ) : (
-        <ul className={listClassName} style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        <ul className={listClassName} style={{ listStyle: "none", padding: 0 }}>
           {shown.map((i) => (
-            <li key={i.id}>{i.node}</li>
+            <li key={i.id} style={i.wide ? { gridColumn: "1 / -1" } : undefined}>
+              {i.node}
+            </li>
           ))}
         </ul>
       )}

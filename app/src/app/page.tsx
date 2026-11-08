@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HeroArt } from "@/components/site/HeroArt";
 import { ContactSection } from "@/components/site/ContactSection";
 import { StoryCard } from "@/components/site/StoryCard";
 import { TourCard } from "@/components/site/TourCard";
@@ -6,7 +7,7 @@ import { ReviewCard } from "@/components/site/ReviewCard";
 import { reviewCard, storyCard, tourCard } from "@/components/site/mappers";
 import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { SectionHeader, SectionLabel } from "@/components/ui/SectionHeader";
 import { TextLink } from "@/components/ui/TextLink";
 import { listFeaturedReviews, listOpenTours, listStories, reviewTourOptions } from "@/data";
 import styles from "./page.module.css";
@@ -47,11 +48,8 @@ export default function HomePage() {
               <span>SCROLL TO EXPLORE</span>
             </p>
           </div>
-          <div className={styles.art} role="img" aria-label="푸른 바다 속으로 이어지는 아치 모양의 수중 일러스트">
-            <div className={styles.artText} aria-hidden="true">
-              <span className={styles.artLabel}>01 / INTO THE BLUE</span>
-              <span className={styles.artCopy}>한 호흡, 무한한 가능성.</span>
-            </div>
+          <div className={styles.art}>
+            <HeroArt />
           </div>
         </div>
       </section>
@@ -61,40 +59,38 @@ export default function HomePage() {
       </div>
 
       <Section tone="light" labelledBy="home-about">
-        <SectionHeader
-          surface="light"
-          label="01 / ABOUT KYU"
-          titleId="home-about"
-          title={
-            <>
+        <div className={styles.aboutGrid}>
+          <SectionLabel surface="light">01 / ABOUT KYU</SectionLabel>
+          <div>
+            <h2 id="home-about" className={styles.aboutTitle}>
               서로 다른 두 세계.
               <br />
-              하나의 호기심.
-            </>
-          }
-        />
-        <div className={styles.about}>
-          <div className={styles.aboutText}>
-            <p>
-              몸으로 경험하는 바다와 상상으로 만드는 세계.
-              <br />
-              프리다이빙과 AI 크리에이티브는
-              <br />
-              저를 소개하는 두 가지 언어입니다.
-            </p>
-            <p>
-              물속의 고요함을 마주하는 순간부터
-              <br />
-              새로운 이미지를 만들어내는 순간까지.
-              <br />
-              저는 경계 너머의 가능성을 탐험합니다.
-            </p>
-            <p className={pages.signature} style={{ color: "var(--kyu-navy)" }}>
-              이동규 aka. KYU
-            </p>
-            <TextLink href="/about" surface="light" icon="arrow-up-right">
-              About 더 보기
-            </TextLink>
+              <span className={styles.aboutMuted}>하나의 호기심.</span>
+            </h2>
+            <div className={styles.aboutCols}>
+              <p>
+                몸으로 경험하는 바다와 상상으로 만드는 세계.
+                <br />
+                프리다이빙과 AI 크리에이티브는
+                <br />
+                저를 소개하는 두 가지 언어입니다.
+              </p>
+              <p>
+                물속의 고요함을 마주하는 순간부터
+                <br />
+                새로운 이미지를 만들어내는 순간까지.
+                <br />
+                저는 경계 너머의 가능성을 탐험합니다.
+              </p>
+            </div>
+            <div className={styles.aboutFoot}>
+              <span className={pages.signature} style={{ color: "var(--kyu-navy)", fontSize: 26 }}>
+                이동규 aka. KYU
+              </span>
+              <TextLink href="/about" surface="light" icon="arrow-up-right">
+                About 더 보기
+              </TextLink>
+            </div>
           </div>
         </div>
       </Section>
@@ -123,41 +119,44 @@ export default function HomePage() {
 
       <Section tone="light" labelledBy="home-freediving">
         <SectionHeader surface="light" label="03 / FREEDIVING" titleId="home-freediving" title="처음 물에 들어가는 날." description="바다를 만나고, 호흡에 집중하고, 물속에서 새로운 감각을 발견하는 시간." />
-        <div className={pages.stack}>
-          {tour ? (
-            <TourCard {...tourCard(tour)} split cta="자세히 보기" />
-          ) : (
-            <p className={pages.emptyLight}>
-              다음 투어를 준비하고 있습니다. 소식이 궁금하시면 <Link href="/contact">문의를 남겨주세요.</Link>
-            </p>
-          )}
-        </div>
-        {reviews.length > 0 ? (
-          <>
-            <ul className={pages.grid3} style={{ listStyle: "none", padding: 0 }}>
-              {reviews.map((r) => (
-                <li key={r.id}>
-                  <ReviewCard {...reviewCard(r, tourOptions)} />
-                </li>
-              ))}
-            </ul>
-            <div className={pages.after}>
-              <TextLink href="/freediving/reviews" surface="light">
-                후기 전체 보기
-              </TextLink>
+        <div className={styles.fdGrid}>
+          <div>
+            {tour ? (
+              <TourCard {...tourCard(tour)} cta="투어 자세히 보기" />
+            ) : (
+              <p className={pages.emptyLight}>
+                다음 투어를 준비하고 있습니다. 소식이 궁금하시면 <Link href="/contact">문의를 남겨주세요.</Link>
+              </p>
+            )}
+          </div>
+          {reviews.length > 0 ? (
+            <div>
+              <p className={styles.sideLabel}>REVIEWS · 수강 후기</p>
+              <ul className={styles.reviewList}>
+                {reviews.slice(0, 2).map((r) => (
+                  <li key={r.id}>
+                    <ReviewCard {...reviewCard(r, tourOptions)} />
+                  </li>
+                ))}
+              </ul>
+              <div className={pages.after}>
+                <TextLink href="/freediving/reviews" surface="light">
+                  후기 전체 보기
+                </TextLink>
+              </div>
             </div>
-          </>
-        ) : null}
+          ) : null}
+        </div>
         <div className={pages.chips}>
-          <Button href="/freediving/tours" variant="outline" surface="light" size="S">
+          <Link href="/freediving/tours" className={pages.pill}>
             투어 보기
-          </Button>
-          <Button href="/freediving/equipment" variant="outline" surface="light" size="S">
+          </Link>
+          <Link href="/freediving/equipment" className={pages.pill}>
             장비 추천 보기
-          </Button>
-          <Button href="/freediving/reviews" variant="outline" surface="light" size="S">
+          </Link>
+          <Link href="/freediving/reviews" className={pages.pill}>
             수강 후기
-          </Button>
+          </Link>
         </div>
       </Section>
 

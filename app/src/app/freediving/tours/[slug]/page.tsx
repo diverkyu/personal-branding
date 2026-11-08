@@ -7,7 +7,7 @@ import { TourCard } from "@/components/site/TourCard";
 import { TourInquiryCard } from "@/components/site/TourInquiryCard";
 import { reviewCard, tourCard } from "@/components/site/mappers";
 import { Section } from "@/components/ui/Section";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { STATUS_LABELS, StatusBadge } from "@/components/ui/StatusBadge";
 import { TextLink } from "@/components/ui/TextLink";
 import { Thumb } from "@/components/ui/Thumb";
 import { getTour, listReviewsForTour, listUpcomingTours, listPastTours, reviewTourOptions } from "@/data";
@@ -46,40 +46,45 @@ export default async function TourDetailPage({ params }: Props) {
         <span aria-current="page">{tour.title}</span>
       </nav>
       <div className={styles.media}>
-        <Thumb height={420} variant={tour.thumbVariant} />
+        <Thumb height={460} variant={tour.thumbVariant} />
+        <span className={styles.badge}>
+          <StatusBadge status={tour.status} />
+        </span>
       </div>
-      <StatusBadge status={tour.status} surface="light" />
-      <h1 className={styles.title}>{tour.title}</h1>
-      <InfoRow
-        items={[
-          { label: "일정", value: formatPeriod(tour.startDate, tour.endDate) },
-          { label: "장소", value: tour.place },
-          { label: "모집 상태", value: <StatusBadge status={tour.status} surface="light" /> },
-          ...(tour.capacity ? [{ label: "정원", value: `${tour.capacity}명` }] : []),
-        ]}
-      />
       <div className={styles.columns}>
-        <div className={pages.prose}>
-          {tour.description.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
-          {tour.feeNote ? <p>{tour.feeNote}</p> : null}
+        <div className={styles.main}>
+          <h1 className={styles.title}>{tour.title}</h1>
+          <InfoRow
+            items={[
+              { label: "일정", value: formatPeriod(tour.startDate, tour.endDate) },
+              { label: "장소", value: tour.place },
+              { label: "모집 상태", value: STATUS_LABELS[tour.status] },
+              ...(tour.capacity ? [{ label: "정원", value: `${tour.capacity}명` }] : []),
+            ]}
+          />
+          <h2 className={styles.h2}>투어 소개</h2>
+          <div className={pages.prose}>
+            {tour.description.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+            {tour.feeNote ? <p>{tour.feeNote}</p> : null}
+          </div>
+
+          <h2 className={styles.h2}>{tour.status === "ended" ? "이 투어의 후기" : "후기"}</h2>
+          <ul className={styles.reviews}>
+            {reviews.map((r) => (
+              <li key={r.id}>
+                <ReviewCard {...reviewCard(r, tourOptions)} />
+              </li>
+            ))}
+          </ul>
+          <div className={pages.after}>
+            <TextLink href={`/freediving/reviews?tour=${encodeURIComponent(tour.slug)}`} surface="light">
+              후기 전체 보기
+            </TextLink>
+          </div>
         </div>
         <TourInquiryCard status={tour.status} />
-      </div>
-
-      <h2 className={styles.h2}>{tour.status === "ended" ? "이 투어의 후기" : "후기"}</h2>
-      <ul className={pages.grid2} style={{ listStyle: "none", padding: 0 }}>
-        {reviews.map((r) => (
-          <li key={r.id}>
-            <ReviewCard {...reviewCard(r, tourOptions)} />
-          </li>
-        ))}
-      </ul>
-      <div className={pages.after}>
-        <TextLink href={`/freediving/reviews?tour=${encodeURIComponent(tour.slug)}`} surface="light">
-          후기 전체 보기
-        </TextLink>
       </div>
 
       {related.length > 0 ? (

@@ -64,32 +64,9 @@
 }
 
 .art {
-  position: relative;
-  height: 640px;
+  height: 620px;
   overflow: hidden;
   border-radius: var(--kyu-radius-hero);
-  background: linear-gradient(180deg, var(--kyu-sea-light) 0%, var(--kyu-sea-mid) 45%, var(--kyu-sea-deep) 100%);
-}
-
-.artText {
-  position: absolute;
-  inset: auto 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 32px;
-  color: var(--kyu-paper);
-  background: linear-gradient(180deg, transparent, #071e2999);
-}
-
-.artLabel {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 2px;
-}
-
-.artCopy {
-  font-size: 20px;
 }
 
 .band {
@@ -97,26 +74,70 @@
   color: var(--kyu-navy);
   overflow: hidden;
   white-space: nowrap;
-  padding: 18px 0;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 3px;
+  padding: 24px var(--kyu-header-x);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 2px;
 }
 
-.about {
+.aboutGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 48px;
-  margin-top: 48px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 40px;
 }
 
-.aboutText {
+.aboutTitle {
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.035em;
+}
+
+.aboutMuted {
+  color: var(--kyu-ink-faint);
+}
+
+.aboutCols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 35px;
+  margin-top: 48px;
+  font-size: 16px;
+  line-height: 1.9;
+  color: var(--kyu-ink-sub);
+}
+
+.aboutFoot {
+  margin-top: 48px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 32px;
+}
+
+.fdGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 40px;
+  margin-top: 56px;
+  align-items: start;
+}
+
+.sideLabel {
+  margin-bottom: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--kyu-ink-sub);
+}
+
+.reviewList {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
-  font-size: 17px;
-  line-height: 2;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .sub {
@@ -129,7 +150,8 @@
 
 @media (max-width: 1000px) {
   .heroInner,
-  .about {
+  .aboutGrid,
+  .fdGrid {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -149,6 +171,10 @@
 
   .art {
     height: 440px;
+  }
+
+  .aboutCols {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .explore span:last-child {

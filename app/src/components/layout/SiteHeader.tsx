@@ -92,14 +92,12 @@ export function SiteHeader() {
             {NAV_ITEMS.map((item) => (
               <li key={item.href}>{item.children ? <DropdownItem item={item} pathname={pathname} /> : <NavLink href={item.href} label={item.label} pathname={pathname} />}</li>
             ))}
-            <li>
-              <Link href={CONTACT_ITEM.href} className={cx(styles.link, styles.contact)} aria-current={isCurrentPath(pathname, CONTACT_ITEM.href) ? "page" : undefined}>
-                {CONTACT_ITEM.label}
-                <Icon name="arrow-up-right" size={16} />
-              </Link>
-            </li>
           </ul>
         </nav>
+        <Link href={CONTACT_ITEM.href} className={cx(styles.link, styles.contact, styles.contactWrap, styles.desktopOnly)} aria-current={isCurrentPath(pathname, CONTACT_ITEM.href) ? "page" : undefined}>
+          {CONTACT_ITEM.label}
+          <Icon name="arrow-up-right" size={16} />
+        </Link>
 
         <button
           ref={buttonRef}
