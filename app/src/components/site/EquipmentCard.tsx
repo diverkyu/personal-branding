@@ -26,6 +26,8 @@ export interface EquipmentCardData {
 }
 
 interface EquipmentCardProps extends EquipmentCardData {
+  /** 제목 수준. 화면의 위 제목이 h1 이면 2, h2 이면 3 (제목 단계를 건너뛰지 않는다) */
+  headingLevel?: 2 | 3;
   /** 제휴 고지 문구. 사이트 설정의 값을 넘긴다 */
   affiliateNotice?: string;
   className?: string;
@@ -33,16 +35,17 @@ interface EquipmentCardProps extends EquipmentCardData {
 
 const DEFAULT_LABEL = { external: "구매처 보기", inquiry: "문의하기" } as const;
 
-export function EquipmentCard({ href, name, category, reason, action, affiliate = false, affiliateNotice, image, thumbVariant, className }: EquipmentCardProps) {
+export function EquipmentCard({ href, name, category, reason, action, affiliate = false, affiliateNotice, image, thumbVariant, className, headingLevel = 3 }: EquipmentCardProps) {
+  const Heading = `h${headingLevel}` as "h2" | "h3";
   return (
     <article className={cx(styles.card, className)}>
       <Thumb height={180} src={image?.src} alt={image?.alt} variant={thumbVariant} />
       <p className={styles.category}>{category}</p>
-      <h3 className={styles.name}>
+      <Heading className={styles.name}>
         <SmartLink href={href} className={styles.link}>
           {name}
         </SmartLink>
-      </h3>
+      </Heading>
       <p className={styles.reason}>{reason}</p>
       {action ? (
         <div className={styles.action}>

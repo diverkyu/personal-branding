@@ -1,0 +1,88 @@
+/* 공개 페이지 공통 배치 */
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--kyu-gap);
+  margin-top: 48px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--kyu-gap);
+  margin-top: 48px;
+}
+
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--kyu-gap);
+  margin-top: 48px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kyu-gap);
+  margin-top: 48px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.after {
+  margin-top: 40px;
+}
+
+.prose {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4em;
+  font-size: 17px;
+  line-height: 2;
+}
+
+.lead {
+  max-width: 560px;
+  font-size: 18px;
+  color: var(--kyu-teal-text);
+}
+
+.signature {
+  font-family: var(--kyu-font-serif);
+  font-style: italic;
+  font-size: 28px;
+  color: var(--kyu-lime);
+}
+
+.empty {
+  margin-top: 48px;
+  max-width: 560px;
+  color: var(--kyu-teal-text);
+}
+
+.emptyLight {
+  composes: empty;
+  color: var(--kyu-ink-sub);
+}
+
+@media (max-width: 1000px) {
+  .grid3,
+  .grid4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .grid2,
+  .grid3,
+  .grid4 {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 480px;
+  }
+}

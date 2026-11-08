@@ -1,12 +1,25 @@
-.main {
-  min-height: calc(100vh - 85px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 28px;
-  padding: 65px var(--kyu-header-x);
+/* 홈 (SCREEN-SPEC §5.1) */
+.hero {
+  background: var(--kyu-navy);
+  color: var(--kyu-paper);
+  padding: 80px var(--kyu-header-x) 0;
+}
+
+.heroInner {
   max-width: var(--kyu-max-width);
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 48px;
+  align-items: end;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+  padding-bottom: 80px;
 }
 
 .label {
@@ -30,12 +43,115 @@
   color: var(--kyu-lime);
 }
 
-.lead {
-  font-size: clamp(21px, 2.4vw, 23px);
+.headline {
+  font-size: clamp(20px, 2.4vw, 28px);
   line-height: 1.6;
 }
 
-.note {
-  font-size: 13px;
+.lead {
+  max-width: 480px;
+  color: var(--kyu-teal-text);
+}
+
+.explore {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
   color: var(--kyu-muted);
+}
+
+.art {
+  position: relative;
+  height: 640px;
+  overflow: hidden;
+  border-radius: var(--kyu-radius-hero);
+  background: linear-gradient(180deg, var(--kyu-sea-light) 0%, var(--kyu-sea-mid) 45%, var(--kyu-sea-deep) 100%);
+}
+
+.artText {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 32px;
+  color: var(--kyu-paper);
+  background: linear-gradient(180deg, transparent, #071e2999);
+}
+
+.artLabel {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.artCopy {
+  font-size: 20px;
+}
+
+.band {
+  background: var(--kyu-lime);
+  color: var(--kyu-navy);
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 18px 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  margin-top: 48px;
+}
+
+.aboutText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  font-size: 17px;
+  line-height: 2;
+}
+
+.sub {
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+@media (max-width: 1000px) {
+  .heroInner,
+  .about {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .art {
+    height: 440px;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero {
+    padding-top: 48px;
+  }
+
+  .copy {
+    padding-bottom: 40px;
+  }
+
+  .art {
+    height: 440px;
+  }
+
+  .explore span:last-child {
+    display: none;
+  }
 }
