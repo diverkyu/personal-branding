@@ -16,7 +16,7 @@
 
 - **확인(실제 배포)** `npm run test:remote`(`REMOTE_EXPECT_REGION=sin1`) 5개 통과: 홈·주요 화면 열림, noindex와 보안 헤더, `robots.txt` 전체 차단, 개발용 쇼케이스 404, **예약 문의 제출 접수(Vercel → Neon 동작)**, **폼을 처리한 함수 지역 `sin1` 확인**. 시험이 남긴 가짜 문의는 `dev` DB에서 삭제했고(1건), 삭제가 됐다는 사실로 **배포가 `dev` DB에 쓰고 있음**도 확인했다
 - **확인** 접근 보호 없이 누구나 열리는 상태다(응답 200, 로그인 화면 없음). 색인은 금지(noindex·robots)라 검색에는 나오지 않는다
-- **발견** `SITE_URL`이 아직 없어 `sitemap.xml`의 주소가 `http://localhost:3000`이다 → Vercel 환경변수 `SITE_URL`을 넣고 **다시 배포**해야 한다(절차서 §10.1 4단계 그대로)
+- **발견·해결** `SITE_URL`이 없어 `sitemap.xml`·구조화 데이터의 주소가 `http://localhost:3000`이었다 → Vercel에 `SITE_URL`을 넣고 다시 배포한 뒤 **`https://personal-branding-l1sr.vercel.app`로 바뀐 것을 확인**했다(sitemap의 localhost 0건, Article 주소 정상). 재배포가 반영되기까지 몇 분 걸렸다
 - **확인된 것으로 갱신** 함수 지역 `sin1` 적용 (INFRASTRUCTURE §10 미확인 항목 해소). 아직 미확인: Hobby에서 작업자 커밋 배포 여부(작업자 커밋으로 새 배포가 생기는지 다음 푸시에서 확인)
 
 ## [0.19.2] — 2026-11-08 · 검토 중 (규강 확인 대기)
