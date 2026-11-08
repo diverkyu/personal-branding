@@ -9,7 +9,14 @@ import styles from "../admin.module.css";
  */
 const GROUPS = [
   { title: "홈", items: [{ href: "/admin", label: "대시보드" }] },
-  { title: "시스템", items: [{ href: "/admin/users", label: "사용자·보안" }] },
+  { title: "운영", items: [{ href: "/admin/inquiries", label: "신청·문의" }] },
+  {
+    title: "시스템",
+    items: [
+      { href: "/admin/audit", label: "활동 기록" },
+      { href: "/admin/users", label: "사용자·보안" },
+    ],
+  },
 ] as const;
 
 export function AdminNav() {
@@ -20,7 +27,7 @@ export function AdminNav() {
         <div key={group.title}>
           <p className={styles.navGroup}>{group.title}</p>
           {group.items.map((item) => (
-            <Link key={item.href} href={item.href} className={styles.navLink} aria-current={pathname === item.href ? "page" : undefined}>
+            <Link key={item.href} href={item.href} className={styles.navLink} aria-current={item.href === "/admin" ? (pathname === "/admin" ? "page" : undefined) : pathname === item.href || pathname.startsWith(item.href + "/") ? "page" : undefined}>
               {item.label}
             </Link>
           ))}

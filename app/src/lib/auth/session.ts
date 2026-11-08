@@ -7,12 +7,9 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAuth } from "./index";
 import { evaluateAdminAccess, type AdminAccess } from "./policy";
+import type { AdminSession } from "./types";
 
-export interface AdminSession {
-  userId: string;
-  name: string;
-  email: string;
-}
+export type { AdminSession } from "./types";
 
 export const ADMIN_LOGIN = "/admin/login";
 export const ADMIN_SETUP_2FA = "/admin/setup-2fa";
