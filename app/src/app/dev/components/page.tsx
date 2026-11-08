@@ -31,7 +31,7 @@ export default function ShowcasePage() {
   if (!isShowcaseEnabled(process.env)) notFound();
 
   return (
-    <main>
+    <div>
       <Section tone="dark" sub>
         <SectionHeader as="h1" size="h2" label="DEV / COMPONENTS" title="컴포넌트 쇼케이스" description="개발·시험용 화면입니다. 샘플 데이터이며 실제 콘텐츠가 아닙니다." />
       </Section>
@@ -168,6 +168,6 @@ export default function ShowcasePage() {
           ))}
         </ul>
       </Section>
-    </main>
+    </div>
   );
 }

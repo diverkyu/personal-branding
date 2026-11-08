@@ -1,0 +1,19 @@
+.skip {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 12px 20px;
+  background: var(--kyu-lime);
+  color: var(--kyu-navy);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  border-radius: var(--kyu-radius-btn);
+  transform: translateY(-200%);
+}
+
+.skip:focus-visible {
+  transform: none;
+  outline-offset: 3px;
+}

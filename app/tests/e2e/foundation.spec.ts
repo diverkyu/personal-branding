@@ -42,7 +42,8 @@ test.describe("기반", () => {
       if (host.endsWith("googleapis.com") || host.endsWith("gstatic.com")) external.push(request.url());
     });
     await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("load");
+    await page.waitForTimeout(1500); // 글꼴 요청이 늦게 나가는 경우를 기다린다 (networkidle 은 미리 불러오기 요청 때문에 끝나지 않을 수 있음)
     expect(external).toEqual([]);
   });
 });
