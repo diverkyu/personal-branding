@@ -94,6 +94,40 @@ export const consentVersions = pgTable(
   ],
 );
 
+/**
+ * 미디어 라이브러리 (ADMIN-DESIGN §9). 파일은 외부 객체 스토리지에 있고 여기에는 위치와 정보만 둔다.
+ * 업로드된 이미지는 서버가 WebP 로 다시 만들어 저장하므로 mime 은 항상 image/webp 다 (SECURITY §7).
+ * 원본 파일명은 저장하지 않는다. deleted_at 이 있으면 라이브러리에서 숨겨진 것이고 파일 정리는 휴지통 단계(AD-6)에서 한다.
+ */
+export const media = pgTable(
+  "media",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** blob(Vercel Blob) | local(개발 전용) */
+    storage: text("storage").notNull(),
+    /** 스토리지 안의 경로. 서버가 무작위로 만든다 */
+    storageKey: text("storage_key").notNull().unique(),
+    url: text("url").notNull(),
+    mime: text("mime").notNull(),
+    bytes: integer("bytes").notNull(),
+    width: integer("width").notNull(),
+    height: integer("height").notNull(),
+    /** 대체 텍스트. 비어 있으면 공개 콘텐츠의 대표 이미지로 쓸 수 없다 */
+    alt: text("alt"),
+    createdBy: text("created_by").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  },
+  (t) => [
+    check("media_mime_check", sql`${t.mime} = 'image/webp'`),
+    check("media_storage_check", sql`${t.storage} in ('blob', 'local')`),
+    check("media_size_check", sql`${t.bytes} > 0 and ${t.width} > 0 and ${t.height} > 0`),
+    index("media_created_idx").on(t.createdAt),
+  ],
+);
+
+export type MediaRow = typeof media.$inferSelect;
+
 export type SiteSettingRow = typeof siteSettings.$inferSelect;
 export type ConsentVersionRow = typeof consentVersions.$inferSelect;
 

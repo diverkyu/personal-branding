@@ -16,3 +16,8 @@ playwright-report/
 artifacts/
 *.log
 .DS_Store
+
+# 로컬 개발용 이미지 저장소 (MEDIA_STORE=local)
+/.media-dev
+/.next-dev
+/AGENTS.md

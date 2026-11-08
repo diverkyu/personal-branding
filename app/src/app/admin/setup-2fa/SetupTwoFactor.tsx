@@ -12,22 +12,25 @@ export function SetupTwoFactor() {
 
   if (!started.qrSvg) {
     return (
-      <form action={start} className={styles.form} noValidate>
-        {started.error ? (
-          <p role="alert" className={styles.alert}>
-            {started.error}
-          </p>
-        ) : null}
-        <TextField id="password" name="password" type="password" label="비밀번호 확인" autoComplete="current-password" required surface="light" hint="안전을 위해 비밀번호를 한 번 더 확인합니다." />
-        <Button type="submit" busy={starting} variant="dark" surface="light">
-          {starting ? "준비 중" : "등록 시작"}
-        </Button>
+      <>
+        <form action={start} className={styles.form} noValidate>
+          {started.error ? (
+            <p role="alert" className={styles.alert}>
+              {started.error}
+            </p>
+          ) : null}
+          <TextField id="password" name="password" type="password" label="비밀번호 확인" autoComplete="current-password" required surface="light" hint="안전을 위해 비밀번호를 한 번 더 확인합니다." />
+          <Button type="submit" busy={starting} variant="dark" surface="light">
+            {starting ? "준비 중" : "등록 시작"}
+          </Button>
+        </form>
+        {/* 폼 안에 폼을 넣을 수 없으므로 로그아웃은 별도 폼이다 */}
         <form action={logoutAction}>
           <button type="submit" className={styles.linkButton}>
             로그아웃
           </button>
         </form>
-      </form>
+      </>
     );
   }
 

@@ -6,7 +6,7 @@ import { expect, test } from "@playwright/test";
  * 실제 로그인·2차 인증 흐름은 단위 통합 시험(src/lib/auth/auth.test.ts)과 개발 DB 수동 확인으로 본다.
  */
 test.describe("어드민 접근 통제", () => {
-  for (const path of ["/admin", "/admin/users", "/admin/setup-2fa", "/admin/anything", "/admin/inquiries", "/admin/inquiries/00000000-0000-4000-8000-000000000000", "/admin/audit", "/admin/settings", "/admin/legal"]) {
+  for (const path of ["/admin", "/admin/users", "/admin/setup-2fa", "/admin/anything", "/admin/inquiries", "/admin/inquiries/00000000-0000-4000-8000-000000000000", "/admin/audit", "/admin/settings", "/admin/legal", "/admin/media"]) {
     test(`비로그인으로 ${path} 를 열면 로그인 화면으로 간다`, async ({ page }) => {
       const response = await page.goto(path);
       expect(page.url()).toContain("/admin/login");
@@ -59,6 +59,12 @@ test.describe("어드민 접근 통제", () => {
     await page.goto("/admin/login");
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(0);
+  });
+
+  test("개발 전용 이미지 주소는 운영 빌드에서 열리지 않는다", async ({ request }) => {
+    for (const path of ["/media-dev/2026/11/" + "a".repeat(32) + ".webp", "/media-dev/2026/11/../../../.env.local"]) {
+      expect((await request.get(path)).status(), path).toBe(404);
+    }
   });
 
   test("공개 사이트의 머리글·꼬리말은 그대로다", async ({ page }) => {
