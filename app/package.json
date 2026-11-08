@@ -16,7 +16,9 @@
     "test:e2e": "playwright test",
     "check": "npm run typecheck && npm run lint && npm run test && npm run build",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "node --env-file-if-exists=.env.local node_modules/drizzle-kit/bin.cjs migrate"
+    "db:migrate": "node --env-file-if-exists=.env.local node_modules/drizzle-kit/bin.cjs migrate",
+    "test:remote": "playwright test -c playwright.remote.config.ts",
+    "db:cleanup-smoke": "node --env-file-if-exists=.env.local scripts/cleanup-smoke.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
