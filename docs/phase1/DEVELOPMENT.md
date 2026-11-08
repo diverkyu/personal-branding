@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.18.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.18.1** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [SECURITY.md](SECURITY.md) · [PRD.md](PRD.md) · [SCREEN-SPEC.md](SCREEN-SPEC.md) · [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md)
 
