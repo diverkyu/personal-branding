@@ -8,7 +8,7 @@ import type { AdminSession } from "@/lib/auth/types";
 import { logger } from "@/lib/logger";
 import type { AdminDb } from "./db";
 
-export type AuditAction = "inquiry.view" | "inquiry.status_change" | "inquiry.memo_update" | "inquiry.delete" | "inquiry.export" | "settings.update" | "consent.publish" | "media.upload" | "media.alt_update" | "media.delete";
+export type AuditAction = "inquiry.view" | "inquiry.status_change" | "inquiry.memo_update" | "inquiry.delete" | "inquiry.export" | "settings.update" | "consent.publish" | "media.upload" | "media.alt_update" | "media.delete" | "content.create" | "content.save" | "content.transition" | "content.discard_draft" | "content.publish_draft" | "content.delete" | "content.retry_job" | "content.publish_scheduled";
 
 export const AUDIT_LABELS: Record<AuditAction, string> = {
   "inquiry.view": "신청·문의 열람",
@@ -21,6 +21,14 @@ export const AUDIT_LABELS: Record<AuditAction, string> = {
   "media.upload": "이미지 업로드",
   "media.alt_update": "이미지 대체 텍스트 수정",
   "media.delete": "이미지 삭제",
+  "content.create": "콘텐츠 만들기",
+  "content.save": "콘텐츠 저장",
+  "content.transition": "콘텐츠 발행 상태 변경",
+  "content.discard_draft": "발행된 글의 수정 내용 버리기",
+  "content.publish_draft": "발행된 글의 수정 내용 반영",
+  "content.delete": "콘텐츠 삭제",
+  "content.retry_job": "예약 발행 다시 시도",
+  "content.publish_scheduled": "예약 발행 실행(자동)",
 };
 
 export interface AuditEntry {

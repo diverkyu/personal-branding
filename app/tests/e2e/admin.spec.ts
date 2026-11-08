@@ -6,7 +6,7 @@ import { expect, test } from "@playwright/test";
  * 실제 로그인·2차 인증 흐름은 단위 통합 시험(src/lib/auth/auth.test.ts)과 개발 DB 수동 확인으로 본다.
  */
 test.describe("어드민 접근 통제", () => {
-  for (const path of ["/admin", "/admin/users", "/admin/setup-2fa", "/admin/anything", "/admin/inquiries", "/admin/inquiries/00000000-0000-4000-8000-000000000000", "/admin/audit", "/admin/settings", "/admin/legal", "/admin/media"]) {
+  for (const path of ["/admin", "/admin/users", "/admin/setup-2fa", "/admin/anything", "/admin/inquiries", "/admin/inquiries/00000000-0000-4000-8000-000000000000", "/admin/audit", "/admin/settings", "/admin/legal", "/admin/media", "/admin/contents", "/admin/contents/00000000-0000-4000-8000-000000000000", "/admin/schedule"]) {
     test(`비로그인으로 ${path} 를 열면 로그인 화면으로 간다`, async ({ page }) => {
       const response = await page.goto(path);
       expect(page.url()).toContain("/admin/login");
@@ -59,6 +59,14 @@ test.describe("어드민 접근 통제", () => {
     await page.goto("/admin/login");
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(0);
+  });
+
+  test("예약 발행 크론 경로는 비밀 값이 없으면 닫혀 있고, 있어도 인증 없이는 실행되지 않는다", async ({ request }) => {
+    const res = await request.get("/api/cron/publish");
+    expect([401, 404]).toContain(res.status());
+    expect((await res.text()).length).toBe(0);
+    const forged = await request.get("/api/cron/publish", { headers: { authorization: "Bearer guess-guess-guess-guess" } });
+    expect([401, 404]).toContain(forged.status());
   });
 
   test("개발 전용 이미지 주소는 운영 빌드에서 열리지 않는다", async ({ request }) => {

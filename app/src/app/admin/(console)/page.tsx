@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { adminDb } from "@/data/admin/dbServer";
+import { contentDashboard } from "@/data/admin/contents";
 import { inquiryDashboard } from "@/data/admin/inquiries";
 import { KIND_LABELS, STATUS_LABELS } from "@/data/admin/inquiryQuery";
 import { getTour } from "@/data";
@@ -12,7 +13,9 @@ export const metadata = { title: "대시보드 · KYU 어드민" };
 /** 대시보드. 아직 만들지 않은 콘텐츠 영역(임시저장 글, 모집 중 투어 등)의 카드는 해당 화면이 생길 때 추가한다 (ADMIN-DESIGN §3.1) */
 export default async function DashboardPage() {
   const admin = await requireAdmin();
-  const { newCount, recent } = await inquiryDashboard(adminDb(), admin);
+  const db = adminDb();
+  const { newCount, recent } = await inquiryDashboard(db, admin);
+  const content = await contentDashboard(db, admin);
   return (
     <>
       <h1 className={styles.h1}>대시보드</h1>
@@ -22,6 +25,18 @@ export default async function DashboardPage() {
         <Link href="/admin/inquiries?status=new" className={styles.statCard}>
           <span className={styles.statLabel}>새 투어 신청·문의</span>
           <span className={styles.statValue}>{newCount}</span>
+        </Link>
+        <Link href="/admin/contents?status=draft" className={styles.statCard}>
+          <span className={styles.statLabel}>임시저장 글</span>
+          <span className={styles.statValue}>{content.draft}</span>
+        </Link>
+        <Link href="/admin/contents?status=review" className={styles.statCard}>
+          <span className={styles.statLabel}>검토 필요</span>
+          <span className={styles.statValue}>{content.review}</span>
+        </Link>
+        <Link href="/admin/schedule" className={styles.statCard}>
+          <span className={styles.statLabel}>예약된 글{content.failedJobs > 0 ? ` · 실패 ${content.failedJobs}` : ""}</span>
+          <span className={styles.statValue}>{content.scheduled}</span>
         </Link>
       </div>
 
