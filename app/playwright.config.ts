@@ -38,6 +38,8 @@ export default defineConfig({
       SITE_INDEXING: "off",
       LOG_LEVEL: "info",
       ENABLE_COMPONENT_SHOWCASE: "on",
+      INQUIRY_STORE: "memory",
+      FORM_RATE_LIMIT: "1000",
     },
   },
 });

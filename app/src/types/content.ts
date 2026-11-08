@@ -1,6 +1,14 @@
 /** 콘텐츠 스키마 (PRD 데이터 모델의 화면용 형태). 저장소(DB)가 정해지면 같은 모양으로 읽어 온다. */
 import type { ThumbVariant } from "@/components/ui/Thumb";
 
+export interface GalleryImage {
+  /** 대체 텍스트. 필수 */
+  alt: string;
+  caption?: string;
+  src?: string;
+  variant: ThumbVariant;
+}
+
 export type TourStatus = "recruiting" | "upcoming" | "closed" | "ended";
 
 export interface Story {
@@ -29,6 +37,10 @@ export interface Tour {
   description: string[];
   /** 참가비·포함 사항 안내 (결제 기능 없음) */
   feeNote?: string;
+  /** 갤러리 사진 (TOUR-D08). 지금은 자리표시이며 실제 사진은 src 를 채운다 */
+  gallery?: GalleryImage[];
+  /** 스케치 영상 주소 (TOUR-D09). 허용 도메인(YouTube, Vimeo)만 재생한다 */
+  videos?: string[];
   /** 종료 투어의 부가 자료 표시 */
   extras?: string[];
   thumbVariant: ThumbVariant;
@@ -49,6 +61,8 @@ export interface Equipment {
   priceNote?: string;
   /** 정보 확인일 (ISO) */
   checkedAt?: string;
+  /** 추가 이미지 0~6 (EQ-D01) */
+  images?: GalleryImage[];
   action: EquipmentActionType;
   /** action 이 external 이면 외부 주소 */
   externalUrl?: string;

@@ -1,0 +1,24 @@
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--kyu-touch);
+  padding: 0 22px;
+  border: 1px solid var(--kyu-line-dark-strong);
+  border-radius: var(--kyu-radius-pill);
+  font-size: 14px;
+  color: var(--kyu-paper);
+}
+
+.nav a[aria-current="true"] {
+  background: var(--kyu-lime);
+  border-color: var(--kyu-lime);
+  color: var(--kyu-navy);
+  font-weight: 700;
+}

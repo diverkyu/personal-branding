@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { AreaNav } from "@/components/site/AreaNav";
 import { EquipmentCard } from "@/components/site/EquipmentCard";
 import { FilteredList } from "@/components/site/FilteredList";
 import { ReviewCard } from "@/components/site/ReviewCard";
@@ -40,17 +41,13 @@ export default function FreedivingPage() {
           </>
         }
       >
-        <nav className={pages.chips} aria-label="Freediving 영역 이동">
-          <a href="#tours" className={pages.pillDark}>
-            투어
-          </a>
-          <a href="#equipment" className={pages.pillDark}>
-            장비 추천
-          </a>
-          <a href="#reviews" className={pages.pillDark}>
-            수강 후기
-          </a>
-        </nav>
+        <AreaNav
+          areas={[
+            { id: "tours", label: "투어" },
+            { id: "equipment", label: "장비 추천" },
+            { id: "reviews", label: "수강 후기" },
+          ]}
+        />
       </PageIntro>
 
       <Section tone="light" id="tours" labelledBy="fd-tours">
