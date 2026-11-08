@@ -1,12 +1,25 @@
-.main {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 28px;
-  padding: 65px var(--kyu-header-x);
+/* 홈 (SCREEN-SPEC §5.1) */
+.hero {
+  background: var(--kyu-navy);
+  color: var(--kyu-paper);
+  padding: 80px var(--kyu-header-x) 0;
+}
+
+.heroInner {
   max-width: var(--kyu-max-width);
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 48px;
+  align-items: end;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+  padding-bottom: 80px;
 }
 
 .label {
@@ -30,12 +43,141 @@
   color: var(--kyu-lime);
 }
 
-.lead {
-  font-size: clamp(21px, 2.4vw, 23px);
+.headline {
+  font-size: clamp(20px, 2.4vw, 28px);
   line-height: 1.6;
 }
 
-.note {
-  font-size: 13px;
+.lead {
+  max-width: 480px;
+  color: var(--kyu-teal-text);
+}
+
+.explore {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
   color: var(--kyu-muted);
+}
+
+.art {
+  height: 620px;
+  overflow: hidden;
+  border-radius: var(--kyu-radius-hero);
+}
+
+.band {
+  background: var(--kyu-lime);
+  color: var(--kyu-navy);
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 24px var(--kyu-header-x);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.aboutGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 40px;
+}
+
+.aboutTitle {
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.035em;
+}
+
+.aboutMuted {
+  color: var(--kyu-ink-faint);
+}
+
+.aboutCols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 35px;
+  margin-top: 48px;
+  font-size: 16px;
+  line-height: 1.9;
+  color: var(--kyu-ink-sub);
+}
+
+.aboutFoot {
+  margin-top: 48px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 32px;
+}
+
+.fdGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 40px;
+  margin-top: 56px;
+  align-items: start;
+}
+
+.sideLabel {
+  margin-bottom: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--kyu-ink-sub);
+}
+
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sub {
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+@media (max-width: 1000px) {
+  .heroInner,
+  .aboutGrid,
+  .fdGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .art {
+    height: 440px;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero {
+    padding-top: 48px;
+  }
+
+  .copy {
+    padding-bottom: 40px;
+  }
+
+  .art {
+    height: 440px;
+  }
+
+  .aboutCols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .explore span:last-child {
+    display: none;
+  }
 }

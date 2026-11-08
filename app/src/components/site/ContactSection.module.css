@@ -1,0 +1,88 @@
+.title {
+  font-size: clamp(52px, 7.3vw, 105px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+}
+
+.accent {
+  color: var(--kyu-lime);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px 40px;
+  margin-top: 56px;
+}
+
+.intro {
+  color: var(--kyu-teal-text);
+  line-height: 1.9;
+}
+
+.email {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding-bottom: 4px;
+  font-size: clamp(20px, 2.4vw, 28px);
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid #809b98;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.copyButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--kyu-touch);
+  padding: 0 22px;
+  border: 1px solid var(--kyu-teal-text);
+  border-radius: 0;
+  background: none;
+  color: var(--kyu-teal-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.copyButton:hover {
+  opacity: 0.78;
+}
+
+.copyStatus {
+  min-height: 1.9em;
+  font-size: 14px;
+  color: var(--kyu-teal-text);
+  overflow-wrap: anywhere;
+}
+
+.subjects {
+  margin-top: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  padding: 0;
+  list-style: none;
+}
+
+.subjects a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--kyu-touch);
+  font-size: 14px;
+  color: var(--kyu-paper);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}

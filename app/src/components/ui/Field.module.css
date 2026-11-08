@@ -1,0 +1,131 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.label {
+  line-height: 1.5;
+}
+
+.required {
+  font-weight: 400;
+}
+
+.input {
+  min-height: var(--kyu-touch);
+  padding: 0 12px;
+  border: 1px solid var(--kyu-line-dark-strong);
+  border-radius: 0;
+  background: var(--kyu-teal);
+  color: var(--kyu-paper);
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  width: 100%;
+}
+
+.textarea {
+  padding: 12px;
+  resize: vertical;
+}
+
+.field[data-surface="dark"] .label {
+  color: var(--kyu-muted);
+}
+
+.field[data-surface="light"] .label {
+  color: var(--kyu-ink-sub);
+}
+
+.field[data-surface="light"] .input {
+  background: var(--kyu-white);
+  border-color: var(--kyu-line);
+  color: var(--kyu-navy);
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--kyu-lime);
+  border-width: 2px;
+}
+
+.hint {
+  color: var(--kyu-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+[data-surface="light"] .hint {
+  color: var(--kyu-ink-sub);
+}
+
+.error {
+  color: var(--kyu-lime);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+[data-surface="light"] .error {
+  color: var(--kyu-navy);
+  text-decoration: underline;
+}
+
+.checkboxWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.checkboxRow {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.checkbox {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--kyu-lime);
+}
+
+.checkboxLabel {
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.checkboxWrap[data-surface="dark"] .checkboxLabel {
+  color: var(--kyu-muted);
+}
+
+.checkboxWrap[data-surface="light"] .checkboxLabel {
+  color: var(--kyu-ink-sub);
+}
+
+.notice {
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.notice[data-surface="dark"] {
+  color: var(--kyu-muted);
+}
+
+.notice[data-surface="light"] {
+  color: var(--kyu-ink-sub);
+}
+
+.notice[data-kind="error"] {
+  font-weight: 700;
+}
+
+.notice[data-surface="dark"][data-kind="error"] {
+  color: var(--kyu-lime);
+}
+
+.notice[data-surface="light"][data-kind="error"] {
+  color: var(--kyu-navy);
+}

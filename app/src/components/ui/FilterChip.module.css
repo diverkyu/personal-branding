@@ -1,0 +1,41 @@
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-height: var(--kyu-touch);
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--kyu-radius-pill);
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.chip[data-surface="dark"] {
+  border-color: var(--kyu-line-dark-strong);
+  color: var(--kyu-paper);
+}
+
+.chip[data-surface="dark"][aria-pressed="true"] {
+  background: var(--kyu-lime);
+  border-color: var(--kyu-lime);
+  color: var(--kyu-navy);
+  font-weight: 700;
+}
+
+.chip[data-surface="light"] {
+  border-color: var(--kyu-line);
+  color: var(--kyu-navy);
+}
+
+.chip[data-surface="light"][aria-pressed="true"] {
+  background: var(--kyu-navy);
+  border-color: var(--kyu-navy);
+  color: var(--kyu-paper);
+  font-weight: 700;
+}

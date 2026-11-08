@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.11.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.14.1** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [CONCEPT.md](CONCEPT.md) · 화면 시안: [mockup/](mockup/README.md) · 시각 보기: 캔버스의 "디자인 시스템" 보드
 
@@ -196,3 +196,43 @@
 | Lucide | ISC (일부 MIT) | 소스에 포함되는 복사본에 저작권·허가 문구를 유지한다 |
 
 구현 시 저장소 루트에 `THIRD-PARTY-NOTICES`(또는 `app/` 안)를 두고 위 항목의 저작권 문구와 라이선스 전문을 모은다. 세부 내용은 [CONCEPT §7.8](CONCEPT.md). 판매하는 상품에 들어가는 이미지·폰트도 같은 기준(상업 이용 가능 여부 확인)을 적용한다.
+
+## 9. 구현 현황 (`app/`)
+
+컴포넌트 이름은 §3의 후보 이름과 같다. 모양은 개발용 쇼케이스(`/dev/components`)에서 상태별로 확인한다 (운영에서는 기본 404, `ENABLE_COMPONENT_SHOWCASE=on`일 때만 열림).
+
+| 컴포넌트 | 위치 | 상태 |
+| --- | --- | --- |
+| `Button` (primary / outline / dark, L·M·S, 링크·버튼 겸용, busy) | `components/ui/Button` | 구현 (단계 2) |
+| `TextLink` | `components/ui/TextLink` | 구현 (단계 2) |
+| `FilterChip`, `FilterChipGroup` (`aria-pressed`) | `components/ui/FilterChip` | 구현 (단계 2) |
+| `StatusBadge` (7가지 상태, 글자 표시) | `components/ui/StatusBadge` | 구현 (단계 2) |
+| `Section`, `SectionHeader`, `SectionLabel` | `components/ui/Section`, `SectionHeader` | 구현 (단계 2) |
+| `TextField`, `Textarea`, `Checkbox`, `FormNotice` | `components/ui/Field` | 구현 (단계 2) |
+| `Icon` (Lucide 20개), `SmartLink`, `Thumb` | `components/ui/` | 구현 (단계 2) |
+| `StoryCard` (큰 카드 포함), `TourCard`, `TourArchiveCard`, `EquipmentCard`, `ReviewCard`, `InfoRow` | `components/site/` | 구현 (단계 2) |
+| `SiteHeader` (데스크톱 메뉴·Freediving 하위 메뉴·모바일 패널), `SiteFooter`, `SkipLink`, `Logo`, `BackToTop` | `components/layout/` | 구현 (단계 3) |
+| `AdminSidebar`, `StatCard`, `DataTable`, `EditorPanel` | — | 대기 (어드민 단계) |
+
+**구현하면서 정한 것**
+- 카드는 제목 링크를 카드 전체로 넓힌다 (stretched link). 카드 전체를 `<a>`로 감싸지 않아 스크린리더가 제목만 링크 이름으로 읽는다. 장비 카드의 행동 버튼은 카드 링크 위에 떠서 따로 눌린다.
+- `TourCard`는 남색 카드라서 **밝은(페이퍼) 섹션 위에 놓는다.** 어두운 섹션에 두면 경계가 사라진다.
+- `SmartLink`는 http(s) 링크를 새 탭 + `rel="noopener noreferrer"`로 열고, `javascript:`·`data:` 같은 스킴은 `#`으로 바꿔 렌더링하지 않는다 ([SECURITY §5](SECURITY.md)).
+- 후기 카드는 원문을 가공 없이(`white-space: pre-line`, HTML 이스케이프) 보여 주고 평점 요소가 없다 ([SCREEN-SPEC §12](SCREEN-SPEC.md) 결정 4).
+- 날짜·정원 같은 표시 문구는 컴포넌트가 만들지 않고 호출하는 쪽이 넘긴다 (데이터 계층이 정해지면 형식을 한 곳에서 정한다).
+- **레이아웃(단계 3)**: 루트 레이아웃이 `SkipLink → SiteHeader → <main id="main"> → SiteFooter`를 감싼다. 각 페이지는 `<main>`을 다시 만들지 않고 `h1`만 하나 둔다. 메뉴 순서·하위 항목·푸터 링크는 `src/config/nav.ts`가 단일 출처다.
+- Freediving 하위 메뉴(INT-02)는 호버·포커스로 열리고 150ms 지연 뒤 닫힌다. 링크 옆 토글 버튼(`aria-expanded`)을 누르면 열린 채로 **고정**되어 터치·키보드에서도 쓸 수 있고, ESC·바깥 포커스·다시 누르기로 닫는다.
+- 모바일 메뉴(INT-01)는 680px 이하에서 패널로 열린다. 포커스를 가두고(MENU/CLOSE 버튼 포함), ESC·배경 클릭·항목 선택으로 닫히며, 닫히면 포커스가 버튼으로 돌아가고 본문 스크롤 잠금이 풀린다. 화면이 넓어지면 자동으로 닫는다.
+- 404(`not-found.tsx`)와 오류(`error.tsx`, `global-error.tsx`)는 SCREEN-SPEC GL-ST 문구를 쓴다. 오류 상세는 화면에 쓰지 않고 `instrumentation.ts`의 `onRequestError`가 `request.error` 로그(오류 종류·digest·경로)로 남긴다.
+- 푸터 SNS 링크(GL-F3)는 사이트 설정이 생기기 전까지 `SOCIAL_LINKS`가 비어 있어 표시되지 않는다. 저작권 연도는 렌더 시점 값이라 정적 페이지는 빌드한 해로 굳는다.
+- 메뉴가 가리키는 페이지는 4단계에서 모두 생겼다 (미리 불러오기 404 예외와 현재 페이지 E2E 보류는 해소).
+
+**페이지 틀(단계 4)에서 정한 것**
+- 콘텐츠는 `src/data/`(읽기 입구)와 `src/types/content.ts`(스키마)를 거친다. 지금은 가상 데이터(`fixtures.ts`, 이름에 "(예시)")이며 저장소가 정해지면 `data/index.ts` 구현만 바꾼다. 날짜 표기는 `lib/format.ts` 한 곳.
+- 카드의 제목 수준은 `headingLevel`(2 또는 3, 기본 3)로 정한다. 페이지 제목(h1) 바로 아래에 카드가 오면 2를 넘겨 **제목 단계를 건너뛰지 않는다** (E2E가 모든 화면을 검사).
+- 칩 필터(`FilteredList`)는 선택을 URL 쿼리(`?tag=`, `?category=`, `?status=`, `?tour=`)에 남기고, 알 수 없는 값은 "전체"로 처리한다.
+- 현재 메뉴 표시: 상세 페이지에서도 해당 메뉴를 라임색으로 강조(`data-current`)하고, `aria-current="page"`는 정확히 그 페이지일 때만 붙인다.
+- 장비 카드는 어두운 배경용이다. 밝은 섹션에서는 쓰지 않는다 (상세 페이지의 "다른 장비"는 어두운 섹션).
+- Contact 영역은 홈 하단과 `/contact`가 같은 컴포넌트(`ContactSection`)를 쓰고, 연락 주소는 예약 도메인 `contact@example.com` 자리표시다 (실수로 실제 메일이 나가지 않음).
+
+**4단계에서 아직 만들지 않은 것** (SCREEN-SPEC 요소): 문의 폼·소식 받기 폼의 접수·검증·허니팟(TOUR-F, TOUR-N: 화면 틀과 비활성 제출 버튼만), 스토리 페이지 이동(STORY-05)·후기 더 보기(REV-05), 투어 갤러리·스케치 영상(TOUR-D08·D09), 모바일 고정 문의 버튼(TOUR-D13), 장비 상세의 이미지 전환(EQ-D01), 미리보기 띠(INT-12), 구조화 데이터. 시안과의 나란히 비교는 0.14.1에서 했다(CHANGELOG 참고).
