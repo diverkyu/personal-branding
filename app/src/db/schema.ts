@@ -40,3 +40,5 @@ export const inquiries = pgTable(
 
 export type InquiryRow = typeof inquiries.$inferSelect;
 export type NewInquiryRow = typeof inquiries.$inferInsert;
+
+export * from "./auth-schema";

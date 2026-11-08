@@ -22,6 +22,10 @@ OFL에 따라 글꼴 자체를 단독으로 판매하지 않으며, 수정본을
 
 `drizzle-orm`(Apache-2.0), `@neondatabase/serverless`(MIT)는 운영에서 쓰고, `drizzle-kit`(MIT)과 `@electric-sql/pglite`(Apache-2.0)는 개발·시험에서만 쓴다. 각 패키지의 `license` 필드로 2026-11-08에 확인했다.
 
+## 어드민 인증·보조 도구
+
+`better-auth`(MIT, 어드민 로그인·2차 인증), `qrcode`(MIT, 2차 인증 등록 QR), `tsx`(MIT, 개발용 스크립트 실행)는 각 패키지의 `license` 필드로 2026-11-08에 확인했다.
+
 ## 확인 방법
 
 글꼴은 Google Fonts 저장소의 `METADATA.pb`·`OFL.txt`, 아이콘은 Lucide 저장소의 `LICENSE`로 2026-11-08에 확인했다 ([CONCEPT §7.8](../docs/phase1/CONCEPT.md)).
