@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { isBodyEmpty, plainEditableText, sanitizeBody } from "@/content/body";
-import { STATUS_LABELS, allowedTransitions, publishChecks, suggestPublishAt, type ContentStatus } from "@/content/publish";
+import { EMPTY_BODY, sanitizeBody } from "@/content/body";
+import { STATUS_LABELS, allowedTransitions, suggestPublishAt, type ContentStatus } from "@/content/publish";
 import { CONTENT_TYPES } from "@/content/types";
-import { editableView, getContent } from "@/data/admin/contents";
+import { editableView, getContent, publishProblems } from "@/data/admin/contents";
 import { adminDb } from "@/data/admin/dbServer";
+import { listMediaForPicker } from "@/data/admin/media";
 import { requireAdmin } from "@/lib/auth/session";
 import { formatDateTimeKst } from "@/lib/format";
 import styles from "../../../admin.module.css";
@@ -23,13 +24,14 @@ const TRANSITION_LABELS: Record<ContentStatus, string> = {
 export default async function ContentEditPage({ params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin();
   const { id } = await params;
-  const row = await getContent(adminDb(), admin, id);
+  const db = adminDb();
+  const row = await getContent(db, admin, id);
   if (!row) notFound();
   const view = editableView(row);
   const body = sanitizeBody(view.body);
-  const bodyText = body.ok ? plainEditableText(body.doc) : "";
+  const pickerMedia = await listMediaForPicker(db, admin);
   const status = row.status as ContentStatus;
-  const problems = publishChecks({ title: view.title, slug: row.slug, bodyEmpty: !body.ok || isBodyEmpty(body.doc), summary: view.summary, origin: view.origin, reviewed: status === "review" });
+  const problems = await publishProblems(db, admin, row, status === "review");
   const nextWeek = suggestPublishAt();
 
   return (
@@ -41,6 +43,9 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
       </p>
       <h1 className={styles.h1}>{row.title}</h1>
       <p className={styles.note}>
+        <a href={`/admin/contents/${row.id}/preview`} target="_blank" rel="noopener noreferrer" className={styles.linkButton}>
+          미리보기 (새 탭)
+        </a>{" · "}
         {CONTENT_TYPES[row.type]?.label ?? row.type} · <span className={styles.statusTag}>{STATUS_LABELS[status]}</span>
         {status === "scheduled" && row.publishAt ? ` · ${formatDateTimeKst(row.publishAt)}에 공개 예정` : ""}
         {status === "published" && row.publishedAt ? ` · ${formatDateTimeKst(row.publishedAt)} 발행` : ""}
@@ -56,7 +61,7 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
               slug: row.slug,
               slugLocked: status === "published",
               summary: view.summary,
-              bodyText,
+              bodyDoc: body.ok ? body.doc : EMPTY_BODY,
               tags: view.tags.join(", "),
               answers: view.answers.join("\n"),
               seoTitle: view.seoTitle,
@@ -64,6 +69,7 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
               origin: view.origin,
               originNote: view.originNote,
             }}
+            media={pickerMedia}
           />
         </div>
 

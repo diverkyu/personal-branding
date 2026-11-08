@@ -14,7 +14,7 @@ const eslintConfig = defineConfig([
       "no-empty": ["error", { allowEmptyCatch: false }],
     },
   },
-  globalIgnores([".next/**", ".next-e2e/**", "out/**", "build/**", "next-env.d.ts", "test-results/**", "playwright-report/**"]),
+  globalIgnores([".next/**", ".next-e2e/**", ".next-dev/**", "out/**", "build/**", "next-env.d.ts", "test-results/**", "playwright-report/**"]),
 ]);
 
 export default eslintConfig;

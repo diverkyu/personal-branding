@@ -9,6 +9,7 @@ import { bodyFromPlainText } from "@/content/body";
 import type { AdminSession } from "@/lib/auth/types";
 import { MAX_ATTEMPTS, runDuePublishJobs } from "@/data/publishJobs";
 import { listAudit } from "./audit";
+import { createMedia, deleteMedia, mediaUsageCount, updateMediaAlt } from "./media";
 import {
   contentDashboard,
   createContent,
@@ -344,6 +345,49 @@ describe("예약 발행 실행 (runDuePublishJobs)", () => {
     await client.query(`update publish_jobs set state='running', attempts=1, claimed_at=$1 where content_id=$2`, [new Date("2026-11-12T00:00:00Z"), c.id]);
     const summary = await runDuePublishJobs(db, new Date("2026-11-12T00:30:00Z"));
     expect(summary.published).toBe(1);
+  });
+});
+
+describe("본문 이미지와 미디어 라이브러리", () => {
+  async function photo(alt = "") {
+    return createMedia(db, admin, { storage: "local", storageKey: `media/2026/11/${Math.random().toString(16).slice(2).padEnd(32, "0").slice(0, 32)}.webp`, url: "/media-dev/x.webp", bytes: 10, width: 4, height: 3, alt });
+  }
+  const withImage = (mediaId: string) => ({ type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "본문" }] }, { type: "image", attrs: { mediaId } }] });
+
+  it("라이브러리에 없거나 삭제된 이미지는 본문에 넣을 수 없다", async () => {
+    const c = await createContent(db, admin, { type: "story", title: "이미지 시험" });
+    await expect(saveContent(db, admin, c.id, c.version, edit({ slug: c.slug, body: withImage("123e4567-e89b-42d3-a456-426614174000") }))).rejects.toThrow("삭제되었거나 없는 이미지");
+    const m = await photo("설명");
+    await deleteMedia(db, admin, m.id);
+    await expect(saveContent(db, admin, c.id, c.version, edit({ slug: c.slug, body: withImage(m.id) }))).rejects.toThrow("삭제되었거나 없는 이미지");
+  });
+
+  it("본문(또는 수정 중인 내용)이 쓰는 이미지는 삭제할 수 없고, 쓰는 글을 지우면 다시 삭제할 수 있다", async () => {
+    const m = await photo("설명");
+    expect(await mediaUsageCount(db, admin, m.id)).toBe(0);
+    const c = await createContent(db, admin, { type: "story", title: "사용 시험" });
+    const s = await saveContent(db, admin, c.id, c.version, edit({ slug: c.slug, body: withImage(m.id) }));
+    expect(await mediaUsageCount(db, admin, m.id)).toBe(1);
+    await expect(deleteMedia(db, admin, m.id)).rejects.toThrow("1곳에서 쓰이고");
+    // 발행된 글의 수정 중인 내용(draft)에서만 쓰는 이미지도 사용 중이다
+    const other = await photo("다른 설명");
+    const pub = await transitionContent(db, admin, c.id, "published", { version: s.version, now: NOW });
+    await saveContent(db, admin, c.id, pub.version, edit({ slug: c.slug, body: withImage(other.id) }));
+    expect(await mediaUsageCount(db, admin, other.id)).toBe(1);
+    await expect(deleteMedia(db, admin, other.id)).rejects.toThrow("쓰이고");
+    await deleteContent(db, admin, c.id);
+    expect(await mediaUsageCount(db, admin, m.id)).toBe(0);
+    await expect(deleteMedia(db, admin, m.id)).resolves.toEqual({ usage: 0 });
+  });
+
+  it("본문 이미지에 대체 텍스트가 없으면 발행·예약할 수 없고, 입력하면 통과한다", async () => {
+    const m = await photo("");
+    const c = await createContent(db, admin, { type: "story", title: "대체 텍스트" });
+    const s = await saveContent(db, admin, c.id, c.version, edit({ slug: c.slug, body: withImage(m.id) }));
+    await expect(transitionContent(db, admin, c.id, "published", { version: s.version, now: NOW })).rejects.toThrow("대체 텍스트가 없습니다");
+    await expect(transitionContent(db, admin, c.id, "scheduled", { version: s.version, publishAt: FUTURE, now: NOW })).rejects.toThrow("대체 텍스트");
+    await updateMediaAlt(db, admin, m.id, "수면 아래 햇빛");
+    await expect(transitionContent(db, admin, c.id, "published", { version: s.version, now: NOW })).resolves.toMatchObject({ status: "published" });
   });
 });
 
