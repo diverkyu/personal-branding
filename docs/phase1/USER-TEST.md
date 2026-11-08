@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.19.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 공동 작업자 + Claude |
+| **0.19.1** | 2026-11-08 | 초안 (규강 검토 전) | 규강 공동 작업자 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 근거: [PRD.md §2·§4](PRD.md) · [CONCEPT.md §2](CONCEPT.md) · [SCREEN-SPEC.md](SCREEN-SPEC.md) · 환경: [INFRASTRUCTURE.md](INFRASTRUCTURE.md)
 
@@ -39,7 +39,7 @@
 
 ### 3.1 방법 A 준비 절차 (소유자가 할 일 + 제가 도울 일)
 
-1. **소유자**: Vercel 계정에 GitHub 저장소 `diverkyu/personal-branding`을 연결해 프로젝트 생성. **Root Directory = `app`**, 프레임워크 Next.js 자동 인식. (계정 생성·로그인·결제는 소유자가 직접)
+1. **규강(저장소 소유자)이 직접**: GitHub 계정으로 Vercel에 가입해 `diverkyu/personal-branding`을 연결, 프로젝트 생성. **저장소 Owner만 연결할 수 있어서 작업자 계정으로는 할 수 없다**([INFRASTRUCTURE §9](INFRASTRUCTURE.md)). **Root Directory = `app`**, 프레임워크 Next.js 자동 인식. 가입·로그인·결제는 규강이 직접, 작업자는 화면 공유로 안내
 2. **환경변수 (Preview 환경)**: `INQUIRY_STORE=postgres`, `DATABASE_URL`=Neon **`dev`** 브랜치 문자열, `SITE_URL`=프리뷰 주소(첫 배포 뒤 확인), `SITE_INDEXING`은 비움(= 색인 금지). 운영 문자열은 넣지 않는다. (비밀 값은 소유자가 Vercel 화면에 직접 입력)
 3. **접근 보호**: Vercel은 프리뷰·운영 배포를 **Vercel Authentication**(Vercel에 로그인한 팀원만 열림)으로 보호할 수 있고, 모든 플랜에서 추가 비용 없이 쓸 수 있다고 공식 문서에 있다. 참가자는 Vercel 계정이 없으므로 두 가지 중 하나를 쓴다. (a) 보호된 배포에 **임시 공유 링크**(유효 기간 설정 가능, 공식 문서 확인)를 만들어 참가자에게 보낸다. (b) 프로젝트의 보호 설정을 끄고 주소만 아는 사람에게 연다. **(b)는 주소가 노출되면 누구나 열 수 있으니 테스트 기간에만 쓰고 끝나면 다시 켠다.** 암호 보호(Password Protection)는 Hobby에서 쓸 수 없고 Pro에서 프로젝트당 월 $20로 공식 문서에 적혀 있다. 기본값이 어떻게 설정되는지는 프로젝트를 만든 뒤 설정 화면에서 직접 확인한다.
 4. **Hobby 조건 유지**: 이 테스트는 **내부 검수** 범위다. 실제 투어 모집, 제휴 링크 노출, 실제 신청 접수는 하지 않고, 참가자에게도 "테스트용"임을 알린다 ([INFRASTRUCTURE §2](INFRASTRUCTURE.md)).
