@@ -2,7 +2,10 @@
 
 import { headers } from "next/headers";
 import { getTour } from "@/data";
+import type { AdminDb } from "@/data/admin/db";
 import { getInquiryStore } from "@/data/inquiryStore";
+import { getDb } from "@/db/client";
+import { resolveConsentVersion } from "@/settings/store";
 import { processSubmission } from "@/lib/forms/process";
 import { createDuplicateGuard, createRateLimiter } from "@/lib/forms/rateLimit";
 import type { FormState } from "@/lib/forms/state";
@@ -12,6 +15,13 @@ import type { FormState } from "@/lib/forms/state";
 const limiter = createRateLimiter({ limit: Number(process.env.FORM_RATE_LIMIT) || 10, windowMs: 10 * 60 * 1000 });
 const duplicates = createDuplicateGuard({ windowMs: 10 * 60 * 1000 });
 
+/** 운영 DB 가 있으면 동의 문구 버전을 DB 기준으로 확인한다. 없으면(개발·시험 메모리 저장) 옛 표기를 쓴다 */
+function consentResolver() {
+  const url = process.env.DATABASE_URL?.trim();
+  if (!url || process.env.INQUIRY_STORE !== "postgres") return undefined;
+  return (kind: "reservation" | "notice", claimed: string | undefined) => resolveConsentVersion(getDb(url) as unknown as AdminDb, kind, claimed);
+}
+
 async function clientIp(): Promise<string> {
   const h = await headers();
   return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
@@ -19,9 +29,9 @@ async function clientIp(): Promise<string> {
 
 /** 투어 slug 는 폼에 묶어(bind) 받는다. 서버에서 투어와 모집 상태를 다시 확인한다. */
 export async function submitReservation(slug: string, _prev: FormState, data: FormData): Promise<FormState> {
-  return processSubmission("reservation", getTour(slug), data, await clientIp(), { store: getInquiryStore(), limiter, duplicates });
+  return processSubmission("reservation", getTour(slug), data, await clientIp(), { store: getInquiryStore(), limiter, duplicates, resolveConsentVersion: consentResolver() });
 }
 
 export async function submitNotice(slug: string, _prev: FormState, data: FormData): Promise<FormState> {
-  return processSubmission("notice", getTour(slug), data, await clientIp(), { store: getInquiryStore(), limiter, duplicates });
+  return processSubmission("notice", getTour(slug), data, await clientIp(), { store: getInquiryStore(), limiter, duplicates, resolveConsentVersion: consentResolver() });
 }

@@ -10,6 +10,7 @@ import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { InfoRow } from "@/components/site/InfoRow";
 import { ReviewCard } from "@/components/site/ReviewCard";
 import { TourCard } from "@/components/site/TourCard";
+import { getConsent } from "@/settings/read";
 import { TourInquiryCard } from "@/components/site/TourInquiryCard";
 import { reviewCard, tourCard } from "@/components/site/mappers";
 import { Section } from "@/components/ui/Section";
@@ -36,6 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 /** TOUR 상세 + 예약 문의 (SCREEN-SPEC §5.7). 상태에 따라 문의 카드가 달라진다. */
 export default async function TourDetailPage({ params }: Props) {
+  const consents = { reservation: await getConsent("reservation"), notice: await getConsent("notice") };
   const tour = getTour((await params).slug);
   if (!tour) notFound();
   const reviews = listReviewsForTour(tour.slug);
@@ -108,7 +110,7 @@ export default async function TourDetailPage({ params }: Props) {
             </TextLink>
           </div>
         </div>
-        <TourInquiryCard status={tour.status} slug={tour.slug} capacity={tour.capacity} />
+        <TourInquiryCard status={tour.status} slug={tour.slug} capacity={tour.capacity} consents={consents} />
         {tour.status === "recruiting" ? <MobileInquiryBar targetId="inquiry" /> : null}
       </div>
 

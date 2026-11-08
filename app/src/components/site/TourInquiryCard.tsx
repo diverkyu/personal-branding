@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/Button";
 import { NoticeForm, ReservationForm } from "./TourForms";
 import type { TourStatus } from "@/types/content";
+import type { CurrentConsent } from "@/settings/consent";
 import styles from "./TourInquiryCard.module.css";
 
 /**
  * 예약 문의 카드 (SCREEN-SPEC §5.7.1) — 투어 상태에 따라 4가지.
  * 폼은 서버 액션(`app/freediving/tours/[slug]/actions.ts`)에 연결된다. 검증·허니팟·빈도 제한은 서버가 맡는다.
  */
-export function TourInquiryCard({ status, slug, capacity }: { status: TourStatus; slug: string; capacity?: number }) {
+export function TourInquiryCard({ status, slug, capacity, consents }: { status: TourStatus; slug: string; capacity?: number; consents?: { reservation: CurrentConsent; notice: CurrentConsent } }) {
   if (status === "ended") return null;
 
   if (status === "closed") {
@@ -33,7 +34,7 @@ export function TourInquiryCard({ status, slug, capacity }: { status: TourStatus
           예약 문의
         </h2>
         <p>모집이 시작되면 안내해 드립니다.</p>
-        <NoticeForm slug={slug} />
+        <NoticeForm slug={slug} consent={consents?.notice} />
       </section>
     );
   }
@@ -45,7 +46,7 @@ export function TourInquiryCard({ status, slug, capacity }: { status: TourStatus
         예약 문의
       </h2>
       <p>결제나 확정은 아닙니다. 남겨주신 내용을 확인한 뒤 연락처로 답변드립니다.</p>
-      <ReservationForm slug={slug} capacity={capacity} />
+      <ReservationForm slug={slug} capacity={capacity} consent={consents?.reservation} />
     </section>
   );
 }

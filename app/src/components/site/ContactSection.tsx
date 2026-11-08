@@ -8,8 +8,8 @@ import { CopyEmailButton } from "./CopyEmailButton";
 import styles from "./ContactSection.module.css";
 
 /** 홈 하단과 /contact 가 함께 쓰는 Contact 영역 (SCREEN-SPEC §5.11). 페이지의 h1 이 아니므로 기본은 h2. */
-export function ContactSection({ asPage = false }: { asPage?: boolean }) {
-  const { email, intro, subjects } = contactConfig;
+export function ContactSection({ asPage = false, email = contactConfig.email, intro = contactConfig.intro }: { asPage?: boolean; email?: string; intro?: readonly string[] }) {
+  const { subjects } = contactConfig;
   const Title = asPage ? "h1" : "h2";
   return (
     <Section tone="teal" id="contact" labelledBy="contact-title">
