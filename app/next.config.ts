@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   reactStrictMode: true,
   poweredByHeader: false,
+  experimental: {
+    // 어드민 이미지 업로드(최대 4MB)를 서버 액션으로 받는다. 파일 크기는 서버 액션 안에서 다시 확인한다.
+    serverActions: { bodySizeLimit: "5mb" },
+  },
   async headers() {
     // SECURITY.md §12 기본 헤더. CSP·HSTS는 호스팅·도메인 확정 후 추가한다.
     return [

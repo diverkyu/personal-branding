@@ -43,6 +43,7 @@ export default defineConfig({
       // 어드민은 "설정되지 않음" 상태로 시험한다. .env.local 의 값이 섞이지 않게 비워 둔다.
       DATABASE_URL: "",
       BETTER_AUTH_SECRET: "",
+      MEDIA_STORE: "",
     },
   },
 });

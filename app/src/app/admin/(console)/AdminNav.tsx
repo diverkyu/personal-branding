@@ -10,6 +10,7 @@ import styles from "../admin.module.css";
 const GROUPS = [
   { title: "홈", items: [{ href: "/admin", label: "대시보드" }] },
   { title: "운영", items: [{ href: "/admin/inquiries", label: "신청·문의" }] },
+  { title: "자산", items: [{ href: "/admin/media", label: "미디어" }] },
   {
     title: "사이트",
     items: [
