@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.10.0** | 2026-11-08 | 초안 (규강 확인 대기, §12 결정 9개 확정) | 규강 + Claude |
+| **0.10.1** | 2026-11-08 | 초안 (규강 확인 대기, §12 결정 9개 확정) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 상위: [PRD.md](PRD.md) · [CONCEPT.md](CONCEPT.md) · 시각: [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) · 화면 시안: [mockup/](mockup/README.md) · 지침: [DEVELOPMENT.md](DEVELOPMENT.md) · [SECURITY.md](SECURITY.md)
 
