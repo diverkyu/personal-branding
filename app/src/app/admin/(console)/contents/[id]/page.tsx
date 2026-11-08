@@ -1,0 +1,110 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { isBodyEmpty, plainEditableText, sanitizeBody } from "@/content/body";
+import { STATUS_LABELS, allowedTransitions, publishChecks, suggestPublishAt, type ContentStatus } from "@/content/publish";
+import { CONTENT_TYPES } from "@/content/types";
+import { editableView, getContent } from "@/data/admin/contents";
+import { adminDb } from "@/data/admin/dbServer";
+import { requireAdmin } from "@/lib/auth/session";
+import { formatDateTimeKst } from "@/lib/format";
+import styles from "../../../admin.module.css";
+import { DeleteContentForm, DraftBanner, EditForm, TransitionForm } from "../ContentForms";
+
+export const metadata = { title: "콘텐츠 편집 · KYU 어드민" };
+
+const TRANSITION_LABELS: Record<ContentStatus, string> = {
+  draft: "임시저장으로 되돌리기",
+  review: "검토 필요로 표시",
+  scheduled: "예약하기",
+  published: "지금 발행",
+  archived: "보관",
+};
+
+export default async function ContentEditPage({ params }: { params: Promise<{ id: string }> }) {
+  const admin = await requireAdmin();
+  const { id } = await params;
+  const row = await getContent(adminDb(), admin, id);
+  if (!row) notFound();
+  const view = editableView(row);
+  const body = sanitizeBody(view.body);
+  const bodyText = body.ok ? plainEditableText(body.doc) : "";
+  const status = row.status as ContentStatus;
+  const problems = publishChecks({ title: view.title, slug: row.slug, bodyEmpty: !body.ok || isBodyEmpty(body.doc), summary: view.summary, origin: view.origin, reviewed: status === "review" });
+  const nextWeek = suggestPublishAt();
+
+  return (
+    <>
+      <p style={{ margin: "0 0 8px" }}>
+        <Link href="/admin/contents" className={styles.linkButton}>
+          ← 전체 콘텐츠
+        </Link>
+      </p>
+      <h1 className={styles.h1}>{row.title}</h1>
+      <p className={styles.note}>
+        {CONTENT_TYPES[row.type]?.label ?? row.type} · <span className={styles.statusTag}>{STATUS_LABELS[status]}</span>
+        {status === "scheduled" && row.publishAt ? ` · ${formatDateTimeKst(row.publishAt)}에 공개 예정` : ""}
+        {status === "published" && row.publishedAt ? ` · ${formatDateTimeKst(row.publishedAt)} 발행` : ""}
+      </p>
+
+      <div className={styles.twoCol}>
+        <div className={styles.panel}>
+          <EditForm
+            initial={{
+              id: row.id,
+              version: row.version,
+              title: view.title,
+              slug: row.slug,
+              slugLocked: status === "published",
+              summary: view.summary,
+              bodyText,
+              tags: view.tags.join(", "),
+              answers: view.answers.join("\n"),
+              seoTitle: view.seoTitle,
+              seoDescription: view.seoDescription,
+              origin: view.origin,
+              originNote: view.originNote,
+            }}
+          />
+        </div>
+
+        <div>
+          {view.hasDraft ? (
+            <div className={styles.panel} style={{ marginBottom: 16 }}>
+              <DraftBanner id={row.id} version={row.version} />
+            </div>
+          ) : null}
+
+          <section className={styles.panel} aria-labelledby="publish-title">
+            <h2 id="publish-title" className={styles.h2} style={{ marginTop: 0 }}>
+              발행
+            </h2>
+            <p className={styles.note}>발행 전 점검</p>
+            {problems.length === 0 ? (
+              <p className={styles.note} style={{ marginTop: 0 }}>
+                통과했습니다.
+              </p>
+            ) : (
+              <ul style={{ margin: "0 0 12px", paddingLeft: 18, fontSize: 14 }}>
+                {problems.map((p) => (
+                  <li key={p}>{p}</li>
+                ))}
+              </ul>
+            )}
+            <div className={styles.form}>
+              {allowedTransitions(status).map((to) => (
+                <TransitionForm key={to} id={row.id} version={row.version} to={to} label={TRANSITION_LABELS[to]} needsTime={to === "scheduled"} defaultTime={nextWeek} />
+              ))}
+            </div>
+            <p className={styles.note} style={{ margin: "12px 0 0" }}>
+              예약한 글은 정해진 시각 이후의 다음 자동 실행 때 공개됩니다. 현재 무료 플랜에서는 하루 한 번(한국 시간 오전 9시) 실행됩니다.
+            </p>
+          </section>
+
+          <div className={styles.panel} style={{ marginTop: 16 }}>
+            <DeleteContentForm id={row.id} />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
