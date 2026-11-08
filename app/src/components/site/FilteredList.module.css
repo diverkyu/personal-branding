@@ -1,0 +1,51 @@
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 56px;
+}
+
+.pager button,
+.more button {
+  min-width: var(--kyu-touch);
+  min-height: var(--kyu-touch);
+  padding: 0 16px;
+  border: 1px solid var(--kyu-line);
+  border-radius: var(--kyu-radius-pill);
+  background: none;
+  color: var(--kyu-navy);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.pager button[data-surface="dark"],
+.more button[data-surface="dark"] {
+  border-color: var(--kyu-line-dark-strong);
+  color: var(--kyu-paper);
+}
+
+.pager button[aria-current="page"] {
+  background: var(--kyu-navy);
+  border-color: var(--kyu-navy);
+  color: var(--kyu-paper);
+  font-weight: 700;
+}
+
+.pager button[aria-current="page"][data-surface="dark"] {
+  background: var(--kyu-lime);
+  border-color: var(--kyu-lime);
+  color: var(--kyu-navy);
+}
+
+.pager button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}

@@ -48,6 +48,20 @@ export const stories: Story[] = [
   },
 ];
 
+// 페이지 나누기(STORY-05)를 확인하기 위해 예시 글을 늘린다. 이미 있는 4건 + 8건 = 12건 (페이지당 9건이면 2페이지).
+const VARIANTS = ["sea-a", "sea-b", "sea-c", "sea-d"] as const;
+stories.push(
+  ...Array.from({ length: 8 }, (_, i): Story => ({
+    slug: `sample-story-${i + 1}`,
+    title: `예시 글 ${i + 1}`,
+    summary: `화면 확인용 예시 글입니다. (${i + 1})`,
+    publishedAt: `2026-08-${String(28 - i * 3).padStart(2, "0")}`,
+    tags: [["바다", "기록", "창작"][i % 3] as string],
+    body: ["예시 본문입니다."],
+    thumbVariant: VARIANTS[i % 4] as Story["thumbVariant"],
+  })),
+);
+
 export const tours: Tour[] = [
   {
     slug: "sample-recruiting",
@@ -60,6 +74,11 @@ export const tours: Tour[] = [
     summary: "처음 물에 들어가는 사람을 위한 투어. (예시)",
     description: ["바다를 만나고, 호흡에 집중하고, 물속에서 새로운 감각을 발견하는 시간입니다. (예시 소개문)", "일정과 준비물은 실제 투어가 등록되면 이곳에 표시됩니다."],
     feeNote: "참가비와 포함 사항은 예시입니다. 결제는 이 사이트에서 하지 않으며 안내만 제공합니다.",
+    gallery: [
+      { alt: "예시 사진 1: 바다 표면", caption: "예시 사진 1", variant: "sea-a" },
+      { alt: "예시 사진 2: 물속 풍경", caption: "예시 사진 2", variant: "sea-b" },
+      { alt: "예시 사진 3: 해안", caption: "예시 사진 3", variant: "sea-c" },
+    ],
     thumbVariant: "sea-a",
   },
   {
@@ -94,7 +113,14 @@ export const tours: Tour[] = [
     place: "예시 장소 A",
     summary: "종료된 투어. (예시)",
     description: ["종료된 투어의 예시 소개문입니다."],
-    extras: ["후기 연결됨", "갤러리"],
+    gallery: [
+      { alt: "예시 사진 1: 출발 전 바다", caption: "출발 전 (예시)", variant: "sea-a" },
+      { alt: "예시 사진 2: 호흡 연습", caption: "호흡 연습 (예시)", variant: "sea-b" },
+      { alt: "예시 사진 3: 물속", caption: "물속 (예시)", variant: "sea-c" },
+      { alt: "예시 사진 4: 단체", caption: "단체 (예시)", variant: "sea-d" },
+    ],
+    videos: ["https://www.youtube.com/watch?v=aqz-KE-bpKQ"],
+    extras: ["후기 연결됨", "갤러리", "스케치 영상"],
     thumbVariant: "sea-d",
   },
   {
@@ -120,6 +146,11 @@ export const equipment: Equipment[] = [
     reason: "시야가 넓고 물이 덜 차는 구조라는 가정의 예시 문구입니다.",
     reasonDetail: ["실제 추천 이유는 규강이 직접 사용·검증한 내용만 씁니다. (예시)"],
     features: ["저용량 구조 (예시)", "넓은 시야 (예시)"],
+    images: [
+      { alt: "예시 이미지: 정면", variant: "sea-b" },
+      { alt: "예시 이미지: 측면", variant: "sea-c" },
+      { alt: "예시 이미지: 착용 모습", variant: "sea-d" },
+    ],
     priceNote: "가격대는 예시입니다",
     checkedAt: "2026-11-01",
     action: "external",
@@ -160,3 +191,14 @@ export const reviews: Review[] = [
   { id: "r3", text: "세 번째 예시 후기입니다.", author: "수강생 C", writtenAt: "2026-06-20", tourSlug: "sample-ended-2", featured: true },
   { id: "r4", text: "투어와 연결되지 않은 예시 후기입니다.", author: "수강생 D", writtenAt: "2026-05-02", featured: false },
 ];
+
+// 후기 "더 보기"(REV-05)를 확인하기 위해 예시 후기를 늘린다 (기본 4건 + 10건 = 14건, 12건씩).
+reviews.push(
+  ...Array.from({ length: 10 }, (_, i): Review => ({
+    id: `rx${i + 1}`,
+    text: `화면 확인용 예시 후기입니다. (${i + 1})`,
+    author: `수강생 ${String.fromCharCode(69 + i)}`,
+    writtenAt: `2026-04-${String(28 - i * 2).padStart(2, "0")}`,
+    featured: false,
+  })),
+);

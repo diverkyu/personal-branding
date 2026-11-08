@@ -8,6 +8,9 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { listStories, listStoryTags } from "@/data";
 import pages from "../pages.module.css";
 
+/** 한 페이지에 보이는 글 수 (큰 카드 제외, SCREEN-SPEC STORY-05 제안값) */
+const STORY_PAGE_SIZE = 9;
+
 export const metadata: Metadata = { title: "Story" };
 
 /** STORY 목록 (SCREEN-SPEC §5.3). 최신 글은 큰 카드, 나머지는 격자. 태그 필터는 URL(?tag=)에 남는다. */
@@ -47,6 +50,7 @@ export default function StoryPage() {
               items={items}
               surface="light"
               listClassName={pages.grid4}
+              pagination={{ mode: "pages", size: STORY_PAGE_SIZE }}
               empty={<p className={pages.emptyLight}>이 태그의 글이 없습니다.</p>}
             />
           </Suspense>

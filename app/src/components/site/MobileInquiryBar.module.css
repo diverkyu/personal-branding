@@ -1,0 +1,32 @@
+.bar {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  .bar {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    padding: 12px var(--kyu-header-x);
+    background: var(--kyu-navy);
+    border-top: 1px solid var(--kyu-line-dark);
+  }
+
+  .bar[data-hidden] {
+    display: none;
+  }
+
+  .bar a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    background: var(--kyu-lime);
+    color: var(--kyu-navy);
+    font-weight: 700;
+    border-radius: var(--kyu-radius-btn);
+  }
+}

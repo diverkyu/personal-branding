@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { EquipmentImages } from "@/components/site/EquipmentImages";
 import { EquipmentCard } from "@/components/site/EquipmentCard";
 import { InfoRow } from "@/components/site/InfoRow";
 import { AFFILIATE_NOTICE, equipmentCard } from "@/components/site/mappers";
 import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
-import { Thumb } from "@/components/ui/Thumb";
 import { getEquipment, listEquipment } from "@/data";
 import { formatDate } from "@/lib/format";
 import pages from "../../../pages.module.css";
@@ -48,7 +48,7 @@ export default async function EquipmentDetailPage({ params }: Props) {
         <span aria-current="page">{item.name}</span>
       </nav>
       <div className={styles.media}>
-        <Thumb height={420} variant={item.thumbVariant} />
+        <EquipmentImages main={{ alt: `${item.name} 대표 이미지`, variant: item.thumbVariant }} images={item.images ?? []} />
       </div>
       <h1 className={styles.title}>{item.name}</h1>
       <InfoRow items={info} />
