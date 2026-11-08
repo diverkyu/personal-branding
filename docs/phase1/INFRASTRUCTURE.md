@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.18.1** | 2026-11-08 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
+| **0.18.2** | 2026-11-08 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [PRD.md §12](PRD.md) · [SECURITY.md §16](SECURITY.md) · [DEVELOPMENT.md](DEVELOPMENT.md)
 
@@ -61,6 +61,20 @@
   4. 개발 서버에서 폼을 제출해 Neon 콘솔의 `inquiries` 표에 행이 생기는지 확인한다.
 - 신청 데이터는 개인정보(이름·연락처·이메일)다. 보관 기간·파기 방식은 SECURITY §16 대기 항목이며, 어드민 접근 통제가 생기기 전에는 DB 콘솔 접근 권한을 소유자·공동 작업자로 제한한다.
 
+**환경 분리 (0.18.2)**
+
+| 환경 | Neon 브랜치 | 설정 위치 |
+| --- | --- | --- |
+| 로컬 개발 | `dev` | `app/.env.local` (git 제외) |
+| Vercel Preview·Development | `dev` | Vercel 환경변수 (Preview·Development) |
+| Vercel Production | `production` | Vercel 환경변수 (**Production에만**) |
+
+- 운영 연결 문자열은 Production 환경에만 넣는다. 로컬과 프리뷰에는 `dev` 문자열만 둔다.
+- `dev`는 `production`의 자식 브랜치다. 운영에 실제 신청 데이터가 쌓인 뒤에 `dev`를 다시 만들거나 갱신할 때는 **개인정보가 복사되지 않도록 "스키마만" 또는 익명화 옵션**을 쓴다 (지금은 데이터가 없다).
+- 스키마를 바꾸는 마이그레이션은 `dev`에서 먼저 적용해 확인하고, 운영에는 배포 전에 적용한다.
+
+**함수 지역 (0.18.2)**: `app/vercel.json`의 `regions: ["sin1"]`(싱가포르). Neon과 같은 AWS 지역이라 함수↔DB 왕복이 짧다. 사용자(한국)는 정적 파일을 가까운 CDN에서 받고, 함수는 폼·어드민에서만 쓴다. 지역 변경은 이 파일 한 줄이다(서울 `icn1` 등).
+
 ## 4. 접수 알림 메일: Resend
 
 - 제3자 글 기준 무료 플랜은 월 3,000통·일 100통, 검증된 발신 도메인 1개 (공식 가격 재확인 필요). 투어 문의 규모에는 충분할 것으로 본다.
@@ -90,9 +104,9 @@ Vercel 서버리스 환경에서는 서버 디스크에 업로드 파일을 둘 
 
 ## 8. 열린 질문
 
-1. Neon 무료 플랜의 상업 사용 가능 여부 (약관 확인)
+1. Neon 무료 플랜의 상업 사용 가능 여부 (약관 확인 — **소유자가 공개 운영 전에 다시 확인하기로 함**)
 2. Vercel 팀(계정) 소유자와 Pro 결제 주체
 3. 이미지 스토리지 선택 (§6)
-4. 개발·프리뷰·운영 환경의 DB 분리 방식 (Neon 브랜치 활용 여부)
+4. ~~개발·프리뷰·운영 환경의 DB 분리 방식~~ → **정함(0.18.2)**: Neon 브랜치 `dev` / `production`
 
 출처(2026-11-08 조회): [Vercel fair use guidelines](https://vercel.com/docs/limits/fair-use-guidelines) · [Neon plans](https://neon.com/docs/introduction/plans) · [Neon pricing](https://neon.com/pricing). Resend·Supabase·Cloudflare 수치는 제3자 글 기준이라 공식 페이지 확인 전까지 참고용이다.
