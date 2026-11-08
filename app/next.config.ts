@@ -17,6 +17,15 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
+      {
+        // 어드민·인증 응답은 캐시하지 않고 색인에서 제외한다 (SECURITY §12). proxy.ts 도 같은 헤더를 건다.
+        source: "/admin/:path*",
+        headers: [
+          { key: "Cache-Control", value: "no-store" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      { source: "/api/auth/:path*", headers: [{ key: "Cache-Control", value: "no-store" }] },
     ];
   },
 };

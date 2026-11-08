@@ -3,6 +3,7 @@ import { DM_Sans, Lora, Noto_Sans_KR } from "next/font/google";
 import { isIndexingAllowed, resolveSiteUrl } from "@/config/env";
 import { siteConfig } from "@/config/site";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { SiteFrame } from "@/components/layout/SiteFrame";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SkipLink } from "@/components/layout/SkipLink";
 import "./globals.css";
@@ -52,13 +53,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="ko" className={`${dmSans.variable} ${notoSansKr.variable} ${lora.variable}`}>
       <body>
-        <SkipLink />
-        <SiteHeader />
-        {/* 모든 화면의 본문. 건너뛰기 링크의 목적지이며 h1 은 화면마다 하나다 */}
-        <main id="main" tabIndex={-1}>
+        <SiteFrame skip={<SkipLink />} header={<SiteHeader />} footer={<SiteFooter />}>
           {children}
-        </main>
-        <SiteFooter />
+        </SiteFrame>
       </body>
     </html>
   );

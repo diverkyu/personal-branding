@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.21.0** | 2026-11-08 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
+| **0.22.0** | 2026-11-08 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [PRD.md §12](PRD.md) · [SECURITY.md §16](SECURITY.md) · [DEVELOPMENT.md](DEVELOPMENT.md)
 
@@ -98,7 +98,7 @@ Vercel 서버리스 환경에서는 서버 디스크에 업로드 파일을 둘 
 | --- | --- | --- |
 | A. DB 연결 | **완료(0.18.1)**: 신청 저장을 실제 Neon에서 확인. 남은 것: 개발·프리뷰 브랜치 분리, Neon 약관 확인, 콘텐츠 테이블·읽기 전환(어드민 단계) | 계정 생성은 **소유자가 직접** (비밀번호·카드 정보는 코드·대화에 넣지 않는다) |
 | B. 메일 | Resend 어댑터, 접수 알림, 실패 표시 | 발신 도메인 (도메인 확정 후) |
-| C. 어드민 | 인증 라이브러리 + TOTP, CMS 화면 | A 완료 |
+| C. 어드민 | **AD-1 구현(0.22.0)**: Better Auth + TOTP, 로그인·2차 인증·보호 레이아웃·계정 스크립트. 다음: AD-2~6 ([ADMIN-DESIGN §11](ADMIN-DESIGN.md)) | A 완료. 배포 환경에 `BETTER_AUTH_SECRET`·`DATABASE_URL`이 있어야 로그인 가능 |
 | D. 첫 배포(R1) | Vercel(Hobby) 프로젝트 연결, Root Directory `app/`, 프리뷰 URL 검수 | 계정 소유자·권한 (PRD §12.5) |
 | E. 공개 게시(R5) 전 | **Pro 전환**, Neon 약관 확인, 도메인·`SITE_URL`, 개인정보 처리방침 전문가 확인 | — |
 
@@ -178,6 +178,7 @@ Vercel 서버리스 환경에서는 서버 디스크에 업로드 파일을 둘 
 | --- | --- | --- | --- |
 | `INQUIRY_STORE` | `postgres` | Production, Preview | |
 | `DATABASE_URL` | Neon **`dev`** 연결 문자열 | Production, Preview | 비밀 값. **Sensitive 표시 옵션이 보이면 켠다.** 지금은 Production에도 `dev` 문자열을 둔다 — 아직 실제 방문자가 없는 시험 단계이기 때문이다. **공개 운영 전에 Production만 `production` 문자열로 바꾼다**(§3, 체크리스트 §10.4) |
+| `BETTER_AUTH_SECRET` | 32자 이상 임의 문자열 | Production, Preview (**환경마다 다른 값**) | 어드민 인증 서명 키. 비밀 값이라 **규강이 직접** 만들어 입력한다. 화면에 출력하지 않는 방법: 터미널에서 `openssl rand -base64 32 \| pbcopy` 후 붙여넣기. 없으면 어드민은 "설정되지 않음"으로 닫혀 있다 (사이트·빌드는 영향 없음). Sensitive 표시를 켠다. 바꾸면 모든 로그인이 풀린다 |
 | `SITE_URL` | 첫 배포 뒤 확정되는 프로젝트 주소(`https://….vercel.app`) | Production, Preview | 첫 배포 때는 비워 두고, 주소가 정해진 뒤 입력하고 **다시 배포**한다(주소는 빌드 때 반영된다 — app/README) |
 | `SITE_INDEXING` | **설정하지 않는다** | — | 비어 있으면 검색 색인 금지(noindex)다 |
 | `ENABLE_COMPONENT_SHOWCASE` | **설정하지 않는다** | — | 개발용 쇼케이스가 열리지 않게 |
