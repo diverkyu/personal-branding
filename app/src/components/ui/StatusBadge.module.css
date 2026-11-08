@@ -1,0 +1,28 @@
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.badge[data-tone="filled"] {
+  background: var(--kyu-lime);
+  color: var(--kyu-navy);
+}
+
+.badge[data-tone="outline"][data-surface="dark"] {
+  border-color: var(--kyu-muted);
+  color: var(--kyu-muted);
+}
+
+.badge[data-tone="outline"][data-surface="light"] {
+  border-color: var(--kyu-ink-sub);
+  color: var(--kyu-ink-sub);
+}
+
+/* 종료는 더 조용하게 */
+.badge[data-status="ended"][data-surface="dark"] {
+  border-color: var(--kyu-ink-sub);
+}

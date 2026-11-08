@@ -1,0 +1,77 @@
+.card {
+  position: relative;
+  min-width: 0;
+}
+
+.media {
+  min-width: 0;
+}
+
+.body {
+  min-width: 0;
+}
+
+.date {
+  margin: 16px 0 6px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.title {
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+}
+
+.summary {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+/* 링크 영역을 카드 전체로 넓힌다 */
+.link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.card[data-surface="dark"] .date,
+.card[data-surface="dark"] .summary {
+  color: var(--kyu-muted);
+}
+
+.card[data-surface="light"] .date,
+.card[data-surface="light"] .summary {
+  color: var(--kyu-ink-sub);
+}
+
+/* 큰 카드: 넓은 화면에서 좌 이미지, 우 텍스트 */
+.card[data-featured] {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card[data-featured] .media {
+  flex: 1.2 1 420px;
+}
+
+.card[data-featured] .body {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 32px;
+}
+
+.card[data-featured] .title {
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.35;
+  letter-spacing: -0.04em;
+}
+
+.card[data-featured][data-surface="dark"] {
+  background: var(--kyu-navy);
+  color: var(--kyu-paper);
+}

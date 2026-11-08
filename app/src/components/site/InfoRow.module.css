@@ -1,0 +1,26 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  border-top: 1px solid var(--kyu-line);
+  border-bottom: 1px solid var(--kyu-line);
+  color: var(--kyu-navy);
+}
+
+.item {
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 20px 0;
+}
+
+.label {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--kyu-ink-sub);
+}
+
+.value {
+  margin: 6px 0 0;
+  font-size: 16px;
+  overflow-wrap: break-word;
+}

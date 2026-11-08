@@ -1,0 +1,25 @@
+.card {
+  position: relative;
+  min-width: 0;
+  color: var(--kyu-navy);
+}
+
+.meta {
+  margin: 14px 0 4px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--kyu-ink-sub);
+}
+
+.title {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
