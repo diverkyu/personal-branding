@@ -22,12 +22,25 @@ async function findClippedElements(page: Page) {
 test.describe("컴포넌트 쇼케이스", () => {
   test("열리고 모든 구역이 보인다 (콘솔 오류 없음)", async ({ page }, testInfo) => {
     const errors: string[] = [];
+    let prefetch404 = 0;
+    let consoleNotFound = 0;
     page.on("console", (message) => {
-      if (message.type() === "error") errors.push(message.text());
+      if (message.type() !== "error") return;
+      // 미리 불러오기 404 는 아래 response 처리에서 걸러진다. 콘솔에는 주소가 없으므로 개수로 맞춘다.
+      if (message.text().includes("status of 404")) {
+        consoleNotFound += 1;
+        return;
+      }
+      errors.push(message.text());
     });
     page.on("pageerror", (error) => errors.push(error.message));
     // 콘솔 메시지에는 주소가 없으므로 실패한 요청의 주소도 함께 남긴다
     page.on("response", (response) => {
+      // 4단계 전까지 메뉴가 가리키는 페이지가 아직 없어 미리 불러오기(_rsc)가 404 를 받는다. 4단계에서 이 예외를 없앤다.
+      if (response.status() === 404 && response.url().includes("_rsc=")) {
+        prefetch404 += 1;
+        return;
+      }
       if (response.status() >= 400) errors.push(`HTTP ${response.status()} ${response.url()}`);
     });
 
@@ -37,6 +50,7 @@ test.describe("컴포넌트 쇼케이스", () => {
       await expect(page.getByRole("heading", { level: 2, name, exact: true })).toBeVisible();
     }
     await page.screenshot({ path: `artifacts/components-${testInfo.project.name}.png`, fullPage: true });
+    if (consoleNotFound > prefetch404) errors.push(`콘솔의 404 오류 ${consoleNotFound}건 중 미리 불러오기가 아닌 것이 있음 (${prefetch404}건만 해당)`);
     expect(errors, errors.join("\n")).toEqual([]);
   });
 
@@ -137,7 +151,7 @@ test.describe("컴포넌트 쇼케이스", () => {
 
   test("아이콘 20개가 모두 그려진다 (글자 기호 대신 SVG)", async ({ page }) => {
     await page.goto(URL);
-    await expect(page.locator("ul li svg")).toHaveCount(20);
+    await expect(page.locator("main ul li svg")).toHaveCount(20);
     await expect(page.getByText(/[↗⧉☰]/)).toHaveCount(0);
   });
 });

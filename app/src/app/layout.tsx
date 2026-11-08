@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, Lora, Noto_Sans_KR } from "next/font/google";
 import { isIndexingAllowed, resolveSiteUrl } from "@/config/env";
 import { siteConfig } from "@/config/site";
+import { SiteFooter } from "@/components/layout/SiteFooter";
+import { SiteHeader } from "@/components/layout/SiteHeader";
+import { SkipLink } from "@/components/layout/SkipLink";
 import "./globals.css";
 
 // 글꼴은 빌드 때 내려받아 사이트에서 직접 제공한다 (방문자 접속 정보가 Google 로 가지 않음).
@@ -48,7 +51,15 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ko" className={`${dmSans.variable} ${notoSansKr.variable} ${lora.variable}`}>
-      <body>{children}</body>
+      <body>
+        <SkipLink />
+        <SiteHeader />
+        {/* 모든 화면의 본문. 건너뛰기 링크의 목적지이며 h1 은 화면마다 하나다 */}
+        <main id="main" tabIndex={-1}>
+          {children}
+        </main>
+        <SiteFooter />
+      </body>
     </html>
   );
 }

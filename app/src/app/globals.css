@@ -75,3 +75,8 @@ svg {
     animation: none !important;
   }
 }
+
+/* 건너뛰기 링크로 이동한 본문은 포커스 외곽선을 그리지 않는다 (화면 전체가 둘러싸이는 것을 막음) */
+main:focus {
+  outline: none;
+}

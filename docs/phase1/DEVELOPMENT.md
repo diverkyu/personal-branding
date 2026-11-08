@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.12.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.13.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [SECURITY.md](SECURITY.md) · [PRD.md](PRD.md) · [SCREEN-SPEC.md](SCREEN-SPEC.md) · [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md)
 
@@ -284,3 +284,4 @@ tests/             # 단위·E2E
 | 2026-11-08 | 공개 전 기본 색인 금지 (`SITE_INDEXING=on`일 때만 허용) | 미리보기·프리뷰가 검색에 노출되는 사고를 막는다 (SECURITY §13) | 기본 허용 |
 | 2026-11-08 | 컴포넌트 단위 시험은 `react-dom/server`의 `renderToStaticMarkup` 사용 (추가 의존성 없음), 상호작용·시각은 쇼케이스 E2E | 서버 렌더 결과(역할, aria 속성, 링크 속성)를 의존성 없이 검사할 수 있다. 클릭·포커스·레이아웃은 브라우저에서만 확인된다 | jsdom + Testing Library (의존성 추가) |
 | 2026-11-08 | 개발용 쇼케이스 `/dev/components`는 운영에서 기본 404 (`ENABLE_COMPONENT_SHOWCASE=on`일 때만) | 개발 화면이 공개되는 사고를 막는다 (SECURITY §13). 값은 정적 빌드 때 반영된다 | 운영에서도 항상 공개 |
+| 2026-11-08 | 서버 오류는 `instrumentation.ts` 의 `onRequestError` 에서 구조화 로그(`request.error`: errorKind, digest, method, routePath)로 남기고, 화면에는 상세를 쓰지 않는다 | 화면 문구와 원인 조사를 분리한다. 오류 메시지 원문에는 개인정보가 섞일 수 있어 로그에 넣지 않는다 | 클라이언트 오류 경계에서 console 출력 |
