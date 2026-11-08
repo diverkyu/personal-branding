@@ -10,6 +10,24 @@
 - PATCH: 오탈자, 표현 다듬기, 링크 수정
 - 상태: 초안 → 검토 중 → 확정
 
+## [0.20.0] — 2026-11-08 · 검토 중 (규강 확인 대기)
+
+어드민 기술 설계.
+
+- **추가** [ADMIN-DESIGN.md](ADMIN-DESIGN.md): 경로·코드 구조, 인증·세션, 데이터 모델, 리치 텍스트, 저장·충돌, 휴지통, 미디어, 구현 단계(AD-1~6), 시험 계획
+- **결정** 인증 라이브러리 **Better Auth** (+TOTP), 리치 텍스트 **Tiptap**(JSON 저장·서버 재검증), 이미지 저장 **Vercel Blob**
+- **정리** INFRASTRUCTURE §5·§6·§8을 결정에 맞게 갱신, SECURITY §16 인증 구현 항목 확정
+- **확인 대기** 초안 보관 방식, 복구 코드 안내 문구 등 ADMIN-DESIGN §13
+
+## [0.19.3] — 2026-11-08 · 검토 중 (규강 확인 대기)
+
+첫 Vercel 배포 확인 (`https://personal-branding-l1sr.vercel.app`).
+
+- **확인(실제 배포)** `npm run test:remote`(`REMOTE_EXPECT_REGION=sin1`) 5개 통과: 홈·주요 화면 열림, noindex와 보안 헤더, `robots.txt` 전체 차단, 개발용 쇼케이스 404, **예약 문의 제출 접수(Vercel → Neon 동작)**, **폼을 처리한 함수 지역 `sin1` 확인**. 시험이 남긴 가짜 문의는 `dev` DB에서 삭제했고(1건), 삭제가 됐다는 사실로 **배포가 `dev` DB에 쓰고 있음**도 확인했다
+- **확인** 접근 보호 없이 누구나 열리는 상태다(응답 200, 로그인 화면 없음). 색인은 금지(noindex·robots)라 검색에는 나오지 않는다
+- **발견·해결** `SITE_URL`이 없어 `sitemap.xml`·구조화 데이터의 주소가 `http://localhost:3000`이었다 → Vercel에 `SITE_URL`을 넣고 다시 배포한 뒤 **`https://personal-branding-l1sr.vercel.app`로 바뀐 것을 확인**했다(sitemap의 localhost 0건, Article 주소 정상). 재배포가 반영되기까지 몇 분 걸렸다
+- **확인된 것으로 갱신** 함수 지역 `sin1` 적용 (INFRASTRUCTURE §10 미확인 항목 해소). 아직 미확인: Hobby에서 작업자 커밋 배포 여부(작업자 커밋으로 새 배포가 생기는지 다음 푸시에서 확인)
+
 ## [0.19.2] — 2026-11-08 · 검토 중 (규강 확인 대기)
 
 첫 프리뷰 배포 준비.
