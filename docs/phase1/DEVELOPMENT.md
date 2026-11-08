@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.16.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.17.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [SECURITY.md](SECURITY.md) · [PRD.md](PRD.md) · [SCREEN-SPEC.md](SCREEN-SPEC.md) · [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md)
 
@@ -289,3 +289,4 @@ tests/             # 단위·E2E
 | 2026-11-08 | 모든 공개 화면의 제목 단계(h1→h2→h3)를 E2E로 검사한다. 카드는 `headingLevel`로 단계를 맞춘다 | 4단계에서 목록 화면의 h1 바로 아래 h3 카드가 단계를 건너뛰는 것을 시험이 찾았다 | 카드 제목을 항상 h3 로 고정 |
 | 2026-11-08 | 저장소가 정해지기 전에는 `INQUIRY_STORE`가 비어 있으면 폼 제출을 저장하지 않고 실패로 응답한다. 개발·시험만 `INQUIRY_STORE=memory` | 저장하지 못한 신청을 "접수되었습니다"로 보이게 하면 신청자가 연락을 기다리게 된다. 접수 여부를 정직하게 알린다 | 메모리 저장을 운영 기본으로, 성공 응답만 흉내 |
 | 2026-11-08 | 외부 영상은 클릭 전에 어떤 외부 요청도 하지 않고(썸네일 포함), 허용 도메인(YouTube→nocookie, Vimeo)만 sandbox iframe 으로 연다 | 방문자 접속 정보가 외부로 먼저 새지 않게 하고(SECURITY §5), 임의 iframe 삽입을 막는다 | 페이지 로드 시 YouTube 임베드·썸네일 |
+| 2026-11-08 | 호스팅 Vercel(Hobby로 시작, 공개 운영 전 Pro), DB Neon(잠정), 메일 Resend, 인증 라이브러리+TOTP. 상세와 조건은 INFRASTRUCTURE.md | Next.js와의 궁합, 1인 운영 부담, PR별 미리보기. Hobby는 비상업 용도 전용이라 공개 운영 전 전환을 조건으로 건다 | Cloudflare(OpenNext), 자체 서버(Docker), Supabase |
