@@ -1,0 +1,49 @@
+/* KYU 디자인 토큰 — docs/phase1/DESIGN-SYSTEM.md §2 의 값만 옮긴 것.
+   색상·간격·모양을 컴포넌트에 직접 쓰지 말고 이 변수를 쓴다. */
+:root {
+  /* 색상 */
+  --kyu-navy: #071e29;
+  --kyu-teal: #10333b;
+  --kyu-lime: #d6f48a;
+  --kyu-paper: #f4f4ec;
+  --kyu-white: #ffffff;
+  --kyu-muted: #a0b4ba;
+  --kyu-ink-sub: #52666a;
+  --kyu-ink-faint: #687d7d;
+  --kyu-line: #bdc8c3;
+  --kyu-line-dark: #ffffff24;
+  --kyu-line-dark-strong: #ffffff40;
+  --kyu-teal-text: #b5c8c6;
+  --kyu-focus: #79b5ff;
+
+  /* 바다 그라디언트 (일러스트·썸네일 자리표시) */
+  --kyu-sea-light: #8dbdb4;
+  --kyu-sea-mid: #267786;
+  --kyu-sea-deep: #062432;
+
+  /* 글꼴 (next/font 가 --font-* 변수를 주입한다) */
+  --kyu-font-sans: var(--font-dm-sans), var(--font-noto-kr), system-ui, sans-serif;
+  --kyu-font-serif: var(--font-lora), serif;
+
+  /* 간격·모양 */
+  --kyu-section-y: 110px;
+  --kyu-section-y-sub: 100px;
+  --kyu-section-x: 7%;
+  --kyu-header-x: 5%;
+  --kyu-container: 1296px;
+  --kyu-max-width: 1800px;
+  --kyu-gap: 24px;
+  --kyu-radius-btn: 2px;
+  --kyu-radius-pill: 30px;
+  --kyu-radius-hero: 46% 46% 0 0;
+
+  /* 터치 영역 */
+  --kyu-touch: 44px;
+}
+
+@media (max-width: 680px) {
+  :root {
+    --kyu-section-y: 70px;
+    --kyu-section-y-sub: 70px;
+  }
+}

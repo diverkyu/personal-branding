@@ -1,0 +1,41 @@
+.main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+  padding: 65px var(--kyu-header-x);
+  max-width: var(--kyu-max-width);
+  margin: 0 auto;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--kyu-muted);
+}
+
+.title {
+  font-size: clamp(46px, 7vw, 88px);
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+}
+
+.accent {
+  font-family: var(--kyu-font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--kyu-lime);
+}
+
+.lead {
+  font-size: clamp(21px, 2.4vw, 23px);
+  line-height: 1.6;
+}
+
+.note {
+  font-size: 13px;
+  color: var(--kyu-muted);
+}

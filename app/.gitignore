@@ -1,0 +1,18 @@
+node_modules/
+.next/
+.next-e2e/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# 환경변수 — .env.example만 커밋한다
+.env
+.env.*
+!.env.example
+
+# 시험 산출물 (캡처·추적·리포트는 개인정보가 담길 수 있어 커밋하지 않는다)
+test-results/
+playwright-report/
+artifacts/
+*.log
+.DS_Store
