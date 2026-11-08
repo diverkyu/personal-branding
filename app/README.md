@@ -24,6 +24,8 @@ npm run dev                  # http://localhost:3000
 | `npm run test` | Vitest 단위 시험 |
 | `npm run build` | 운영 빌드 (글꼴을 내려받아 자체 호스팅하므로 인터넷 연결 필요) |
 | `npm run check` | 위 네 가지를 차례로 |
+| `npm run db:generate` | 스키마(`src/db/schema.ts`) 변경으로 마이그레이션 SQL 생성 (DB 접속 불필요) |
+| `npm run db:migrate` | `DATABASE_URL`의 DB에 마이그레이션 적용 |
 | `npm run test:e2e` | 운영 빌드를 3100 포트로 띄워 Chrome에서 390 / 768 / 1440 폭으로 시험. 캡처는 `artifacts/`에 저장 |
 
 E2E는 설치된 Chrome을 쓴다. 번들 Chromium을 쓰려면 `PW_CHANNEL= npx playwright install chromium` 후 `PW_CHANNEL= npm run test:e2e`.
@@ -35,6 +37,7 @@ src/
 ├── app/          # 라우트 (얇게 유지)
 ├── components/   # ui/ (기본 요소), site/ (카드 등), layout/ (헤더·푸터) — 쇼케이스: /dev/components
 ├── config/       # 상수·환경변수 해석 (단일 출처)
+├── db/           # 스키마(Drizzle), 운영 DB 연결 (마이그레이션은 ../drizzle)
 ├── lib/          # 비즈니스 로직·로거·오류 (순수 함수)
 ├── styles/       # 디자인 토큰 (DESIGN-SYSTEM.md §2)
 └── instrumentation.ts   # 서버 시작 시 설정 점검 로그

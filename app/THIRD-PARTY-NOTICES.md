@@ -18,6 +18,10 @@ OFL에 따라 글꼴 자체를 단독으로 판매하지 않으며, 수정본을
 
 `lucide-react` 패키지. Copyright (c) 2026 Lucide Icons and Contributors. 일부 아이콘은 Feather 프로젝트에서 유래했으며 해당 아이콘은 MIT 라이선스(Copyright (c) 2013-present Cole Bemis)를 따른다. 전문: <https://github.com/lucide-icons/lucide/blob/main/LICENSE>
 
+## 데이터베이스 라이브러리
+
+`drizzle-orm`(Apache-2.0), `@neondatabase/serverless`(MIT)는 운영에서 쓰고, `drizzle-kit`(MIT)과 `@electric-sql/pglite`(Apache-2.0)는 개발·시험에서만 쓴다. 각 패키지의 `license` 필드로 2026-11-08에 확인했다.
+
 ## 확인 방법
 
 글꼴은 Google Fonts 저장소의 `METADATA.pb`·`OFL.txt`, 아이콘은 Lucide 저장소의 `LICENSE`로 2026-11-08에 확인했다 ([CONCEPT §7.8](../docs/phase1/CONCEPT.md)).

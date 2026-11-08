@@ -88,6 +88,8 @@ export function createLogger(options: LoggerOptions = {}) {
           operationId,
           outcome: "failed",
           errorKind: errorKindOf(error),
+          // 오류 종류(클래스 이름)만 남긴다. 메시지에는 연결 문자열·입력값이 섞일 수 있어 기록하지 않는다 (원인 구분용)
+          errorType: error instanceof Error ? error.name : typeof error,
           durationMs: now() - start,
         });
         throw error;

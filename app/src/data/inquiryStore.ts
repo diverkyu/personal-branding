@@ -39,7 +39,35 @@ export function resetMemoryStore(): void {
   memory.length = 0;
 }
 
-/** 환경 설정에 맞는 저장소. 설정이 없으면 undefined (= 접수 불가) */
+/**
+ * 환경 설정에 맞는 저장소. 설정이 없거나 모자라면 undefined (= 접수 불가, 폼은 실패 안내).
+ * - INQUIRY_STORE=postgres : DATABASE_URL 의 Postgres(Neon)에 저장
+ * - INQUIRY_STORE=memory   : 개발·시험용 메모리 (서버를 다시 시작하면 사라짐)
+ */
 export function getInquiryStore(env: Record<string, string | undefined> = process.env): InquiryStore | undefined {
-  return env.INQUIRY_STORE === "memory" ? memoryStore : undefined;
+  if (env.INQUIRY_STORE === "memory") return memoryStore;
+  if (env.INQUIRY_STORE === "postgres") {
+    const url = env.DATABASE_URL?.trim();
+    if (!url) return undefined;
+    return postgresStore(url);
+  }
+  return undefined;
+}
+
+let postgres: { url: string; store: InquiryStore } | undefined;
+
+function postgresStore(url: string): InquiryStore {
+  if (!postgres || postgres.url !== url) {
+    // 필요할 때만 불러온다 (메모리·시험 환경에서는 DB 드라이버를 읽지 않는다)
+    postgres = {
+      url,
+      store: {
+        async save(entry) {
+          const [{ getDb }, { createPostgresInquiryStore }] = await Promise.all([import("@/db/client"), import("./postgresInquiryStore")]);
+          return createPostgresInquiryStore(getDb(url)).save(entry);
+        },
+      },
+    };
+  }
+  return postgres.store;
 }

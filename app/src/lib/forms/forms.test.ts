@@ -125,10 +125,18 @@ describe("제출 처리 (INT-06)", () => {
 });
 
 describe("저장소 선택", () => {
-  it("INQUIRY_STORE=memory 일 때만 저장소가 있다 (운영 기본은 없음)", () => {
+  it("설정이 없거나 알 수 없는 값이면 저장소가 없다 (운영 기본은 접수 불가)", () => {
     expect(getInquiryStore({})).toBeUndefined();
     expect(getInquiryStore({ INQUIRY_STORE: "other" })).toBeUndefined();
     expect(getInquiryStore({ INQUIRY_STORE: "memory" })).toBe(memoryStore);
+  });
+
+  it("postgres 는 DATABASE_URL 이 있을 때만 저장소를 만들고, 만들 때 연결하지 않는다", () => {
+    expect(getInquiryStore({ INQUIRY_STORE: "postgres" })).toBeUndefined();
+    expect(getInquiryStore({ INQUIRY_STORE: "postgres", DATABASE_URL: "  " })).toBeUndefined();
+    const store = getInquiryStore({ INQUIRY_STORE: "postgres", DATABASE_URL: "postgresql://user:pw@localhost.invalid/db" });
+    expect(store).toBeDefined();
+    expect(store).not.toBe(memoryStore);
   });
 });
 
