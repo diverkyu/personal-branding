@@ -13,11 +13,23 @@ import { Section } from "@/components/ui/Section";
 import { SectionHeader, SectionLabel } from "@/components/ui/SectionHeader";
 import { TextLink } from "@/components/ui/TextLink";
 import { listFeaturedReviews, listOpenTours, listStories, reviewTourOptions } from "@/data";
+import { getSiteSettings } from "@/settings/read";
+import { splitSlogan } from "@/settings/registry";
 import styles from "./page.module.css";
 import pages from "./pages.module.css";
 
 /** 홈 (SCREEN-SPEC §5.1). 섹션 순서: 히어로 → 구분 띠 → About 요약 → Story → Freediving → Contact. 콘텐츠는 가상 데이터. */
-export default function HomePage() {
+export default async function HomePage() {
+  const settings = await getSiteSettings();
+  const slogan = splitSlogan(settings["home.slogan"] ?? "");
+  const headline = (settings["home.headline"] ?? "").split("\n");
+  const lead = (settings["home.lead"] ?? "").split("\n");
+  const lines = (items: string[]) => items.map((line, i) => (
+    <span key={i}>
+      {i > 0 ? <br /> : null}
+      {line}
+    </span>
+  ));
   const stories = listStories().slice(0, 3);
   const tour = listOpenTours()[0];
   const reviews = listFeaturedReviews(3);
@@ -31,19 +43,16 @@ export default function HomePage() {
           <div className={styles.copy}>
             <p className={styles.label}>FREEDIVING INSTRUCTOR &amp; AI CREATOR</p>
             <h1 className={styles.title}>
-              Dive deeper.
-              <br />
-              Create <em className={styles.accent}>beyond.</em>
+              {slogan.line1}
+              {slogan.accent ? (
+                <>
+                  <br />
+                  {slogan.line2Lead} <em className={styles.accent}>{slogan.accent}</em>
+                </>
+              ) : null}
             </h1>
-            <p className={styles.headline}>
-              바다에서는 더 깊이,
-              <br />
-              상상 속에서는 더 멀리.
-            </p>
-            <p className={styles.lead}>
-              프리다이빙 강사이자 AI 크리에이터, 이동규입니다.
-              <br />한 번의 호흡과 하나의 아이디어로 새로운 세계를 탐험합니다.
-            </p>
+            <p className={styles.headline}>{lines(headline)}</p>
+            <p className={styles.lead}>{lines(lead)}</p>
             <Button href="/story" size="L" icon="arrow-up-right">
               나의 세계 둘러보기
             </Button>
@@ -164,7 +173,7 @@ export default function HomePage() {
         </div>
       </Section>
 
-      <ContactSection />
+      <ContactSection email={settings["contact.email"]} intro={settings["contact.intro"]?.split("\n")} />
     </>
   );
 }

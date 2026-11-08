@@ -5,6 +5,7 @@ import { submitNotice, submitReservation } from "@/app/freediving/tours/[slug]/a
 import { Button } from "@/components/ui/Button";
 import { Checkbox, FormNotice, TextField, Textarea } from "@/components/ui/Field";
 import { LIMITS } from "@/lib/forms/inquiry";
+import { DEFAULT_CONSENT_TEXT, BUILTIN_VERSION, type CurrentConsent } from "@/settings/consent";
 import { IDLE, type FormState } from "@/lib/forms/state";
 import styles from "./TourInquiryCard.module.css";
 
@@ -36,7 +37,7 @@ function useFocusFirstError(state: FormState, order: string[], idPrefix: string)
 const RESERVATION_ORDER = ["name", "phone", "email", "people", "experience", "message", "consent"];
 
 /** 예약 문의 폼 (TOUR-F). 모집 중인 투어에만 나온다. */
-export function ReservationForm({ slug, capacity }: { slug: string; capacity?: number }) {
+export function ReservationForm({ slug, capacity, consent = { version: BUILTIN_VERSION, text: DEFAULT_CONSENT_TEXT.reservation } }: { slug: string; capacity?: number; consent?: CurrentConsent }) {
   const [state, action, pending] = useActionState<FormState, FormData>(submitReservation.bind(null, slug), IDLE);
   const formRef = useFocusFirstError(state, RESERVATION_ORDER, "inq");
   const [count, setCount] = useState(0);
@@ -75,7 +76,8 @@ export function ReservationForm({ slug, capacity }: { slug: string; capacity?: n
         error={err.message}
         onInput={(e) => setCount(e.currentTarget.value.length)}
       />
-      <Checkbox id="inq-consent" name="consent" required label="개인정보 수집·이용에 동의합니다." error={err.consent} />
+      <Checkbox id="inq-consent" name="consent" required label={consent.text} error={err.consent} />
+      <input type="hidden" name="consentVersion" value={consent.version} />
       <Honeypot />
       <Button type="submit" size="L" busy={pending} className={styles.submit}>
         예약 문의하기
@@ -88,7 +90,7 @@ export function ReservationForm({ slug, capacity }: { slug: string; capacity?: n
 const NOTICE_ORDER = ["name", "email", "consent"];
 
 /** 소식 받기 폼 (TOUR-N). 모집 예정인 투어에만 나온다. */
-export function NoticeForm({ slug }: { slug: string }) {
+export function NoticeForm({ slug, consent = { version: BUILTIN_VERSION, text: DEFAULT_CONSENT_TEXT.notice } }: { slug: string; consent?: CurrentConsent }) {
   const [state, action, pending] = useActionState<FormState, FormData>(submitNotice.bind(null, slug), IDLE);
   const formRef = useFocusFirstError(state, NOTICE_ORDER, "notify");
   const err = state.fieldErrors ?? {};
@@ -102,7 +104,8 @@ export function NoticeForm({ slug }: { slug: string }) {
     <form ref={formRef} action={action} className={styles.form} aria-label="소식 받기" noValidate>
       <TextField id="notify-name" name="name" label="이름" required autoComplete="name" maxLength={LIMITS.nameMax} defaultValue={val.name} error={err.name} />
       <TextField id="notify-email" name="email" type="email" label="이메일" required autoComplete="email" maxLength={LIMITS.emailMax} defaultValue={val.email} error={err.email} />
-      <Checkbox id="notify-consent" name="consent" required label="이 투어의 모집이 시작되면 이메일로 안내를 받는 데 동의합니다." error={err.consent} />
+      <Checkbox id="notify-consent" name="consent" required label={consent.text} error={err.consent} />
+      <input type="hidden" name="consentVersion" value={consent.version} />
       <Honeypot />
       <Button type="submit" size="M" busy={pending}>
         소식 받기

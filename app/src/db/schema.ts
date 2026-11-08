@@ -4,7 +4,7 @@
  * 투어는 아직 DB 테이블이 아니므로 tour_slug 는 외래키 없이 문자열로만 둔다 (투어 테이블이 생기면 연결한다).
  */
 import { sql } from "drizzle-orm";
-import { check, index, integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { check, index, integer, jsonb, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 
 export const inquiries = pgTable(
   "inquiries",
@@ -61,6 +61,41 @@ export const auditLog = pgTable(
   },
   (t) => [index("audit_log_at_idx").on(t.at), index("audit_log_target_idx").on(t.targetType, t.targetId)],
 );
+
+/**
+ * 사이트 설정 (SCREEN-SPEC §7.6). 키 목록·규칙·기본값은 코드(settings/registry.ts)에 있고 여기에는 바꾼 값만 둔다.
+ * version 은 저장할 때마다 올라가며 동시 편집 충돌 확인에 쓴다 (ADMIN-DESIGN §7).
+ */
+export const siteSettings = pgTable("site_settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  version: integer("version").notNull().default(1),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedBy: text("updated_by").notNull(),
+});
+
+/**
+ * 동의 문구·개인정보 처리방침의 버전 기록. 한 번 만든 버전은 고치거나 지우지 않는다(변경 이력 보존, SECURITY §8).
+ * kind: reservation(예약 문의 동의), notice(소식 받기 동의), privacy(개인정보 처리방침).
+ */
+export const consentVersions = pgTable(
+  "consent_versions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    kind: text("kind").notNull(),
+    version: integer("version").notNull(),
+    body: text("body").notNull(),
+    effectiveFrom: timestamp("effective_from", { withTimezone: true }).notNull().defaultNow(),
+    createdBy: text("created_by").notNull(),
+  },
+  (t) => [
+    unique("consent_versions_kind_version_uq").on(t.kind, t.version),
+    check("consent_versions_kind_check", sql`${t.kind} in ('reservation', 'notice', 'privacy')`),
+  ],
+);
+
+export type SiteSettingRow = typeof siteSettings.$inferSelect;
+export type ConsentVersionRow = typeof consentVersions.$inferSelect;
 
 export type AuditRow = typeof auditLog.$inferSelect;
 

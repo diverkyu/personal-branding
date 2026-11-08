@@ -6,7 +6,7 @@ import { expect, test } from "@playwright/test";
  * 실제 로그인·2차 인증 흐름은 단위 통합 시험(src/lib/auth/auth.test.ts)과 개발 DB 수동 확인으로 본다.
  */
 test.describe("어드민 접근 통제", () => {
-  for (const path of ["/admin", "/admin/users", "/admin/setup-2fa", "/admin/anything", "/admin/inquiries", "/admin/inquiries/00000000-0000-4000-8000-000000000000", "/admin/audit"]) {
+  for (const path of ["/admin", "/admin/users", "/admin/setup-2fa", "/admin/anything", "/admin/inquiries", "/admin/inquiries/00000000-0000-4000-8000-000000000000", "/admin/audit", "/admin/settings", "/admin/legal"]) {
     test(`비로그인으로 ${path} 를 열면 로그인 화면으로 간다`, async ({ page }) => {
       const response = await page.goto(path);
       expect(page.url()).toContain("/admin/login");

@@ -19,6 +19,8 @@ export interface SubmissionDeps {
   limiter: ReturnType<typeof createRateLimiter>;
   duplicates: ReturnType<typeof createDuplicateGuard>;
   now?: () => Date;
+  /** 신청자가 본 동의 문구의 버전 표기를 확인한다. 없으면 옛 표기(CONSENT_VERSION)를 쓴다 (SECURITY §8) */
+  resolveConsentVersion?: (kind: InquiryKind, claimed: string | undefined) => Promise<string>;
 }
 
 const FAILED: FormState = { status: "failed" };
@@ -71,7 +73,11 @@ export async function processSubmission(
   try {
     await logger.operation(
       "inquiry.save",
-      () => deps.store!.save({ kind, tourSlug: tour.slug, receivedAt, consentAt: receivedAt, consentVersion: CONSENT_VERSION, data: result.value }),
+      async () => {
+        const claimed = data.get("consentVersion");
+        const consentVersion = deps.resolveConsentVersion ? await deps.resolveConsentVersion(kind, typeof claimed === "string" ? claimed.slice(0, 40) : undefined) : CONSENT_VERSION;
+        return deps.store!.save({ kind, tourSlug: tour.slug, receivedAt, consentAt: receivedAt, consentVersion, data: result.value });
+      },
       base,
     );
   } catch {

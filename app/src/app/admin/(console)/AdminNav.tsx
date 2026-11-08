@@ -11,6 +11,13 @@ const GROUPS = [
   { title: "홈", items: [{ href: "/admin", label: "대시보드" }] },
   { title: "운영", items: [{ href: "/admin/inquiries", label: "신청·문의" }] },
   {
+    title: "사이트",
+    items: [
+      { href: "/admin/settings", label: "사이트 설정" },
+      { href: "/admin/legal", label: "동의·방침" },
+    ],
+  },
+  {
     title: "시스템",
     items: [
       { href: "/admin/audit", label: "활동 기록" },

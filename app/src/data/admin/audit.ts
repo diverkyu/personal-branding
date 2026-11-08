@@ -8,7 +8,7 @@ import type { AdminSession } from "@/lib/auth/types";
 import { logger } from "@/lib/logger";
 import type { AdminDb } from "./db";
 
-export type AuditAction = "inquiry.view" | "inquiry.status_change" | "inquiry.memo_update" | "inquiry.delete" | "inquiry.export";
+export type AuditAction = "inquiry.view" | "inquiry.status_change" | "inquiry.memo_update" | "inquiry.delete" | "inquiry.export" | "settings.update" | "consent.publish";
 
 export const AUDIT_LABELS: Record<AuditAction, string> = {
   "inquiry.view": "신청·문의 열람",
@@ -16,6 +16,8 @@ export const AUDIT_LABELS: Record<AuditAction, string> = {
   "inquiry.memo_update": "신청·문의 메모 수정",
   "inquiry.delete": "신청·문의 삭제(파기)",
   "inquiry.export": "신청·문의 CSV 내보내기",
+  "settings.update": "사이트 설정 변경",
+  "consent.publish": "동의 문구·방침 새 버전 게시",
 };
 
 export interface AuditEntry {
