@@ -152,7 +152,7 @@ export function SiteHeader() {
 function NavLink({ href, label, pathname }: { href: string; label: string; pathname: string }) {
   const current = isCurrentPath(pathname, href);
   return (
-    <Link href={href} className={styles.link} aria-current={current ? "page" : undefined}>
+    <Link href={href} className={styles.link} aria-current={pathname === href ? "page" : undefined} data-current={current || undefined}>
       {label}
     </Link>
   );

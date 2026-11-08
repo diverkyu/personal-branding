@@ -15,6 +15,8 @@ export interface StoryCardData {
 }
 
 interface StoryCardProps extends StoryCardData {
+  /** 제목 수준. 화면의 위 제목이 h1 이면 2, h2 이면 3 (제목 단계를 건너뛰지 않는다) */
+  headingLevel?: 2 | 3;
   surface?: Surface;
   /** 큰 카드(좌 이미지 + 우 텍스트). Story 목록의 최신 글에 쓴다 */
   featured?: boolean;
@@ -25,7 +27,8 @@ interface StoryCardProps extends StoryCardData {
  * 스토리 카드. 제목이 링크이고, 링크 영역을 카드 전체로 넓힌다(stretched link).
  * 카드 전체를 <a>로 감싸지 않아 스크린리더가 제목만 링크 이름으로 읽는다.
  */
-export function StoryCard({ href, title, summary, dateLabel, image, thumbVariant, surface = "dark", featured = false, className }: StoryCardProps) {
+export function StoryCard({ href, title, summary, dateLabel, image, thumbVariant, surface = "dark", featured = false, className, headingLevel = 3 }: StoryCardProps) {
+  const Heading = `h${headingLevel}` as "h2" | "h3";
   return (
     <article className={cx(styles.card, className)} data-surface={surface} data-featured={featured || undefined}>
       <div className={styles.media}>
@@ -33,11 +36,11 @@ export function StoryCard({ href, title, summary, dateLabel, image, thumbVariant
       </div>
       <div className={styles.body}>
         <p className={styles.date}>{dateLabel}</p>
-        <h3 className={styles.title}>
+        <Heading className={styles.title}>
           <SmartLink href={href} className={styles.link}>
             {title}
           </SmartLink>
-        </h3>
+        </Heading>
         {summary ? <p className={styles.summary}>{summary}</p> : null}
       </div>
     </article>

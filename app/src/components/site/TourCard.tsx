@@ -19,6 +19,8 @@ export interface TourCardData {
 }
 
 interface TourCardProps extends TourCardData {
+  /** 제목 수준. 화면의 위 제목이 h1 이면 2, h2 이면 3 (제목 단계를 건너뛰지 않는다) */
+  headingLevel?: 2 | 3;
   /** 좌 이미지 + 우 정보. Freediving 허브의 큰 카드 */
   split?: boolean;
   /** 카드 아래 안내 문구 (예: "자세히 보기"). 링크는 제목 하나이므로 이 문구는 장식이다 */
@@ -27,7 +29,8 @@ interface TourCardProps extends TourCardData {
 }
 
 /** 진행 예정 투어 카드. 남색 카드이므로 밝은(페이퍼) 섹션 위에 놓는다. 제목이 링크이고 카드 전체가 눌린다. */
-export function TourCard({ href, title, status, scheduleLabel, place, capacityLabel, image, thumbVariant, split = false, cta, className }: TourCardProps) {
+export function TourCard({ href, title, status, scheduleLabel, place, capacityLabel, image, thumbVariant, split = false, cta, className, headingLevel = 3 }: TourCardProps) {
+  const Heading = `h${headingLevel}` as "h2" | "h3";
   return (
     <article className={cx(styles.card, className)} data-split={split || undefined}>
       {split ? (
@@ -37,11 +40,11 @@ export function TourCard({ href, title, status, scheduleLabel, place, capacityLa
       ) : null}
       <div className={styles.body}>
         <StatusBadge status={status} />
-        <h3 className={styles.title}>
+        <Heading className={styles.title}>
           <SmartLink href={href} className={styles.link}>
             {title}
           </SmartLink>
-        </h3>
+        </Heading>
         <dl className={styles.info}>
           <div>
             <dt>일정</dt>

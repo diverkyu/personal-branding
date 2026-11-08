@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 // 1단계(기반) 확인: 3개 화면 폭에서 같은 시나리오를 실행한다.
 test.describe("기반", () => {
-  test("임시 홈이 뜨고 제목이 보인다", async ({ page }, testInfo) => {
+  test("홈이 뜨고 제목이 보인다", async ({ page }, testInfo) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Dive deeper.");
     await expect(page.getByText("바다에서는 더 깊이,")).toBeVisible();
