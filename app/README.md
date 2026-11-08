@@ -33,7 +33,7 @@ E2E는 설치된 Chrome을 쓴다. 번들 Chromium을 쓰려면 `PW_CHANNEL= npx
 ```text
 src/
 ├── app/          # 라우트 (얇게 유지)
-├── components/   # ui/ (기본 요소), site/ (카드 등) — 쇼케이스: /dev/components
+├── components/   # ui/ (기본 요소), site/ (카드 등), layout/ (헤더·푸터) — 쇼케이스: /dev/components
 ├── config/       # 상수·환경변수 해석 (단일 출처)
 ├── lib/          # 비즈니스 로직·로거·오류 (순수 함수)
 ├── styles/       # 디자인 토큰 (DESIGN-SYSTEM.md §2)

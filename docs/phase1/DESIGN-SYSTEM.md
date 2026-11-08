@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.12.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.13.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [CONCEPT.md](CONCEPT.md) · 화면 시안: [mockup/](mockup/README.md) · 시각 보기: 캔버스의 "디자인 시스템" 보드
 
@@ -211,7 +211,7 @@
 | `TextField`, `Textarea`, `Checkbox`, `FormNotice` | `components/ui/Field` | 구현 (단계 2) |
 | `Icon` (Lucide 20개), `SmartLink`, `Thumb` | `components/ui/` | 구현 (단계 2) |
 | `StoryCard` (큰 카드 포함), `TourCard`, `TourArchiveCard`, `EquipmentCard`, `ReviewCard`, `InfoRow` | `components/site/` | 구현 (단계 2) |
-| `SiteHeader`, `SiteFooter` | — | 대기 (단계 3) |
+| `SiteHeader` (데스크톱 메뉴·Freediving 하위 메뉴·모바일 패널), `SiteFooter`, `SkipLink`, `Logo`, `BackToTop` | `components/layout/` | 구현 (단계 3) |
 | `AdminSidebar`, `StatCard`, `DataTable`, `EditorPanel` | — | 대기 (어드민 단계) |
 
 **구현하면서 정한 것**
@@ -220,3 +220,9 @@
 - `SmartLink`는 http(s) 링크를 새 탭 + `rel="noopener noreferrer"`로 열고, `javascript:`·`data:` 같은 스킴은 `#`으로 바꿔 렌더링하지 않는다 ([SECURITY §5](SECURITY.md)).
 - 후기 카드는 원문을 가공 없이(`white-space: pre-line`, HTML 이스케이프) 보여 주고 평점 요소가 없다 ([SCREEN-SPEC §12](SCREEN-SPEC.md) 결정 4).
 - 날짜·정원 같은 표시 문구는 컴포넌트가 만들지 않고 호출하는 쪽이 넘긴다 (데이터 계층이 정해지면 형식을 한 곳에서 정한다).
+- **레이아웃(단계 3)**: 루트 레이아웃이 `SkipLink → SiteHeader → <main id="main"> → SiteFooter`를 감싼다. 각 페이지는 `<main>`을 다시 만들지 않고 `h1`만 하나 둔다. 메뉴 순서·하위 항목·푸터 링크는 `src/config/nav.ts`가 단일 출처다.
+- Freediving 하위 메뉴(INT-02)는 호버·포커스로 열리고 150ms 지연 뒤 닫힌다. 링크 옆 토글 버튼(`aria-expanded`)을 누르면 열린 채로 **고정**되어 터치·키보드에서도 쓸 수 있고, ESC·바깥 포커스·다시 누르기로 닫는다.
+- 모바일 메뉴(INT-01)는 680px 이하에서 패널로 열린다. 포커스를 가두고(MENU/CLOSE 버튼 포함), ESC·배경 클릭·항목 선택으로 닫히며, 닫히면 포커스가 버튼으로 돌아가고 본문 스크롤 잠금이 풀린다. 화면이 넓어지면 자동으로 닫는다.
+- 404(`not-found.tsx`)와 오류(`error.tsx`, `global-error.tsx`)는 SCREEN-SPEC GL-ST 문구를 쓴다. 오류 상세는 화면에 쓰지 않고 `instrumentation.ts`의 `onRequestError`가 `request.error` 로그(오류 종류·digest·경로)로 남긴다.
+- 푸터 SNS 링크(GL-F3)는 사이트 설정이 생기기 전까지 `SOCIAL_LINKS`가 비어 있어 표시되지 않는다. 저작권 연도는 렌더 시점 값이라 정적 페이지는 빌드한 해로 굳는다.
+- **알려진 제한**: 메뉴가 가리키는 페이지(`/about` 등)는 4단계 전까지 없어서 미리 불러오기 요청이 404를 받는다 (E2E에 임시 예외, 4단계에서 제거). 현재 페이지 표시(`aria-current`, 라임색)의 E2E는 페이지가 생기는 4단계에서 확인한다.
