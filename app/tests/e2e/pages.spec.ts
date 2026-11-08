@@ -123,7 +123,7 @@ test.describe("필터와 상태별 화면", () => {
     await page.goto("/freediving/tours/sample-recruiting");
     await expect(page.getByRole("form", { name: "예약 문의" })).toBeVisible();
     await expect(page.getByLabel("이름")).toBeVisible();
-    await expect(page.getByRole("button", { name: "예약 문의하기" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "예약 문의하기" })).toBeEnabled();
 
     await page.goto("/freediving/tours/sample-upcoming");
     await expect(page.getByRole("form", { name: "소식 받기" })).toBeVisible();
