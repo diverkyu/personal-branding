@@ -38,3 +38,12 @@
 .form > .submit {
   align-self: stretch;
 }
+
+/* 허니팟: 화면 밖으로 치운다 (display:none 은 일부 봇이 건너뛰므로 쓰지 않음) */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

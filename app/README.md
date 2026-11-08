@@ -45,6 +45,6 @@ tests/e2e/        # Playwright 시나리오
 
 ## 환경변수
 
-[.env.example](.env.example) 참고. 핵심은 `SITE_URL`(사이트 주소 단일 출처)과 `SITE_INDEXING`(공개 전에는 색인 금지, 기본 꺼짐).
+[.env.example](.env.example) 참고. 문의·소식 신청 저장소(`INQUIRY_STORE`)는 저장소가 정해지기 전에는 비워 두며, 비어 있으면 폼은 저장하지 않고 실패 안내를 보여 준다. 핵심은 `SITE_URL`(사이트 주소 단일 출처)과 `SITE_INDEXING`(공개 전에는 색인 금지, 기본 꺼짐).
 
 **주의**: 정적 페이지에는 `SITE_URL`, `SITE_INDEXING`, `ENABLE_COMPONENT_SHOWCASE`가 **빌드 때** 반영된다. 값을 바꾸면 다시 빌드해야 한다 (도메인이 바뀔 때도 마찬가지).

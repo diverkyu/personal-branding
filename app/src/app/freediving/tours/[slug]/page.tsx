@@ -84,7 +84,7 @@ export default async function TourDetailPage({ params }: Props) {
             </TextLink>
           </div>
         </div>
-        <TourInquiryCard status={tour.status} />
+        <TourInquiryCard status={tour.status} slug={tour.slug} capacity={tour.capacity} />
       </div>
 
       {related.length > 0 ? (
