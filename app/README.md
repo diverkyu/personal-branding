@@ -26,6 +26,8 @@ npm run dev                  # http://localhost:3000
 | `npm run check` | 위 네 가지를 차례로 |
 | `npm run db:generate` | 스키마(`src/db/schema.ts`) 변경으로 마이그레이션 SQL 생성 (DB 접속 불필요) |
 | `npm run db:migrate` | `DATABASE_URL`의 DB에 마이그레이션 적용 |
+| `npm run test:remote` | 배포된 주소 스모크 시험 (`REMOTE_URL=… npm run test:remote`, 절차는 INFRASTRUCTURE §10) |
+| `npm run db:cleanup-smoke` | 원격 스모크 시험이 남긴 가짜 문의 삭제 |
 | `npm run test:e2e` | 운영 빌드를 3100 포트로 띄워 Chrome에서 390 / 768 / 1440 폭으로 시험. 캡처는 `artifacts/`에 저장 |
 
 E2E는 설치된 Chrome을 쓴다. 번들 Chromium을 쓰려면 `PW_CHANNEL= npx playwright install chromium` 후 `PW_CHANNEL= npm run test:e2e`.

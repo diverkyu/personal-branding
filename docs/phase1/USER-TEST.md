@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.19.1** | 2026-11-08 | 초안 (규강 검토 전) | 규강 공동 작업자 + Claude |
+| **0.19.2** | 2026-11-08 | 초안 (규강 검토 전) | 규강 공동 작업자 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 근거: [PRD.md §2·§4](PRD.md) · [CONCEPT.md §2](CONCEPT.md) · [SCREEN-SPEC.md](SCREEN-SPEC.md) · 환경: [INFRASTRUCTURE.md](INFRASTRUCTURE.md)
 
