@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.19.1** | 2026-11-08 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
+| **0.19.2** | 2026-11-08 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [PRD.md §12](PRD.md) · [SECURITY.md §16](SECURITY.md) · [DEVELOPMENT.md](DEVELOPMENT.md)
 
@@ -154,3 +154,62 @@ Vercel 서버리스 환경에서는 서버 디스크에 업로드 파일을 둘 
 - 공개 저장소에서 협업자 커밋이 **Hobby**에서 배포되는지, 그리고 **Pro 팀**에서 협업자가 팀 멤버가 아닐 때 배포되는지 (첫 배포에서 확인)
 - Hobby에서 Pro로 **올릴 때 기존 프로젝트·환경변수가 그대로 유지되는지** (공식 문서로 확인하지 않음)
 - Neon 이전 시 `dev`·`production` 브랜치와 마이그레이션 기록이 그대로 유지되는지 (이전 후 확인)
+
+## 10. 첫 프리뷰 배포 절차 (규강 + 작업자, 화면 공유)
+
+**준비물**: 규강의 GitHub 로그인, Vercel 가입에 쓸 규강 이메일, Neon `dev` 연결 문자열(작업자가 대면·화면 공유 중 직접 복사해서 규강이 입력 칸에 붙여넣거나, 규강이 Neon 화면의 Connect에서 직접 복사). **연결 문자열을 메신저·문서에 붙이지 않는다.**
+
+### 10.1 단계
+
+1. 규강이 [vercel.com](https://vercel.com)에서 **Continue with GitHub**로 가입한다(무료 Hobby). 플랜 선택은 Hobby.
+2. **Add New → Project**에서 저장소 `diverkyu/personal-branding`을 **Import**한다. (GitHub 권한 창에서 Vercel 앱에 이 저장소 접근을 허용)
+3. 설정 화면에서 아래처럼 맞춘다.
+
+| 항목 | 값 |
+| --- | --- |
+| Framework Preset | Next.js (자동 인식) |
+| **Root Directory** | **`app`** (Edit을 눌러 선택) |
+| Build·Install·Output | 기본값 그대로 (`npm run build` 등) |
+| Node.js 버전 | 24.x (프로젝트 Settings → General에서 확인, 저장소는 24 이상 필요 — [app/README](../../app/README.md)) |
+
+4. **Environment Variables** (첫 배포 전에 입력):
+
+| 이름 | 값 | 적용 환경 | 비고 |
+| --- | --- | --- | --- |
+| `INQUIRY_STORE` | `postgres` | Production, Preview | |
+| `DATABASE_URL` | Neon **`dev`** 연결 문자열 | Production, Preview | 비밀 값. **Sensitive 표시 옵션이 보이면 켠다.** 지금은 Production에도 `dev` 문자열을 둔다 — 아직 실제 방문자가 없는 시험 단계이기 때문이다. **공개 운영 전에 Production만 `production` 문자열로 바꾼다**(§3, 체크리스트 §10.4) |
+| `SITE_URL` | 첫 배포 뒤 확정되는 프로젝트 주소(`https://….vercel.app`) | Production, Preview | 첫 배포 때는 비워 두고, 주소가 정해진 뒤 입력하고 **다시 배포**한다(주소는 빌드 때 반영된다 — app/README) |
+| `SITE_INDEXING` | **설정하지 않는다** | — | 비어 있으면 검색 색인 금지(noindex)다 |
+| `ENABLE_COMPONENT_SHOWCASE` | **설정하지 않는다** | — | 개발용 쇼케이스가 열리지 않게 |
+
+5. **Deploy**를 누른다. 빌드가 끝나면 주소가 나온다. `app/vercel.json`의 `sin1`이 함수 지역으로 쓰인다.
+6. **접근 보호**: Project Settings → Deployment Protection에서 현재 설정을 확인한다. 테스트 참가자가 열려면 임시 공유 링크를 만들거나 테스트 기간만 보호를 끈다([USER-TEST §3.1](USER-TEST.md)). 끈 경우 끝나면 다시 켠다.
+7. 작업자 초대는 지금은 하지 않는다(Hobby는 멤버를 둘 수 없다). Pro 전환 때 Viewer 또는 Member로 초대한다(§9.3).
+
+### 10.2 배포 확인 (작업자가 실행)
+
+주소(접근 보호 중이면 공유 링크 전체)를 알려 주면 작업자가 아래 시험을 돌린다.
+
+```bash
+cd app
+REMOTE_URL="https://주소" REMOTE_EXPECT_REGION=sin1 npm run test:remote
+npm run db:cleanup-smoke   # 시험이 남긴 가짜 문의(smoke-*@example.com)를 dev DB에서 삭제
+```
+
+확인 내용: 홈과 주요 화면 열림, noindex·보안 헤더, robots.txt 전체 차단, 개발용 쇼케이스 404, **예약 문의 제출이 접수되고(= Vercel → Neon 연결 동작)**, 폼을 처리한 **함수 지역이 `sin1`인지**(응답 헤더 `x-vercel-id`). 이 시험은 모바일 폭(390px)에서 실행한다.
+
+### 10.3 자주 막히는 곳
+
+| 증상 | 원인·조치 |
+| --- | --- |
+| 저장소가 목록에 안 보임 | Vercel 앱의 GitHub 접근 권한 설정에서 저장소를 허용 |
+| 빌드 실패: 폴더를 못 찾음 | Root Directory가 `app`인지 확인 |
+| 접수 때 "전송하지 못했습니다" | `INQUIRY_STORE`·`DATABASE_URL` 누락 또는 오타, 환경 선택(Production/Preview) 확인. 환경변수를 바꾼 뒤에는 **다시 배포**해야 반영된다 |
+| 열리지 않고 로그인 화면이 뜸 | 접근 보호(Vercel Authentication). 공유 링크 사용 |
+| 주소·메타 정보가 localhost | `SITE_URL`을 넣고 다시 배포 |
+
+### 10.4 공개 운영 전에 바꿔야 하는 것 (이 단계의 임시 설정 되돌리기)
+
+- [ ] Production의 `DATABASE_URL`을 `production` 브랜치 문자열로 교체하고 Preview는 `dev` 유지
+- [ ] `SITE_INDEXING=on`(공개 시점에만), 실제 도메인으로 `SITE_URL`
+- [ ] Hobby → Pro, Neon 이전 (§9.3)
