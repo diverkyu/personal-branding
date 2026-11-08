@@ -41,7 +41,7 @@ src/
 tests/e2e/        # Playwright 시나리오
 ```
 
-`data/`(DB·스토리지 접근)와 `types/`(콘텐츠 스키마)는 해당 기능을 만들 때 추가한다.
+`data/`는 콘텐츠를 읽는 유일한 입구이고 지금은 가상 데이터(`fixtures.ts`)를 돌려준다. `types/`는 콘텐츠 스키마다. DB·스토리지가 정해지면 `data/index.ts`의 구현만 바꾼다.
 
 ## 환경변수
 
