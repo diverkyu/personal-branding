@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.19.3** | 2026-11-08 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
+| **0.20.0** | 2026-11-08 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [PRD.md §12](PRD.md) · [SECURITY.md §16](SECURITY.md) · [DEVELOPMENT.md](DEVELOPMENT.md)
 
@@ -15,8 +15,8 @@
 | 호스팅 | **Vercel** | 확정 (**Hobby로 시작, 공개 운영 전 Pro 전환 조건부**) | §2 |
 | 데이터베이스 | **Neon Postgres** (무료 플랜으로 시작) | **잠정 — 확인 대기** | §3. 상업 사용 가능 여부를 약관으로 확인해야 함 |
 | 접수 알림 메일 | **Resend** | 확정 | §4. 발신 도메인은 도메인 확정 뒤 |
-| 어드민 인증 | **인증 라이브러리 + TOTP 2차 인증** (Better Auth 또는 Auth.js) | 확정 (라이브러리는 구현 때 최종 선택) | §5 |
-| 이미지 스토리지 | 미정 | 대기 | 어드민 이미지 업로드 단계 전에 결정 (§6) |
+| 어드민 인증 | **Better Auth + TOTP 2차 인증** | 확정 (0.20.0) | §5 |
+| 이미지 스토리지 | **Vercel Blob** | 확정 (0.20.0, [ADMIN-DESIGN §9](ADMIN-DESIGN.md)) | 어드민 이미지 업로드 단계 전에 결정 (§6) |
 | ORM·마이그레이션 | **Drizzle** (+ drizzle-kit) | 확정 (0.18.0 구현) | §3 아래 "구현 현황" |
 
 ## 2. 호스팅: Vercel (Hobby로 시작, 조건부)
@@ -85,10 +85,10 @@
 ## 5. 어드민 인증: 인증 라이브러리 + TOTP
 
 - 검증된 라이브러리(Better Auth 또는 Auth.js)를 DB에 연결하고 TOTP(인증 앱) 2차 인증을 켠다. 직접 구현하지 않는다 (SECURITY §2·§16).
-- 구현 단계에서 두 라이브러리의 **현재 문서와 Next.js 16 호환**을 확인한 뒤 하나를 고른다.
+- **Better Auth로 확정(0.20.0).** 상세는 [ADMIN-DESIGN §4](ADMIN-DESIGN.md). 구현 시작 때 현재 버전과 Next.js 16 호환을 다시 확인한다.
 - 비밀번호 재설정(이메일 링크 vs 운영자 수동)과 편집자 역할 도입 시점은 SECURITY §16 대기 항목으로 남는다.
 
-## 6. 이미지 스토리지 (대기)
+## 6. 이미지 스토리지: Vercel Blob (0.20.0 결정)
 
 Vercel 서버리스 환경에서는 서버 디스크에 업로드 파일을 둘 수 없어 **외부 객체 스토리지**가 필요하다 (PRD §12). 후보: Vercel Blob(같은 플랫폼, 설정 단순) / Cloudflare R2(S3 호환, 외부 전송 요금 없음으로 알려짐, 제3자 글 기준). **어드민 이미지 업로드를 만들기 전에** 가격·한도를 공식 문서로 비교해 정한다. 어떤 경우든 `data/` 스토리지 어댑터 뒤에 둔다.
 
@@ -106,7 +106,7 @@ Vercel 서버리스 환경에서는 서버 디스크에 업로드 파일을 둘 
 
 1. Neon 무료 플랜의 상업 사용 가능 여부 (약관 확인 — **소유자가 공개 운영 전에 다시 확인하기로 함**)
 2. Vercel 팀(계정) 소유자와 Pro 결제 주체
-3. 이미지 스토리지 선택 (§6)
+3. ~~이미지 스토리지 선택~~ → **Vercel Blob(0.20.0)**
 4. ~~개발·프리뷰·운영 환경의 DB 분리 방식~~ → **정함(0.18.2)**: Neon 브랜치 `dev` / `production`
 
 출처(2026-11-08 조회): [Vercel fair use guidelines](https://vercel.com/docs/limits/fair-use-guidelines) · [Neon plans](https://neon.com/docs/introduction/plans) · [Neon pricing](https://neon.com/pricing). Resend·Supabase·Cloudflare 수치는 제3자 글 기준이라 공식 페이지 확인 전까지 참고용이다.
