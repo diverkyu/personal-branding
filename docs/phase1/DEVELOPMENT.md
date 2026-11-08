@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.11.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.12.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [SECURITY.md](SECURITY.md) · [PRD.md](PRD.md) · [SCREEN-SPEC.md](SCREEN-SPEC.md) · [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md)
 
@@ -282,3 +282,5 @@ tests/             # 단위·E2E
 | 2026-11-08 | 글꼴은 `next/font/google`로 빌드 때 내려받아 자체 제공 | 방문자 접속 정보가 Google로 가지 않는다 (CONCEPT §7.8). 빌드에는 인터넷 연결이 필요 | 런타임 Google Fonts CDN |
 | 2026-11-08 | E2E는 설치된 Chrome 사용 (`channel: chrome`) | 브라우저 내려받기 없이 실행. 번들 Chromium은 `PW_CHANNEL=`로 선택 | 번들 Chromium 설치 |
 | 2026-11-08 | 공개 전 기본 색인 금지 (`SITE_INDEXING=on`일 때만 허용) | 미리보기·프리뷰가 검색에 노출되는 사고를 막는다 (SECURITY §13) | 기본 허용 |
+| 2026-11-08 | 컴포넌트 단위 시험은 `react-dom/server`의 `renderToStaticMarkup` 사용 (추가 의존성 없음), 상호작용·시각은 쇼케이스 E2E | 서버 렌더 결과(역할, aria 속성, 링크 속성)를 의존성 없이 검사할 수 있다. 클릭·포커스·레이아웃은 브라우저에서만 확인된다 | jsdom + Testing Library (의존성 추가) |
+| 2026-11-08 | 개발용 쇼케이스 `/dev/components`는 운영에서 기본 404 (`ENABLE_COMPONENT_SHOWCASE=on`일 때만) | 개발 화면이 공개되는 사고를 막는다 (SECURITY §13). 값은 정적 빌드 때 반영된다 | 운영에서도 항상 공개 |

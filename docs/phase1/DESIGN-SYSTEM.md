@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.11.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.12.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [CONCEPT.md](CONCEPT.md) · 화면 시안: [mockup/](mockup/README.md) · 시각 보기: 캔버스의 "디자인 시스템" 보드
 
@@ -196,3 +196,27 @@
 | Lucide | ISC (일부 MIT) | 소스에 포함되는 복사본에 저작권·허가 문구를 유지한다 |
 
 구현 시 저장소 루트에 `THIRD-PARTY-NOTICES`(또는 `app/` 안)를 두고 위 항목의 저작권 문구와 라이선스 전문을 모은다. 세부 내용은 [CONCEPT §7.8](CONCEPT.md). 판매하는 상품에 들어가는 이미지·폰트도 같은 기준(상업 이용 가능 여부 확인)을 적용한다.
+
+## 9. 구현 현황 (`app/`)
+
+컴포넌트 이름은 §3의 후보 이름과 같다. 모양은 개발용 쇼케이스(`/dev/components`)에서 상태별로 확인한다 (운영에서는 기본 404, `ENABLE_COMPONENT_SHOWCASE=on`일 때만 열림).
+
+| 컴포넌트 | 위치 | 상태 |
+| --- | --- | --- |
+| `Button` (primary / outline / dark, L·M·S, 링크·버튼 겸용, busy) | `components/ui/Button` | 구현 (단계 2) |
+| `TextLink` | `components/ui/TextLink` | 구현 (단계 2) |
+| `FilterChip`, `FilterChipGroup` (`aria-pressed`) | `components/ui/FilterChip` | 구현 (단계 2) |
+| `StatusBadge` (7가지 상태, 글자 표시) | `components/ui/StatusBadge` | 구현 (단계 2) |
+| `Section`, `SectionHeader`, `SectionLabel` | `components/ui/Section`, `SectionHeader` | 구현 (단계 2) |
+| `TextField`, `Textarea`, `Checkbox`, `FormNotice` | `components/ui/Field` | 구현 (단계 2) |
+| `Icon` (Lucide 20개), `SmartLink`, `Thumb` | `components/ui/` | 구현 (단계 2) |
+| `StoryCard` (큰 카드 포함), `TourCard`, `TourArchiveCard`, `EquipmentCard`, `ReviewCard`, `InfoRow` | `components/site/` | 구현 (단계 2) |
+| `SiteHeader`, `SiteFooter` | — | 대기 (단계 3) |
+| `AdminSidebar`, `StatCard`, `DataTable`, `EditorPanel` | — | 대기 (어드민 단계) |
+
+**구현하면서 정한 것**
+- 카드는 제목 링크를 카드 전체로 넓힌다 (stretched link). 카드 전체를 `<a>`로 감싸지 않아 스크린리더가 제목만 링크 이름으로 읽는다. 장비 카드의 행동 버튼은 카드 링크 위에 떠서 따로 눌린다.
+- `TourCard`는 남색 카드라서 **밝은(페이퍼) 섹션 위에 놓는다.** 어두운 섹션에 두면 경계가 사라진다.
+- `SmartLink`는 http(s) 링크를 새 탭 + `rel="noopener noreferrer"`로 열고, `javascript:`·`data:` 같은 스킴은 `#`으로 바꿔 렌더링하지 않는다 ([SECURITY §5](SECURITY.md)).
+- 후기 카드는 원문을 가공 없이(`white-space: pre-line`, HTML 이스케이프) 보여 주고 평점 요소가 없다 ([SCREEN-SPEC §12](SCREEN-SPEC.md) 결정 4).
+- 날짜·정원 같은 표시 문구는 컴포넌트가 만들지 않고 호출하는 쪽이 넘긴다 (데이터 계층이 정해지면 형식을 한 곳에서 정한다).
