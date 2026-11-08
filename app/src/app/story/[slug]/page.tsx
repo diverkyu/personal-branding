@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/site/JsonLd";
+import { resolveSiteUrl } from "@/config/env";
+import { articleLd, breadcrumbLd } from "@/lib/structured";
 import { Section } from "@/components/ui/Section";
 import { TextLink } from "@/components/ui/TextLink";
 import { storyHref } from "@/components/site/mappers";
@@ -27,9 +30,12 @@ export default async function StoryDetailPage({ params }: Props) {
   const story = getStory((await params).slug);
   if (!story) notFound();
   const { newer, older } = getStoryNeighbors(story.slug);
+  const origin = resolveSiteUrl(process.env).url.origin;
 
   return (
     <Section tone="light" sub>
+      <JsonLd data={articleLd(origin, story)} />
+      <JsonLd data={breadcrumbLd(origin, [{ name: "Story", path: "/story" }, { name: story.title, path: `/story/${story.slug}` }])} />
       <TextLink href="/story" surface="light" icon={null}>
         Story 목록으로
       </TextLink>

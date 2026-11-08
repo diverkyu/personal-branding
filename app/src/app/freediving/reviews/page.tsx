@@ -27,6 +27,7 @@ export default function ReviewsPage() {
             items={listReviews().map((r) => ({ id: r.id, values: r.tourSlug ? [r.tourSlug] : [], node: <ReviewCard {...reviewCard(r, tours)} /> }))}
             surface="light"
             listClassName={pages.grid3}
+            pagination={{ mode: "more", size: 12 }}
             empty={<p className={pages.emptyLight}>아직 등록된 후기가 없습니다.</p>}
           />
         </Suspense>

@@ -12,7 +12,7 @@ export function TourInquiryCard({ status, slug, capacity }: { status: TourStatus
 
   if (status === "closed") {
     return (
-      <section className={styles.card} aria-labelledby="inquiry-title">
+      <section id="inquiry" className={styles.card} aria-labelledby="inquiry-title">
         <p className={styles.label}>RESERVATION</p>
       <h2 id="inquiry-title" className={styles.title}>
           예약 문의
@@ -27,7 +27,7 @@ export function TourInquiryCard({ status, slug, capacity }: { status: TourStatus
 
   if (status === "upcoming") {
     return (
-      <section className={styles.card} aria-labelledby="inquiry-title">
+      <section id="inquiry" className={styles.card} aria-labelledby="inquiry-title">
         <p className={styles.label}>RESERVATION</p>
       <h2 id="inquiry-title" className={styles.title}>
           예약 문의
@@ -39,7 +39,7 @@ export function TourInquiryCard({ status, slug, capacity }: { status: TourStatus
   }
 
   return (
-    <section className={styles.card} aria-labelledby="inquiry-title">
+    <section id="inquiry" className={styles.card} aria-labelledby="inquiry-title">
       <p className={styles.label}>RESERVATION</p>
       <h2 id="inquiry-title" className={styles.title}>
         예약 문의

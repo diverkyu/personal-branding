@@ -1,0 +1,33 @@
+.wrap {
+  max-width: 720px;
+}
+
+.play,
+.frame {
+  display: flex;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+
+.play {
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: linear-gradient(160deg, var(--kyu-sea-mid), var(--kyu-sea-deep));
+  color: var(--kyu-paper);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fallback {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.fallback a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  color: var(--kyu-ink-sub);
+}

@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { JsonLd } from "@/components/site/JsonLd";
+import { resolveSiteUrl } from "@/config/env";
+import { websiteLd } from "@/lib/structured";
 import { HeroArt } from "@/components/site/HeroArt";
 import { ContactSection } from "@/components/site/ContactSection";
 import { StoryCard } from "@/components/site/StoryCard";
@@ -22,6 +25,7 @@ export default function HomePage() {
 
   return (
     <>
+      <JsonLd data={websiteLd(resolveSiteUrl(process.env).url.origin)} />
       <section className={styles.hero} aria-label="소개">
         <div className={styles.heroInner}>
           <div className={styles.copy}>
