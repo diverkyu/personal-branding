@@ -1,16 +1,74 @@
+import Link from "next/link";
+import { adminDb } from "@/data/admin/dbServer";
+import { inquiryDashboard } from "@/data/admin/inquiries";
+import { KIND_LABELS, STATUS_LABELS } from "@/data/admin/inquiryQuery";
+import { getTour } from "@/data";
 import { requireAdmin } from "@/lib/auth/session";
+import { formatDateTimeKst } from "@/lib/format";
 import styles from "../admin.module.css";
 
+export const metadata = { title: "대시보드 · KYU 어드민" };
+
+/** 대시보드. 아직 만들지 않은 콘텐츠 영역(임시저장 글, 모집 중 투어 등)의 카드는 해당 화면이 생길 때 추가한다 (ADMIN-DESIGN §3.1) */
 export default async function DashboardPage() {
   const admin = await requireAdmin();
+  const { newCount, recent } = await inquiryDashboard(adminDb(), admin);
   return (
     <>
       <h1 className={styles.h1}>대시보드</h1>
-      <div className={styles.panel}>
-        <p className={styles.note} style={{ margin: 0 }}>
-          {admin.name} 님, 환영합니다. 신청·문의 처리, 콘텐츠 발행 같은 화면은 다음 단계에서 이 메뉴에 추가됩니다.
-        </p>
+      <p className={styles.note}>{admin.name} 님, 오늘 처리할 일입니다.</p>
+
+      <div className={styles.cards}>
+        <Link href="/admin/inquiries?status=new" className={styles.statCard}>
+          <span className={styles.statLabel}>새 투어 신청·문의</span>
+          <span className={styles.statValue}>{newCount}</span>
+        </Link>
       </div>
+
+      <h2 className={styles.h2}>최근 신청·문의</h2>
+      {recent.length === 0 ? (
+        <div className={styles.panel}>
+          <p className={styles.note} style={{ margin: 0 }}>
+            아직 접수된 신청이 없습니다.
+          </p>
+        </div>
+      ) : (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th scope="col">접수일시</th>
+              <th scope="col">유형</th>
+              <th scope="col">투어</th>
+              <th scope="col">이름</th>
+              <th scope="col">상태</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recent.map((item) => (
+              <tr key={item.id}>
+                <td data-label="접수일시">{formatDateTimeKst(item.receivedAt)}</td>
+                <td data-label="유형">{KIND_LABELS[item.kind]}</td>
+                <td data-label="투어">{getTour(item.tourSlug)?.title ?? item.tourSlug}</td>
+                <td data-label="이름">
+                  <Link href={`/admin/inquiries/${item.id}`} className={styles.rowLink}>
+                    {item.name}
+                  </Link>
+                </td>
+                <td data-label="상태">
+                  <span className={styles.statusTag} data-status={item.status}>
+                    {STATUS_LABELS[item.status]}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      <p style={{ marginTop: 12 }}>
+        <Link href="/admin/inquiries" className={styles.linkButton}>
+          신청·문의 전체 보기
+        </Link>
+      </p>
     </>
   );
 }

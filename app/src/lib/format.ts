@@ -19,3 +19,11 @@ export function formatPeriod(startIso: string, endIso: string): string {
   if (sy === ey) return `${sy}.${sm}.${sd} – ${em}.${ed}`;
   return `${sy}.${sm}.${sd} – ${ey}.${em}.${ed}`;
 }
+
+const KST = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+
+/** 어드민용 일시 표기: 한국 시간 기준 2026.11.08 12:00 */
+export function formatDateTimeKst(date: Date | string): string {
+  const parts = Object.fromEntries(KST.formatToParts(new Date(date)).map((p) => [p.type, p.value]));
+  return `${parts.year}.${parts.month}.${parts.day} ${parts.hour}:${parts.minute}`;
+}

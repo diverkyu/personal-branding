@@ -6,7 +6,7 @@ import { expect, test } from "@playwright/test";
  * 실제 로그인·2차 인증 흐름은 단위 통합 시험(src/lib/auth/auth.test.ts)과 개발 DB 수동 확인으로 본다.
  */
 test.describe("어드민 접근 통제", () => {
-  for (const path of ["/admin", "/admin/users", "/admin/setup-2fa", "/admin/anything"]) {
+  for (const path of ["/admin", "/admin/users", "/admin/setup-2fa", "/admin/anything", "/admin/inquiries", "/admin/inquiries/00000000-0000-4000-8000-000000000000", "/admin/audit"]) {
     test(`비로그인으로 ${path} 를 열면 로그인 화면으로 간다`, async ({ page }) => {
       const response = await page.goto(path);
       expect(page.url()).toContain("/admin/login");
@@ -15,11 +15,21 @@ test.describe("어드민 접근 통제", () => {
     });
   }
 
+  test("비로그인으로 신청 CSV 내보내기를 요청하면 데이터 없이 로그인으로 보낸다", async ({ request }) => {
+    const res = await request.get("/admin/inquiries/export", { maxRedirects: 0 });
+    expect(res.status()).toBeGreaterThanOrEqual(300);
+    expect(res.status()).toBeLessThan(400);
+    expect(res.headers()["location"]).toContain("/admin/login");
+    expect(res.headers()["content-type"] ?? "").not.toContain("text/csv");
+  });
+
   test("가짜 세션 쿠키로는 어드민이 열리지 않는다 (프록시만 믿지 않는다)", async ({ page, context }) => {
     await context.addCookies([{ name: "better-auth.session_token", value: "forged.value", url: "http://127.0.0.1:3100" }]);
-    await page.goto("/admin");
+    await page.goto("/admin/inquiries");
     expect(page.url()).toContain("/admin/login");
     await expect(page.getByRole("heading", { level: 1, name: "로그인" })).toBeVisible();
+    const forgedExport = await page.request.get("/admin/inquiries/export", { maxRedirects: 0, failOnStatusCode: false });
+    expect(forgedExport.headers()["content-type"] ?? "").not.toContain("text/csv");
   });
 
   test("설정되지 않은 어드민은 로그인 폼 대신 안내를 보여 주고, 인증 입구는 404 다", async ({ page, request }) => {
