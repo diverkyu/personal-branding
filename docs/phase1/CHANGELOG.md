@@ -10,6 +10,23 @@
 - PATCH: 오탈자, 표현 다듬기, 링크 수정
 - 상태: 초안 → 검토 중 → 확정
 
+## [0.18.0] — 2026-11-08 · 검토 중 (규강 확인 대기)
+
+개발 7단계: DB 연결 (INFRASTRUCTURE §3 결정의 구현). 범위는 문의·소식 신청 저장이다.
+
+- **추가** 스키마 `src/db/schema.ts`(Drizzle): `inquiries` 표 — 유형·투어·이름·연락처·이메일·인원·경험·문의·**동의 일시와 문구 버전**·접수 일시·처리 상태·메모. DB 제약(유형·상태·인원 범위)과 인덱스 포함. 첫 마이그레이션 `drizzle/0000_init.sql`
+- **추가** Postgres 저장 어댑터 `data/postgresInquiryStore.ts`(파라미터 바인딩), 운영 연결 `db/client.ts`(Neon HTTP 드라이버, 서버리스에 맞는 stateless 방식). `INQUIRY_STORE=postgres` + `DATABASE_URL` 일 때만 켜지고, 하나라도 없으면 이전처럼 접수 불가(실패 안내)
+- **추가** 명령 `npm run db:generate`(스키마 → SQL, DB 접속 불필요), `npm run db:migrate`(`DATABASE_URL`의 DB에 적용)
+- **추가** 시험: 단위 106개(+8). **PGlite(실제 Postgres 엔진, 메모리)에 실제 마이그레이션 SQL을 적용**해 저장·되읽기, 빈 선택 항목 null 처리, SQL 닮은 입력의 값 저장, DB 제약 거부, 제출 처리와의 통합(중복 한 번만 저장)을 확인. 저장소 선택 규칙(`postgres`는 `DATABASE_URL`이 있을 때만)
+- **추가** 의존성(안정판, 라이선스 확인): `drizzle-orm` 0.45.4(Apache-2.0), `@neondatabase/serverless` 1.2.0(MIT), 개발용 `drizzle-kit` 0.31.11(MIT)·`@electric-sql/pglite` 0.5.15(Apache-2.0). 운영 의존성 `npm audit` 0건
+- **변경** 로거 `operation()`이 실패 때 `errorType`(오류 클래스 이름)을 남긴다 — 원인 구분용. 메시지는 연결 문자열·입력값이 섞일 수 있어 남기지 않는다(시험으로 고정). 참고: 로거의 개인정보 가림 규칙은 키 이름이 `name`으로 끝나면 값을 가리므로 `errorName`이 아니라 `errorType`을 쓴다
+- **확인(실제 서버)** 운영 빌드를 `INQUIRY_STORE=postgres`와 **닿지 않는 `DATABASE_URL`**로 띄워 제출: 실패 안내 표시, 입력 보존, 서버 로그에 `inquiry.save outcome=failed`가 남고 **연결 문자열의 비밀번호는 로그에 없음**
+- **아직 아님 / 미검증**
+  - **실제 Neon 서버와의 연결은 확인하지 못했다** (계정·프로젝트가 아직 없다). 네트워크·인증·마이그레이션 적용은 소유자가 Neon 프로젝트를 만든 뒤 INFRASTRUCTURE §7 A 절차로 확인해야 한다
+  - 스토리·투어·장비·후기·관리자 계정 테이블과 콘텐츠를 DB에서 읽는 전환은 어드민(CMS) 단계에서 한다. 지금 콘텐츠는 가상 데이터다
+  - 알림 메일(Resend), 어드민의 신청 목록, 빈도 제한의 공유 저장소, 개인정보 보관 기간과 파기는 아직 없다
+  - neon-http 드라이버는 트랜잭션을 지원하지 않는다(단일 INSERT만 쓰므로 지금은 문제 없음). 여러 쓰기를 묶어야 하면 WebSocket 드라이버로 바꾼다
+
 ## [0.17.0] — 2026-11-08 · 검토 중 (규강 확인 대기)
 
 저장소·호스팅 결정 (코드 변경 없음).

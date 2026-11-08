@@ -74,6 +74,13 @@ describe("logger", () => {
       expect(lines[0]?.entry).toMatchObject({ outcome: "failed", errorKind: "validation" });
     });
 
+    it("오류 이름은 남기되 메시지(연결 문자열·입력값이 섞일 수 있음)는 남기지 않는다", async () => {
+      const { log, lines } = capture();
+      await expect(log.operation("x.op", () => Promise.reject(new TypeError("postgresql://u:SECRETPW@host/db")))).rejects.toThrow();
+      expect(lines[0]?.entry).toMatchObject({ errorType: "TypeError" });
+      expect(JSON.stringify(lines[0]?.entry)).not.toContain("SECRETPW");
+    });
+
     it("알 수 없는 오류의 errorKind 는 unknown 이다", async () => {
       const { log, lines } = capture();
       await expect(

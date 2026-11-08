@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.17.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.18.0** | 2026-11-08 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [SECURITY.md](SECURITY.md) · [PRD.md](PRD.md) · [SCREEN-SPEC.md](SCREEN-SPEC.md) · [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md)
 
@@ -290,3 +290,5 @@ tests/             # 단위·E2E
 | 2026-11-08 | 저장소가 정해지기 전에는 `INQUIRY_STORE`가 비어 있으면 폼 제출을 저장하지 않고 실패로 응답한다. 개발·시험만 `INQUIRY_STORE=memory` | 저장하지 못한 신청을 "접수되었습니다"로 보이게 하면 신청자가 연락을 기다리게 된다. 접수 여부를 정직하게 알린다 | 메모리 저장을 운영 기본으로, 성공 응답만 흉내 |
 | 2026-11-08 | 외부 영상은 클릭 전에 어떤 외부 요청도 하지 않고(썸네일 포함), 허용 도메인(YouTube→nocookie, Vimeo)만 sandbox iframe 으로 연다 | 방문자 접속 정보가 외부로 먼저 새지 않게 하고(SECURITY §5), 임의 iframe 삽입을 막는다 | 페이지 로드 시 YouTube 임베드·썸네일 |
 | 2026-11-08 | 호스팅 Vercel(Hobby로 시작, 공개 운영 전 Pro), DB Neon(잠정), 메일 Resend, 인증 라이브러리+TOTP. 상세와 조건은 INFRASTRUCTURE.md | Next.js와의 궁합, 1인 운영 부담, PR별 미리보기. Hobby는 비상업 용도 전용이라 공개 운영 전 전환을 조건으로 건다 | Cloudflare(OpenNext), 자체 서버(Docker), Supabase |
+| 2026-11-08 | DB 접근은 Drizzle + Neon HTTP 드라이버(운영), 저장 어댑터 시험은 PGlite(실제 Postgres 엔진, 메모리)에 실제 마이그레이션을 적용해 실행 | Neon 계정 없이도 SQL·제약·마이그레이션을 매번 검증할 수 있다. 네트워크·인증은 범위 밖이라 소유자의 실제 연결 확인이 따로 필요하다 | 목(mock) 객체로만 시험, 시험마다 외부 DB 사용 |
+| 2026-11-08 | 로그의 오류 필드는 `errorType`(클래스 이름)만 남기고 메시지는 남기지 않는다 | 메시지에 연결 문자열·입력값이 섞일 수 있다. 로거의 가림 규칙이 `name`으로 끝나는 키를 가리므로 `errorName`은 쓸 수 없다 | 오류 메시지 전체 기록 |
