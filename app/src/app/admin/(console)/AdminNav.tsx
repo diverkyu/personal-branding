@@ -23,7 +23,13 @@ const GROUPS = [
       { href: "/admin/reviews", label: "수강 후기" },
     ],
   },
-  { title: "자산", items: [{ href: "/admin/media", label: "미디어" }] },
+  {
+    title: "자산",
+    items: [
+      { href: "/admin/media", label: "미디어" },
+      { href: "/admin/trash", label: "휴지통" },
+    ],
+  },
   {
     title: "사이트",
     items: [
