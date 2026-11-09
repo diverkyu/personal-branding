@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { adminDb } from "@/data/admin/dbServer";
 import {
@@ -13,10 +13,17 @@ import {
   transitionContent,
   type ContentEdit,
 } from "@/data/admin/contents";
+import { STORIES_TAG } from "@/content/cacheTags";
 import { STATUSES, parseKstLocal, type ContentOrigin, type ContentStatus } from "@/content/publish";
 import { AppError, errorKindOf } from "@/lib/errors";
 import { requireAdmin } from "@/lib/auth/session";
 import { logger } from "@/lib/logger";
+
+/** 공개 화면의 스토리 캐시를 바로 갱신한다 (발행·취소·삭제 때) */
+function refreshPublic() {
+  updateTag(STORIES_TAG);
+  revalidatePath("/", "layout");
+}
 
 /**
  * 콘텐츠 서버 액션. 호출할 때마다 requireAdmin() 을 다시 거친다.
@@ -113,7 +120,7 @@ export async function transitionContentAction(_: ContentState, formData: FormDat
     revalidatePath(`/admin/contents/${id}`);
     revalidatePath("/admin/contents");
     revalidatePath("/admin/schedule");
-    // 공개 화면은 공개 콘텐츠가 DB 로 전환되는 단계(AD-5c)에서 갱신한다
+    refreshPublic();
     return { ok: true };
   } catch (error) {
     logger.warn("admin.content.transition", { outcome: "failed", errorKind: errorKindOf(error), to });
@@ -127,6 +134,7 @@ export async function publishDraftAction(_: ContentState, formData: FormData): P
   try {
     await publishDraft(adminDb(), admin, id, versionOf(formData));
     revalidatePath(`/admin/contents/${id}`);
+    refreshPublic();
     return { ok: true, message: "수정 내용을 발행했습니다." };
   } catch (error) {
     logger.warn("admin.content.publish_draft", { outcome: "failed", errorKind: errorKindOf(error) });
@@ -157,6 +165,7 @@ export async function deleteContentAction(_: ContentState, formData: FormData): 
     return { error: messageOf(error) };
   }
   revalidatePath("/admin/contents");
+  refreshPublic();
   redirect("/admin/contents?deleted=1");
 }
 

@@ -7,11 +7,11 @@ import type { StoryCardData } from "./StoryCard";
 import type { TourArchiveCardData } from "./TourArchiveCard";
 import type { TourCardData } from "./TourCard";
 
-export const storyHref = (s: Story) => `/story/${s.slug}`;
+export const storyHref = (s: Pick<Story, "slug">) => `/story/${s.slug}`;
 export const tourHref = (t: Tour) => `/freediving/tours/${t.slug}`;
 export const equipmentHref = (e: Equipment) => `/freediving/equipment/${e.slug}`;
 
-export function storyCard(s: Story): StoryCardData {
+export function storyCard(s: Pick<Story, "slug" | "title" | "summary" | "publishedAt" | "thumbVariant">): StoryCardData {
   return { href: storyHref(s), title: s.title, summary: s.summary, dateLabel: formatDate(s.publishedAt), thumbVariant: s.thumbVariant };
 }
 

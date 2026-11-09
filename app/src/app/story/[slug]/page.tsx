@@ -7,7 +7,8 @@ import { articleLd, breadcrumbLd } from "@/lib/structured";
 import { Section } from "@/components/ui/Section";
 import { TextLink } from "@/components/ui/TextLink";
 import { storyHref } from "@/components/site/mappers";
-import { getStory, getStoryNeighbors, listStories } from "@/data";
+import { ContentBody } from "@/content/ContentBody";
+import { getStory, getStoryNeighbors, listStories } from "@/data/stories";
 import { formatDate } from "@/lib/format";
 import pages from "../../pages.module.css";
 import styles from "./page.module.css";
@@ -16,20 +17,23 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return listStories().map((s) => ({ slug: s.slug }));
+/** 새로 발행된 글은 처음 열릴 때 만들어지고(dynamicParams), 발행·취소·삭제 때 캐시가 갱신된다. 최대 5분 안에는 반드시 새 내용을 읽는다 */
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  return (await listStories()).map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const story = getStory((await params).slug);
-  return story ? { title: story.title, description: story.summary } : {};
+  const story = await getStory((await params).slug);
+  return story ? { title: story.seoTitle || story.title, description: story.seoDescription || story.summary } : {};
 }
 
 /** STORY 상세 (SCREEN-SPEC §5.4). 존재하지 않거나 비공개인 글은 404. 글 안에 투어·후기 광고를 넣지 않는다. */
 export default async function StoryDetailPage({ params }: Props) {
-  const story = getStory((await params).slug);
+  const story = await getStory((await params).slug);
   if (!story) notFound();
-  const { newer, older } = getStoryNeighbors(story.slug);
+  const { newer, older } = await getStoryNeighbors(story.slug);
   const origin = resolveSiteUrl(process.env).url.origin;
 
   return (
@@ -51,11 +55,9 @@ export default async function StoryDetailPage({ params }: Props) {
       </div>
       <h1 className={styles.title}>{story.title}</h1>
       <div className={pages.prose}>
-        {story.body.map((p, i) => (
-          <p key={i}>{p}</p>
-        ))}
+        <ContentBody doc={story.doc} media={new Map(story.media.map((m) => [m.id, m]))} />
       </div>
-      {story.questions && story.questions.length > 0 ? (
+      {story.questions.length > 0 ? (
         <details className={styles.questions}>
           <summary>이 글이 답하는 질문</summary>
           <ul>
