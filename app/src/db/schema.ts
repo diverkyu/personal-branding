@@ -276,6 +276,32 @@ export const reviewRevisions = pgTable(
   ],
 );
 
+/**
+ * About(규강 소개) 페이지 (ADMIN-DESIGN §5.2, §26). 행은 하나뿐이다(id 는 항상 'main').
+ * - 공개 내용은 headline·body·signature·photo_media_id 이고, 고치는 중인 내용은 draft 칸에 쌓인다. "공개 반영"을 눌러야 공개 내용이 바뀐다.
+ * - status: draft(공개 중이 아님 → 공개 화면은 기본 문구를 보여 준다) / published(공개 중).
+ */
+export const about = pgTable(
+  "about",
+  {
+    id: text("id").primaryKey().default("main"),
+    headline: text("headline").notNull().default(""),
+    body: jsonb("body").$type<Record<string, unknown>>().notNull().default({ type: "doc", content: [] }),
+    signature: text("signature").notNull().default(""),
+    photoMediaId: uuid("photo_media_id").references(() => media.id),
+    status: text("status").notNull().default("draft"),
+    /** 고치는 중인 내용 (headline·body·signature·photoMediaId). 없으면 null */
+    draft: jsonb("draft").$type<Record<string, unknown>>(),
+    version: integer("version").notNull().default(1),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    updatedBy: text("updated_by").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [check("about_status_check", sql`${t.status} in ('draft', 'published')`), check("about_single_check", sql`${t.id} = 'main'`)],
+);
+
+export type AboutRow = typeof about.$inferSelect;
+
 export type ReviewRow = typeof reviews.$inferSelect;
 export type ReviewRevisionRow = typeof reviewRevisions.$inferSelect;
 

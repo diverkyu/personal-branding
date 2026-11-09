@@ -14,6 +14,7 @@ const GROUPS = [
     items: [
       { href: "/admin/contents", label: "전체 콘텐츠" },
       { href: "/admin/schedule", label: "발행 일정" },
+      { href: "/admin/taxonomy", label: "태그·카테고리" },
     ],
   },
   {
@@ -33,6 +34,7 @@ const GROUPS = [
   {
     title: "사이트",
     items: [
+      { href: "/admin/about", label: "About" },
       { href: "/admin/settings", label: "사이트 설정" },
       { href: "/admin/legal", label: "동의·방침" },
     ],
