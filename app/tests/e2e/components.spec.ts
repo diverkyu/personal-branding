@@ -131,7 +131,7 @@ test.describe("컴포넌트 쇼케이스", () => {
     await page.goto(URL);
     const quote = page.locator("blockquote").first();
     await expect(quote).toContainText("줄바꿈도");
-    expect(await quote.evaluate((el) => getComputedStyle(el).whiteSpace)).toBe("pre-line");
+    expect(await quote.evaluate((el) => getComputedStyle(el).whiteSpace)).toBe("pre-wrap");
     await expect(page.getByText(/별점|★/)).toHaveCount(0);
   });
 
