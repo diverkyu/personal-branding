@@ -102,7 +102,7 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
               ))}
             </div>
             <p className={styles.note} style={{ margin: "12px 0 0" }}>
-              예약한 글은 정해진 시각 이후의 다음 자동 실행 때 공개됩니다. 현재 무료 플랜에서는 하루 한 번(한국 시간 오전 9시) 실행됩니다.
+              예약한 글은 정해진 시각이 지나면 공개 화면에 5분 안에 나타납니다. '발행됨' 표시와 기록은 다음 자동 실행 때 정리되며, 현재 무료 플랜에서는 하루 한 번(한국 시간 오전 9시) 실행됩니다.
             </p>
           </section>
 

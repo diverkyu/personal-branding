@@ -21,7 +21,7 @@ export function websiteLd(origin: string): Json {
   };
 }
 
-export function articleLd(origin: string, story: Story): Json {
+export function articleLd(origin: string, story: Pick<Story, "slug" | "title" | "summary" | "publishedAt" | "tags">): Json {
   return {
     "@context": "https://schema.org",
     "@type": "Article",

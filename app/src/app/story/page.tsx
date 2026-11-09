@@ -5,7 +5,7 @@ import { StoryCard } from "@/components/site/StoryCard";
 import { storyCard } from "@/components/site/mappers";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { listStories, listStoryTags } from "@/data";
+import { listStories, listStoryTags } from "@/data/stories";
 import pages from "../pages.module.css";
 
 /** 한 페이지에 보이는 글 수 (큰 카드 제외, SCREEN-SPEC STORY-05 제안값) */
@@ -13,9 +13,13 @@ const STORY_PAGE_SIZE = 9;
 
 export const metadata: Metadata = { title: "Story" };
 
+/** 발행·취소·삭제 때 바로 갱신되고, 예약 시각은 최대 5분 안에 반영된다 */
+export const revalidate = 300;
+
 /** STORY 목록 (SCREEN-SPEC §5.3). 최신 글은 큰 카드, 나머지는 격자. 태그 필터는 URL(?tag=)에 남는다. */
-export default function StoryPage() {
-  const stories = listStories();
+export default async function StoryPage() {
+  const stories = await listStories();
+  const tags = await listStoryTags();
   const items: FilteredItem[] = stories.map((s, i) => ({
     id: s.slug,
     values: s.tags,
@@ -46,7 +50,7 @@ export default function StoryPage() {
             <FilteredList
               label="스토리 태그"
               param="tag"
-              options={listStoryTags().map((t) => ({ value: t, label: t }))}
+              options={tags.map((t) => ({ value: t, label: t }))}
               items={items}
               surface="light"
               listClassName={pages.grid4}
