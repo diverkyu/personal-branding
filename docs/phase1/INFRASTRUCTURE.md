@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.30.0** | 2026-11-09 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
+| **0.31.0** | 2026-11-09 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [PRD.md §12](PRD.md) · [SECURITY.md §16](SECURITY.md) · [DEVELOPMENT.md](DEVELOPMENT.md)
 
