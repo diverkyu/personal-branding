@@ -12,17 +12,18 @@ import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader, SectionLabel } from "@/components/ui/SectionHeader";
 import { TextLink } from "@/components/ui/TextLink";
-import { listFeaturedReviews, listOpenTours, reviewTourOptions } from "@/data";
+import { listFeaturedReviews } from "@/data";
+import { listOpenTours, reviewTourOptions } from "@/data/tours";
 import { listStories } from "@/data/stories";
 import { getSiteSettings } from "@/settings/read";
 import { splitSlogan } from "@/settings/registry";
 import styles from "./page.module.css";
 import pages from "./pages.module.css";
 
-/** 홈 (SCREEN-SPEC §5.1). 섹션 순서: 히어로 → 구분 띠 → About 요약 → Story → Freediving → Contact. 콘텐츠는 가상 데이터. */
 /** 발행·취소·삭제 때 바로 갱신되고, 예약 시각은 최대 5분 안에 반영된다 */
 export const revalidate = 300;
 
+/** 홈 (SCREEN-SPEC §5.1). 섹션 순서: 히어로 → 구분 띠 → About 요약 → Story → Freediving → Contact. Story·투어는 어드민 콘텐츠, 후기는 아직 가상 데이터. */
 export default async function HomePage() {
   const settings = await getSiteSettings();
   const slogan = splitSlogan(settings["home.slogan"] ?? "");
@@ -35,9 +36,9 @@ export default async function HomePage() {
     </span>
   ));
   const stories = (await listStories()).slice(0, 3);
-  const tour = listOpenTours()[0];
+  const tour = (await listOpenTours())[0];
   const reviews = listFeaturedReviews(3);
-  const tourOptions = reviewTourOptions();
+  const tourOptions = await reviewTourOptions();
 
   return (
     <>

@@ -19,7 +19,7 @@ import {
   type ContentOrigin,
   type ContentStatus,
 } from "@/content/publish";
-import { isContentType, slugFromTitle, validateSlug } from "@/content/types";
+import { CONTENT_TYPES, isContentType, slugFromTitle, validateSlug } from "@/content/types";
 import { recordAudit } from "./audit";
 import type { AdminDb } from "./db";
 import { isUuid } from "./inquiryQuery";
@@ -41,9 +41,11 @@ export interface ContentEdit {
   seoDescription: string;
   origin: ContentOrigin;
   originNote: string;
+  /** 유형별 항목(투어의 일정·장소 등). 유형 정의가 검사한다. 스토리는 비어 있다 */
+  fields?: unknown;
 }
 
-type CleanEdit = Omit<ContentEdit, "body"> & { body: BodyDoc };
+type CleanEdit = Omit<ContentEdit, "body" | "fields"> & { body: BodyDoc; fields: Record<string, unknown> };
 
 function cleanList(values: string[], max: number, maxLen: number, label: string): string[] {
   const out = [...new Set(values.map((v) => v.replace(/\s+/g, " ").trim()).filter(Boolean))];
@@ -52,7 +54,7 @@ function cleanList(values: string[], max: number, maxLen: number, label: string)
   return out;
 }
 
-export function cleanEdit(input: ContentEdit): CleanEdit {
+export function cleanEdit(input: ContentEdit, type: string = "story"): CleanEdit {
   const title = input.title.replace(/\s+/g, " ").trim();
   if (!title) throw new AppError("validation", "제목을 입력해 주세요.");
   if (title.length > LIMITS.title) throw new AppError("validation", `제목은 ${LIMITS.title}자까지 쓸 수 있습니다.`);
@@ -69,6 +71,8 @@ export function cleanEdit(input: ContentEdit): CleanEdit {
   if (!(ORIGINS as readonly string[]).includes(input.origin)) throw new AppError("validation", "알 수 없는 제작 방식입니다.");
   const body = sanitizeBody(input.body);
   if (!body.ok) throw new AppError("validation", body.error);
+  const def = CONTENT_TYPES[type]?.fields;
+  const fields = def ? def.clean(input.fields ?? def.empty()) : {};
   return {
     title,
     slug: input.slug,
@@ -80,6 +84,23 @@ export function cleanEdit(input: ContentEdit): CleanEdit {
     seoDescription,
     origin: input.origin,
     originNote,
+    fields,
+  };
+}
+
+/** 공개 내용(본문 칸)에 쓰는 열. 저장(발행 전)·발행·수정 내용 반영이 같은 모양을 쓴다 */
+function columnsOf(clean: CleanEdit) {
+  return {
+    title: clean.title,
+    summary: clean.summary,
+    body: clean.body as unknown as Record<string, unknown>,
+    tags: clean.tags,
+    answers: clean.answers,
+    seoTitle: clean.seoTitle,
+    seoDescription: clean.seoDescription,
+    origin: clean.origin,
+    originNote: clean.originNote,
+    fields: clean.fields,
   };
 }
 
@@ -185,6 +206,7 @@ export function editableView(row: ContentRow): ContentEdit & { hasDraft: boolean
     seoDescription: d?.seoDescription ?? row.seoDescription,
     origin: (d?.origin ?? row.origin) as ContentOrigin,
     originNote: d?.originNote ?? row.originNote,
+    fields: d?.fields ?? row.fields,
     hasDraft: row.draft !== null,
   };
 }
@@ -208,7 +230,7 @@ export async function createContent(db: AdminDb, admin: AdminSession, input: { t
   const slug = await uniqueSlug(db, input.type, base);
   const [row] = await db
     .insert(contents)
-    .values({ type: input.type, slug, title, body: EMPTY_BODY as unknown as Record<string, unknown>, createdBy: admin.userId, updatedBy: admin.userId })
+    .values({ type: input.type, slug, title, body: EMPTY_BODY as unknown as Record<string, unknown>, fields: CONTENT_TYPES[input.type]?.fields?.empty() ?? {}, createdBy: admin.userId, updatedBy: admin.userId })
     .returning();
   if (!row) throw new AppError("external", "저장 결과가 비어 있습니다.");
   await recordAudit(db, admin, { action: "content.create", targetType: "content", targetId: row.id, meta: { type: input.type } });
@@ -228,6 +250,14 @@ async function assertBodyMedia(db: AdminDb, doc: BodyDoc): Promise<void> {
   if (found.length !== ids.length) throw new AppError("validation", "본문에 삭제되었거나 없는 이미지가 있습니다. 이미지를 지우고 다시 넣어 주세요.");
 }
 
+/** 유형별 항목(갤러리 등)이 쓰는 이미지가 모두 라이브러리에 있는지 확인한다 */
+async function assertFieldMedia(db: AdminDb, type: string, fields: Record<string, unknown>): Promise<void> {
+  const ids = CONTENT_TYPES[type]?.fields?.mediaIds(fields) ?? [];
+  if (ids.length === 0) return;
+  const found = await db.select({ id: media.id }).from(media).where(and(inArray(media.id, ids), isNull(media.deletedAt)));
+  if (found.length !== ids.length) throw new AppError("validation", "갤러리에 삭제되었거나 없는 이미지가 있습니다. 이미지를 빼고 다시 저장해 주세요.");
+}
+
 /**
  * 발행 전 점검 전체: 글 내용 점검 + 본문 이미지의 대체 텍스트(없으면 막는다).
  * 수정 중인 내용이 있으면 그것을 기준으로 한다. 편집 화면의 점검 표시와 발행·예약·수정 내용 반영이 같은 함수를 쓴다.
@@ -245,33 +275,35 @@ export async function publishProblems(db: AdminDb, admin: AdminSession, row: Con
       if (missing > 0) problems.push(`본문 이미지 ${missing}개에 대체 텍스트가 없습니다. 어드민 > 미디어에서 입력해 주세요.`);
     }
   }
+  const def = CONTENT_TYPES[row.type]?.fields;
+  if (def) {
+    const fields = editableView(row).fields;
+    problems.push(...def.problems(fields));
+    const ids = def.mediaIds(fields);
+    if (ids.length > 0) {
+      const rows = await db.select({ id: media.id, alt: media.alt }).from(media).where(and(inArray(media.id, ids), isNull(media.deletedAt)));
+      if (rows.length !== ids.length) problems.push("갤러리에 삭제되었거나 없는 이미지가 있습니다.");
+      const missing = rows.filter((r) => !r.alt || !r.alt.trim()).length;
+      if (missing > 0) problems.push(`갤러리 사진 ${missing}개에 대체 텍스트가 없습니다. 어드민 > 미디어에서 입력해 주세요.`);
+    }
+  }
   return problems;
 }
 
 export async function saveContent(db: AdminDb, admin: AdminSession, id: string, version: number, input: ContentEdit): Promise<{ version: number; savedAsDraft: boolean }> {
   if (!isUuid(id)) throw new AppError("not_found", "대상을 찾을 수 없습니다.");
-  const edit = cleanEdit(input);
-  await assertBodyMedia(db, edit.body);
   const current = await getContent(db, admin, id);
   if (!current) throw new AppError("not_found", "대상을 찾을 수 없습니다.");
+  const edit = cleanEdit(input, current.type);
+  await assertBodyMedia(db, edit.body);
+  await assertFieldMedia(db, current.type, edit.fields);
   const published = current.status === "published";
   if (published && edit.slug !== current.slug) throw new AppError("validation", "발행된 글의 주소 이름은 바꿀 수 없습니다. 먼저 발행을 취소해 주세요.");
   const now = new Date();
   try {
     const patch = published
       ? { draft: { ...edit, body: edit.body } as unknown as Record<string, unknown> }
-      : {
-          title: edit.title,
-          slug: edit.slug,
-          summary: edit.summary,
-          body: edit.body as unknown as Record<string, unknown>,
-          tags: edit.tags,
-          answers: edit.answers,
-          seoTitle: edit.seoTitle,
-          seoDescription: edit.seoDescription,
-          origin: edit.origin,
-          originNote: edit.originNote,
-        };
+      : { ...columnsOf(edit), slug: edit.slug };
     const updated = await db
       .update(contents)
       .set({ ...patch, version: version + 1, updatedAt: now, updatedBy: admin.userId })
@@ -326,17 +358,9 @@ export async function transitionContent(
   if (to === "published") {
     // 수정 중인 내용이 있으면 이때 공개 내용에 반영한다
     const view = editableView(row);
-    const clean = cleanEdit({ ...view, slug: row.slug });
+    const clean = cleanEdit({ ...view, slug: row.slug }, row.type);
     Object.assign(set, {
-      title: clean.title,
-      summary: clean.summary,
-      body: clean.body as unknown as Record<string, unknown>,
-      tags: clean.tags,
-      answers: clean.answers,
-      seoTitle: clean.seoTitle,
-      seoDescription: clean.seoDescription,
-      origin: clean.origin,
-      originNote: clean.originNote,
+      ...columnsOf(clean),
       draft: null,
       publishedAt: now,
       publishAt: null,
@@ -379,25 +403,39 @@ export async function discardDraft(db: AdminDb, admin: AdminSession, id: string,
   await recordAudit(db, admin, { action: "content.discard_draft", targetType: "content", targetId: id });
 }
 
+/**
+ * 투어의 모집 상태(모집 예정·모집 중·모집 마감)를 바꾼다. 다른 항목과 달리 **수정 내용 발행을 거치지 않고 바로 반영**한다 —
+ * 마감을 눌렀는데 신청이 계속 들어오면 안 되기 때문이다. 수정 중인 내용이 있으면 그 안의 값도 같이 바꿔 나중에 되돌아가지 않게 한다.
+ */
+export async function setRecruitStatus(db: AdminDb, admin: AdminSession, id: string, version: number, recruit: string): Promise<{ version: number }> {
+  const row = await getContent(db, admin, id);
+  if (!row || row.type !== "tour") throw new AppError("not_found", "대상을 찾을 수 없습니다.");
+  const def = CONTENT_TYPES.tour!.fields!;
+  const current = row.fields as Record<string, unknown>;
+  const next = def.clean({ ...current, recruit });
+  const draft = row.draft as Record<string, unknown> | null;
+  const nextDraft = draft ? { ...draft, fields: def.clean({ ...((draft.fields as Record<string, unknown>) ?? current), recruit }) } : null;
+  const updated = await db
+    .update(contents)
+    .set({ fields: next, draft: nextDraft, version: version + 1, updatedAt: new Date(), updatedBy: admin.userId })
+    .where(and(eq(contents.id, id), eq(contents.version, version), isNull(contents.deletedAt)))
+    .returning({ version: contents.version });
+  if (updated.length === 0) throw new AppError("validation", "다른 곳에서 먼저 저장했습니다. 새로고침한 뒤 다시 시도해 주세요.");
+  await recordAudit(db, admin, { action: "content.recruit_status", targetType: "content", targetId: id, meta: { from: String(current.recruit ?? ""), to: String(next.recruit) } });
+  return { version: version + 1 };
+}
+
 /** 발행된 글의 수정 내용을 공개 내용에 반영한다 (발행 점검을 다시 거친다) */
 export async function publishDraft(db: AdminDb, admin: AdminSession, id: string, version: number): Promise<{ version: number }> {
   const row = await getContent(db, admin, id);
   if (!row || row.status !== "published" || row.draft === null) throw new AppError("validation", "반영할 수정 내용이 없습니다.");
   const problems = await publishProblems(db, admin, row, true);
   if (problems.length > 0) throw new AppError("validation", problems.join(" "));
-  const clean = cleanEdit({ ...editableView(row), slug: row.slug });
+  const clean = cleanEdit({ ...editableView(row), slug: row.slug }, row.type);
   const updated = await db
     .update(contents)
     .set({
-      title: clean.title,
-      summary: clean.summary,
-      body: clean.body as unknown as Record<string, unknown>,
-      tags: clean.tags,
-      answers: clean.answers,
-      seoTitle: clean.seoTitle,
-      seoDescription: clean.seoDescription,
-      origin: clean.origin,
-      originNote: clean.originNote,
+      ...columnsOf(clean),
       draft: null,
       version: version + 1,
       updatedAt: new Date(),
@@ -462,6 +500,21 @@ export async function contentDashboard(db: AdminDb, admin: AdminSession): Promis
   const get = (s: string) => grouped.find((g) => g.status === s)?.value ?? 0;
   const [failed] = await db.select({ value: count() }).from(publishJobs).where(eq(publishJobs.state, "failed"));
   return { draft: get("draft"), review: get("review"), scheduled: get("scheduled"), failedJobs: failed?.value ?? 0 };
+}
+
+export interface TourOption {
+  slug: string;
+  title: string;
+}
+
+/** 신청·문의 화면이 투어 이름을 보여 주고 거르는 데 쓰는 목록. 공개 전·종료된 투어도 포함한다(최근 시작일 순) */
+export async function listTourOptions(db: AdminDb, admin: AdminSession): Promise<TourOption[]> {
+  void admin;
+  const rows = await db.select({ slug: contents.slug, title: contents.title, fields: contents.fields }).from(contents).where(and(eq(contents.type, "tour"), isNull(contents.deletedAt)));
+  return rows
+    .map((r) => ({ slug: r.slug, title: r.title, start: String((r.fields as Record<string, unknown>)?.startDate ?? "") }))
+    .sort((a, b) => b.start.localeCompare(a.start))
+    .map(({ slug, title }) => ({ slug, title }));
 }
 
 export function summaryOf(row: ContentRow): string {

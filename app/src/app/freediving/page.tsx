@@ -11,22 +11,26 @@ import { PageIntro } from "@/components/layout/PageIntro";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { TextLink } from "@/components/ui/TextLink";
-import { listEquipment, listEquipmentCategories, listFeaturedReviews, listPastTours, listUpcomingTours, reviewTourOptions } from "@/data";
+import { listEquipment, listEquipmentCategories, listFeaturedReviews } from "@/data";
+import { listPastTours, listUpcomingTours, reviewTourOptions } from "@/data/tours";
 import pages from "../pages.module.css";
 
 export const metadata: Metadata = { title: "Freediving" };
+
+/** 투어는 어드민에서 발행·취소·마감할 때 바로 갱신되고, 종료 여부는 최대 5분 안에 반영된다 */
+export const revalidate = 300;
 
 const UPCOMING_LIMIT = 4;
 const PAST_LIMIT = 6;
 const EQUIPMENT_LIMIT = 8;
 
 /** FD 허브 (SCREEN-SPEC §5.5). 영역 이동 칩은 같은 페이지의 구역으로 이동한다. */
-export default function FreedivingPage() {
-  const upcoming = listUpcomingTours();
-  const past = listPastTours();
+export default async function FreedivingPage() {
+  const upcoming = await listUpcomingTours();
+  const past = await listPastTours();
   const equipment = listEquipment().slice(0, EQUIPMENT_LIMIT);
   const reviews = listFeaturedReviews(3);
-  const tourOptions = reviewTourOptions();
+  const tourOptions = await reviewTourOptions();
 
   return (
     <>

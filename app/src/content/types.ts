@@ -1,17 +1,43 @@
+import { EMPTY_TOUR_FIELDS, cleanTourFields, readTourFields, tourMediaIds, tourProblems } from "./tourFields";
+
 /**
  * 콘텐츠 유형 정의 (ADMIN-DESIGN §14.1). 새 유형 = 여기에 정의 하나를 더하고 공개 경로를 연결한다.
- * 지금은 스토리만 있다. 영상·여행 추천은 AD-6 에서 같은 모양으로 추가한다.
+ * 스토리와 투어가 있다. 영상·여행 추천은 AD-6d 에서 같은 모양으로 추가한다.
  */
+export interface FieldsDef {
+  /** 새로 만들 때의 기본값 */
+  empty: () => Record<string, unknown>;
+  /** 입력(폼·저장된 값)을 검사해 깨끗한 값으로 만든다. 잘못되면 AppError(validation) */
+  clean: (input: unknown) => Record<string, unknown>;
+  /** 발행·예약 전에 막아야 할 문제 (저장된 값 기준) */
+  problems: (stored: unknown) => string[];
+  /** 이 항목이 쓰는 이미지 id (존재 확인·사용 집계에 쓴다) */
+  mediaIds: (stored: unknown) => string[];
+}
+
 export interface ContentTypeDef {
   key: string;
   /** 메뉴·목록에 보이는 이름 */
   label: string;
   /** 주소 이름(slug)이 고유한 범위는 유형 안이다 */
   publicPath: (slug: string) => string;
+  /** 유형별 항목. 없으면 공통 항목만 쓴다 */
+  fields?: FieldsDef;
 }
 
 export const CONTENT_TYPES: Record<string, ContentTypeDef> = {
   story: { key: "story", label: "스토리", publicPath: (slug) => `/story/${slug}` },
+  tour: {
+    key: "tour",
+    label: "투어",
+    publicPath: (slug) => `/freediving/tours/${slug}`,
+    fields: {
+      empty: () => ({ ...EMPTY_TOUR_FIELDS }) as unknown as Record<string, unknown>,
+      clean: (input) => cleanTourFields(input) as unknown as Record<string, unknown>,
+      problems: (stored) => tourProblems(readTourFields(stored)),
+      mediaIds: (stored) => tourMediaIds(readTourFields(stored)),
+    },
+  },
 };
 
 export type ContentTypeKey = keyof typeof CONTENT_TYPES;

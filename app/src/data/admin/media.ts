@@ -86,7 +86,7 @@ export async function mediaUsageCount(db: AdminDb, admin: AdminSession, id: stri
   const [row] = await db
     .select({ value: count() })
     .from(contents)
-    .where(and(isNull(contents.deletedAt), or(eq(contents.coverMediaId, id), sql`${contents.body}::text like ${pattern}`, sql`${contents.draft}::text like ${pattern}`)));
+    .where(and(isNull(contents.deletedAt), or(eq(contents.coverMediaId, id), sql`${contents.body}::text like ${pattern}`, sql`${contents.draft}::text like ${pattern}`, sql`${contents.fields}::text like ${pattern}`)));
   return row?.value ?? 0;
 }
 

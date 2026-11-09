@@ -60,7 +60,7 @@ export default async function SchedulePage() {
   return (
     <>
       <h1 className={styles.h1}>발행 일정</h1>
-      <p className={styles.note}>예약한 글과 자동 발행 기록입니다. 시각은 한국 시간입니다. 예약 시각이 지나면 공개 화면에는 5분 안에 나타나고, 이 목록의 '발행됨' 표시는 자동 실행 때 정리됩니다. 지금은 하루 한 번 실행됩니다.</p>
+      <p className={styles.note}>예약한 글과 자동 발행 기록입니다. 시각은 한국 시간입니다. 예약 시각이 지나면 공개 화면에는 5분 안에 나타나고, 이 목록의 “발행됨” 표시는 자동 실행 때 정리됩니다. 지금은 하루 한 번 실행됩니다.</p>
 
       {failed.length > 0 ? (
         <>

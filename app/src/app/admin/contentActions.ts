@@ -9,19 +9,20 @@ import {
   discardDraft,
   publishDraft,
   retryPublishJob,
+  setRecruitStatus,
   saveContent,
   transitionContent,
   type ContentEdit,
 } from "@/data/admin/contents";
-import { STORIES_TAG } from "@/content/cacheTags";
+import { PUBLIC_CONTENT_TAGS } from "@/content/cacheTags";
 import { STATUSES, parseKstLocal, type ContentOrigin, type ContentStatus } from "@/content/publish";
 import { AppError, errorKindOf } from "@/lib/errors";
 import { requireAdmin } from "@/lib/auth/session";
 import { logger } from "@/lib/logger";
 
-/** 공개 화면의 스토리 캐시를 바로 갱신한다 (발행·취소·삭제 때) */
+/** 공개 화면의 콘텐츠 캐시(스토리·투어)를 바로 갱신한다 (발행·취소·삭제·모집 상태 변경 때) */
 function refreshPublic() {
-  updateTag(STORIES_TAG);
+  for (const tag of PUBLIC_CONTENT_TAGS) updateTag(tag);
   revalidatePath("/", "layout");
 }
 
@@ -85,13 +86,37 @@ function editFromForm(formData: FormData): ContentEdit {
     seoDescription: text(formData, "seoDescription", 500),
     origin: text(formData, "origin", 20) as ContentOrigin,
     originNote: text(formData, "originNote", 1000),
+    fields: fieldsFromForm(formData),
+  };
+}
+
+/** 투어 입력(f_ 로 시작하는 칸)을 유형별 항목으로 묶는다. 스토리 화면에는 이 칸이 없고, 서버는 유형 정의에 따라 쓰거나 버린다 */
+function fieldsFromForm(formData: FormData): Record<string, unknown> {
+  let gallery: unknown = [];
+  const raw = text(formData, "galleryJson", 20_000);
+  if (raw) {
+    try {
+      gallery = JSON.parse(raw);
+    } catch {
+      throw new AppError("validation", "갤러리를 읽을 수 없습니다. 새로고침한 뒤 다시 시도해 주세요.");
+    }
+  }
+  return {
+    startDate: text(formData, "f_startDate", 20),
+    endDate: text(formData, "f_endDate", 20),
+    place: text(formData, "f_place", 300),
+    recruit: text(formData, "f_recruit", 20),
+    capacity: text(formData, "f_capacity", 10),
+    feeNote: text(formData, "f_feeNote", 2000),
+    videos: text(formData, "f_videos", 3000).split(/\r?\n/),
+    gallery,
   };
 }
 
 export async function saveContentAction(_: ContentState, formData: FormData): Promise<ContentState> {
   const admin = await requireAdmin();
   const id = text(formData, "id", 64);
-  const values = Object.fromEntries(["title", "slug", "summary", "tags", "answers", "seoTitle", "seoDescription", "origin", "originNote"].map((k) => [k, text(formData, k, 5000)]));
+  const values = Object.fromEntries(["title", "slug", "summary", "tags", "answers", "seoTitle", "seoDescription", "origin", "originNote", "f_startDate", "f_endDate", "f_place", "f_recruit", "f_capacity", "f_feeNote", "f_videos"].map((k) => [k, text(formData, k, 5000)]));
   try {
     const db = adminDb();
     const saved = await saveContent(db, admin, id, versionOf(formData), editFromForm(formData));
@@ -124,6 +149,21 @@ export async function transitionContentAction(_: ContentState, formData: FormDat
     return { ok: true };
   } catch (error) {
     logger.warn("admin.content.transition", { outcome: "failed", errorKind: errorKindOf(error), to });
+    return { error: messageOf(error) };
+  }
+}
+
+export async function setRecruitAction(_: ContentState, formData: FormData): Promise<ContentState> {
+  const admin = await requireAdmin();
+  const id = text(formData, "id", 64);
+  try {
+    await setRecruitStatus(adminDb(), admin, id, versionOf(formData), text(formData, "recruit", 20));
+    revalidatePath(`/admin/contents/${id}`);
+    revalidatePath("/admin/contents");
+    refreshPublic();
+    return { ok: true, message: "모집 상태를 바꿨습니다. 공개 화면에 바로 반영됩니다." };
+  } catch (error) {
+    logger.warn("admin.content.recruit_status", { outcome: "failed", errorKind: errorKindOf(error) });
     return { error: messageOf(error) };
   }
 }

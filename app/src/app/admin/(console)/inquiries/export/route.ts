@@ -1,8 +1,8 @@
+import { listTourOptions } from "@/data/admin/contents";
 import { adminDb } from "@/data/admin/dbServer";
 import { toCsv } from "@/data/admin/csv";
 import { listInquiriesForExport } from "@/data/admin/inquiries";
 import { KIND_LABELS, STATUS_LABELS, parseInquiryQuery, type InquiryKindFilter, type InquiryStatus } from "@/data/admin/inquiryQuery";
-import { getTour } from "@/data";
 import { requireAdmin } from "@/lib/auth/session";
 import { formatDateTimeKst } from "@/lib/format";
 
@@ -14,12 +14,13 @@ export async function GET(request: Request) {
   const admin = await requireAdmin();
   const params = Object.fromEntries(new URL(request.url).searchParams);
   const rows = await listInquiriesForExport(adminDb(), admin, parseInquiryQuery(params));
+  const tourTitles = new Map((await listTourOptions(adminDb(), admin)).map((t) => [t.slug, t.title]));
   const csv = toCsv(
     ["접수일시", "유형", "투어", "이름", "연락처", "이메일", "인원", "상태"],
     rows.map((r) => [
       formatDateTimeKst(r.receivedAt),
       KIND_LABELS[r.kind as InquiryKindFilter] ?? r.kind,
-      getTour(r.tourSlug)?.title ?? r.tourSlug,
+      tourTitles.get(r.tourSlug) ?? r.tourSlug,
       r.name,
       r.phone,
       r.email,

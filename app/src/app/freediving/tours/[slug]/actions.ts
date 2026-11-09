@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { getTour } from "@/data";
+import { getTourForInquiry } from "@/data/tours";
 import type { AdminDb } from "@/data/admin/db";
 import { getInquiryStore } from "@/data/inquiryStore";
 import { getDb } from "@/db/client";
@@ -29,9 +29,9 @@ async function clientIp(): Promise<string> {
 
 /** 투어 slug 는 폼에 묶어(bind) 받는다. 서버에서 투어와 모집 상태를 다시 확인한다. */
 export async function submitReservation(slug: string, _prev: FormState, data: FormData): Promise<FormState> {
-  return processSubmission("reservation", getTour(slug), data, await clientIp(), { store: getInquiryStore(), limiter, duplicates, resolveConsentVersion: consentResolver() });
+  return processSubmission("reservation", await getTourForInquiry(slug), data, await clientIp(), { store: getInquiryStore(), limiter, duplicates, resolveConsentVersion: consentResolver() });
 }
 
 export async function submitNotice(slug: string, _prev: FormState, data: FormData): Promise<FormState> {
-  return processSubmission("notice", getTour(slug), data, await clientIp(), { store: getInquiryStore(), limiter, duplicates, resolveConsentVersion: consentResolver() });
+  return processSubmission("notice", await getTourForInquiry(slug), data, await clientIp(), { store: getInquiryStore(), limiter, duplicates, resolveConsentVersion: consentResolver() });
 }

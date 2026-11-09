@@ -9,7 +9,8 @@ import { listMediaForPicker } from "@/data/admin/media";
 import { requireAdmin } from "@/lib/auth/session";
 import { formatDateTimeKst } from "@/lib/format";
 import styles from "../../../admin.module.css";
-import { DeleteContentForm, DraftBanner, EditForm, TransitionForm } from "../ContentForms";
+import { readTourFields } from "@/content/tourFields";
+import { DeleteContentForm, DraftBanner, EditForm, RecruitForm, TransitionForm } from "../ContentForms";
 
 export const metadata = { title: "콘텐츠 편집 · KYU 어드민" };
 
@@ -33,6 +34,8 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
   const status = row.status as ContentStatus;
   const problems = await publishProblems(db, admin, row, status === "review");
   const nextWeek = suggestPublishAt();
+  const isTour = row.type === "tour";
+  const tour = isTour ? readTourFields(view.fields) : null;
 
   return (
     <>
@@ -56,6 +59,11 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
           <EditForm
             initial={{
               id: row.id,
+              type: row.type,
+              tourFields: tour
+                ? { startDate: tour.startDate, endDate: tour.endDate, place: tour.place, recruit: tour.recruit, capacity: tour.capacity === null ? "" : String(tour.capacity), feeNote: tour.feeNote, videos: tour.videos.join("\n") }
+                : undefined,
+              tourGallery: tour?.gallery,
               version: row.version,
               title: view.title,
               slug: row.slug,
@@ -102,9 +110,19 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
               ))}
             </div>
             <p className={styles.note} style={{ margin: "12px 0 0" }}>
-              예약한 글은 정해진 시각이 지나면 공개 화면에 5분 안에 나타납니다. '발행됨' 표시와 기록은 다음 자동 실행 때 정리되며, 현재 무료 플랜에서는 하루 한 번(한국 시간 오전 9시) 실행됩니다.
+              예약한 글은 정해진 시각이 지나면 공개 화면에 5분 안에 나타납니다. “발행됨” 표시와 기록은 다음 자동 실행 때 정리되며, 현재 무료 플랜에서는 하루 한 번(한국 시간 오전 9시) 실행됩니다.
             </p>
           </section>
+
+          {tour && status === "published" ? (
+            <section className={styles.panel} style={{ marginTop: 16 }} aria-labelledby="recruit-title">
+              <h2 id="recruit-title" className={styles.h2} style={{ marginTop: 0 }}>
+                모집 상태
+              </h2>
+              <p className={styles.note}>마감하거나 다시 여는 것은 수정 내용 발행 없이 공개 화면에 바로 반영됩니다. 종료일이 지나면 모집 상태와 상관없이 “종료”로 보입니다.</p>
+              <RecruitForm id={row.id} version={row.version} current={tour.recruit} />
+            </section>
+          ) : null}
 
           <div className={styles.panel} style={{ marginTop: 16 }}>
             <DeleteContentForm id={row.id} />
