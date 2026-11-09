@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader, SectionLabel } from "@/components/ui/SectionHeader";
 import { TextLink } from "@/components/ui/TextLink";
-import { listFeaturedReviews } from "@/data";
-import { listOpenTours, reviewTourOptions } from "@/data/tours";
+import { listFeaturedReviews, reviewTourOptions } from "@/data/reviews";
+import { listOpenTours } from "@/data/tours";
 import { listStories } from "@/data/stories";
 import { getSiteSettings } from "@/settings/read";
 import { splitSlogan } from "@/settings/registry";
@@ -37,7 +37,7 @@ export default async function HomePage() {
   ));
   const stories = (await listStories()).slice(0, 3);
   const tour = (await listOpenTours())[0];
-  const reviews = listFeaturedReviews(3);
+  const reviews = await listFeaturedReviews(3);
   const tourOptions = await reviewTourOptions();
 
   return (

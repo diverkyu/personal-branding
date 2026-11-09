@@ -13,7 +13,7 @@ import { getDb } from "@/db/client";
 import type { AdminDb } from "@/data/admin/db";
 import { logger } from "@/lib/logger";
 import type { Tour } from "@/types/content";
-import { getTour as getFixtureTour, listOpenTours as fixtureOpen, listPastTours as fixturePast, listReviews, listUpcomingTours as fixtureUpcoming, reviewTourOptions as fixtureReviewOptions } from "./index";
+import { getTour as getFixtureTour, listOpenTours as fixtureOpen, listPastTours as fixturePast, listUpcomingTours as fixtureUpcoming } from "./index";
 import { openOf, pastOf, queryLiveTour, queryLiveTours, upcomingOf, type TourItem } from "./tourQueries";
 
 export type { TourItem } from "./tourQueries";
@@ -66,11 +66,4 @@ export async function getTourForInquiry(slug: string): Promise<Tour | undefined>
   const d = db();
   if (!d) return undefined;
   return (await queryLiveTours(d)).find((t) => t.slug === slug);
-}
-
-/** 후기의 "투어" 필터·링크에 쓰는 투어 (후기가 연결한 투어 중 공개된 것) */
-export async function reviewTourOptions(): Promise<Tour[]> {
-  if (shouldUseFixtures()) return fixtureReviewOptions();
-  const slugs = new Set(listReviews().map((r) => r.tourSlug).filter((s): s is string => Boolean(s)));
-  return (await all()).filter((t) => slugs.has(t.slug));
 }

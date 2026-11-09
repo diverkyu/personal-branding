@@ -4,7 +4,7 @@
  * 투어는 아직 DB 테이블이 아니므로 tour_slug 는 외래키 없이 문자열로만 둔다 (투어 테이블이 생기면 연결한다).
  */
 import { sql } from "drizzle-orm";
-import { check, index, integer, jsonb, pgTable, text, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { boolean, check, date, index, integer, jsonb, pgTable, text, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 export const inquiries = pgTable(
   "inquiries",
@@ -206,6 +206,78 @@ export const publishJobs = pgTable(
     index("publish_jobs_due_idx").on(t.state, t.runAt),
   ],
 );
+
+/**
+ * 수강 후기 (ADMIN-DESIGN §5.2, §24). 원문을 가공하지 않고 보관하며 평점은 없다.
+ * - status: private(비공개) / public(공개). **동의 확인(consent_confirmed)이 없으면 public 이 될 수 없다** — 서버 검사와 별개로 DB 제약이 막는다.
+ * - tour_slug 는 투어 콘텐츠의 주소 이름이다 (외래키 없음: 투어는 contents 의 한 유형이다).
+ * - 고칠 때마다 review_revisions 에 그 시점의 내용을 남긴다. deleted_at 이 있으면 삭제(휴지통)다.
+ */
+export const reviews = pgTable(
+  "reviews",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** 후기 원문 (1~1,000자). 가공하지 않는다 */
+    body: text("body").notNull(),
+    /** 수강생 표기 (동의받은 방식: 실명·이니셜·닉네임) */
+    authorLabel: text("author_label").notNull(),
+    /** real(실명) / initial(이니셜) / nick(닉네임) — 기록용 */
+    labelKind: text("label_kind").notNull(),
+    writtenOn: date("written_on", { mode: "string" }).notNull(),
+    /** bluepebble / instagram / direct / other / 빈 문자열 — 기록용, 공개하지 않음 */
+    sourceKind: text("source_kind").notNull().default(""),
+    sourceNote: text("source_note").notNull().default(""),
+    tourSlug: text("tour_slug"),
+    isFeatured: boolean("is_featured").notNull().default(false),
+    featuredOrder: integer("featured_order").notNull().default(100),
+    consentConfirmed: boolean("consent_confirmed").notNull().default(false),
+    /** 동의 방법과 일자 메모 — 기록용, 공개하지 않음 */
+    consentNote: text("consent_note").notNull().default(""),
+    status: text("status").notNull().default("private"),
+    version: integer("version").notNull().default(1),
+    createdBy: text("created_by").notNull(),
+    updatedBy: text("updated_by").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  },
+  (t) => [
+    check("reviews_body_check", sql`char_length(${t.body}) between 1 and 1000`),
+    check("reviews_author_check", sql`char_length(${t.authorLabel}) between 1 and 40`),
+    check("reviews_label_kind_check", sql`${t.labelKind} in ('real', 'initial', 'nick')`),
+    check("reviews_source_kind_check", sql`${t.sourceKind} in ('', 'bluepebble', 'instagram', 'direct', 'other')`),
+    check("reviews_status_check", sql`${t.status} in ('private', 'public')`),
+    check("reviews_consent_check", sql`${t.status} <> 'public' or ${t.consentConfirmed}`),
+    check("reviews_featured_order_check", sql`${t.featuredOrder} between 0 and 9999`),
+    index("reviews_status_written_idx").on(t.status, t.writtenOn),
+    index("reviews_tour_idx").on(t.tourSlug),
+  ],
+);
+
+/** 후기 수정 이력. 만들기·고치기·공개 전환·철회·삭제 때마다 그 시점의 내용을 통째로 남긴다 (SCREEN-SPEC ADM-REV) */
+export const reviewRevisions = pgTable(
+  "review_revisions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    reviewId: uuid("review_id")
+      .notNull()
+      .references(() => reviews.id),
+    /** 그 시점의 reviews.version */
+    version: integer("version").notNull(),
+    /** create / edit / status / withdraw / delete */
+    reason: text("reason").notNull(),
+    snapshot: jsonb("snapshot").$type<Record<string, unknown>>().notNull(),
+    changedBy: text("changed_by").notNull(),
+    changedAt: timestamp("changed_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    check("review_revisions_reason_check", sql`${t.reason} in ('create', 'edit', 'status', 'withdraw', 'delete')`),
+    index("review_revisions_review_idx").on(t.reviewId, t.version),
+  ],
+);
+
+export type ReviewRow = typeof reviews.$inferSelect;
+export type ReviewRevisionRow = typeof reviewRevisions.$inferSelect;
 
 export type ContentRow = typeof contents.$inferSelect;
 export type PublishJobRow = typeof publishJobs.$inferSelect;

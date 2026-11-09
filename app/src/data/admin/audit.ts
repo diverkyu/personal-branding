@@ -8,7 +8,7 @@ import type { AdminSession } from "@/lib/auth/types";
 import { logger } from "@/lib/logger";
 import type { AdminDb } from "./db";
 
-export type AuditAction = "inquiry.view" | "inquiry.status_change" | "inquiry.memo_update" | "inquiry.delete" | "inquiry.export" | "settings.update" | "consent.publish" | "media.upload" | "media.alt_update" | "media.delete" | "content.create" | "content.save" | "content.transition" | "content.discard_draft" | "content.publish_draft" | "content.recruit_status" | "content.delete" | "content.retry_job" | "content.publish_scheduled";
+export type AuditAction = "inquiry.view" | "inquiry.status_change" | "inquiry.memo_update" | "inquiry.delete" | "inquiry.export" | "settings.update" | "consent.publish" | "media.upload" | "media.alt_update" | "media.delete" | "content.create" | "content.save" | "content.transition" | "content.discard_draft" | "content.publish_draft" | "content.recruit_status" | "review.create" | "review.save" | "review.status" | "review.withdraw" | "review.delete" | "content.delete" | "content.retry_job" | "content.publish_scheduled";
 
 export const AUDIT_LABELS: Record<AuditAction, string> = {
   "inquiry.view": "신청·문의 열람",
@@ -27,6 +27,11 @@ export const AUDIT_LABELS: Record<AuditAction, string> = {
   "content.discard_draft": "발행된 글의 수정 내용 버리기",
   "content.publish_draft": "발행된 글의 수정 내용 반영",
   "content.recruit_status": "투어 모집 상태 변경",
+  "review.create": "후기 만들기",
+  "review.save": "후기 수정",
+  "review.status": "후기 공개 상태 변경",
+  "review.withdraw": "후기 철회(즉시 비공개)",
+  "review.delete": "후기 삭제",
   "content.delete": "콘텐츠 삭제",
   "content.retry_job": "예약 발행 다시 시도",
   "content.publish_scheduled": "예약 발행 실행(자동)",

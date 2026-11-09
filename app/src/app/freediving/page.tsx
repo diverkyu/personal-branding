@@ -11,9 +11,9 @@ import { PageIntro } from "@/components/layout/PageIntro";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { TextLink } from "@/components/ui/TextLink";
-import { listFeaturedReviews } from "@/data";
 import { listEquipment, listEquipmentCategories } from "@/data/equipment";
-import { listPastTours, listUpcomingTours, reviewTourOptions } from "@/data/tours";
+import { listFeaturedReviews, reviewTourOptions } from "@/data/reviews";
+import { listPastTours, listUpcomingTours } from "@/data/tours";
 import pages from "../pages.module.css";
 
 export const metadata: Metadata = { title: "Freediving" };
@@ -31,7 +31,7 @@ export default async function FreedivingPage() {
   const past = await listPastTours();
   const equipment = (await listEquipment()).slice(0, EQUIPMENT_LIMIT);
   const equipmentCategories = await listEquipmentCategories();
-  const reviews = listFeaturedReviews(3);
+  const reviews = await listFeaturedReviews(3);
   const tourOptions = await reviewTourOptions();
 
   return (

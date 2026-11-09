@@ -152,7 +152,7 @@ test.describe("필터와 상태별 화면", () => {
   test("후기: 원문 줄바꿈 유지, 평점 없음, 연결 투어 링크", async ({ page }) => {
     await page.goto("/freediving/reviews");
     const card = page.locator("figure", { hasText: "예시 후기 원문입니다." });
-    expect(await card.locator("blockquote").evaluate((el) => getComputedStyle(el).whiteSpace)).toBe("pre-line");
+    expect(await card.locator("blockquote").evaluate((el) => getComputedStyle(el).whiteSpace)).toBe("pre-wrap");
     await expect(card.getByRole("link", { name: /입문|여름|초여름/ })).toHaveCount(1);
     await expect(page.getByText(/★|별점|평점/)).toHaveCount(0);
   });

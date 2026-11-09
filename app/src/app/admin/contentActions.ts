@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, updateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { adminDb } from "@/data/admin/dbServer";
 import {
@@ -14,17 +14,11 @@ import {
   transitionContent,
   type ContentEdit,
 } from "@/data/admin/contents";
-import { PUBLIC_CONTENT_TAGS } from "@/content/cacheTags";
 import { STATUSES, parseKstLocal, type ContentOrigin, type ContentStatus } from "@/content/publish";
 import { AppError, errorKindOf } from "@/lib/errors";
 import { requireAdmin } from "@/lib/auth/session";
 import { logger } from "@/lib/logger";
-
-/** 공개 화면의 콘텐츠 캐시(스토리·투어)를 바로 갱신한다 (발행·취소·삭제·모집 상태 변경 때) */
-function refreshPublic() {
-  for (const tag of PUBLIC_CONTENT_TAGS) updateTag(tag);
-  revalidatePath("/", "layout");
-}
+import { refreshPublic } from "./refreshPublic";
 
 /**
  * 콘텐츠 서버 액션. 호출할 때마다 requireAdmin() 을 다시 거친다.
