@@ -16,7 +16,13 @@ const GROUPS = [
       { href: "/admin/schedule", label: "발행 일정" },
     ],
   },
-  { title: "운영", items: [{ href: "/admin/inquiries", label: "신청·문의" }] },
+  {
+    title: "운영",
+    items: [
+      { href: "/admin/inquiries", label: "신청·문의" },
+      { href: "/admin/reviews", label: "수강 후기" },
+    ],
+  },
   { title: "자산", items: [{ href: "/admin/media", label: "미디어" }] },
   {
     title: "사이트",

@@ -6,18 +6,19 @@ import { reviewCard, tourHref } from "@/components/site/mappers";
 import { PageIntro } from "@/components/layout/PageIntro";
 import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
-import { listReviews } from "@/data";
-import { listOpenTours, reviewTourOptions } from "@/data/tours";
+import { listReviews, reviewTourOptions } from "@/data/reviews";
+import { listOpenTours } from "@/data/tours";
 import pages from "../../pages.module.css";
 
 export const metadata: Metadata = { title: "수강 후기" };
 
-/** 투어는 어드민에서 발행·취소·마감할 때 바로 갱신되고, 종료 여부는 최대 5분 안에 반영된다 */
+/** 후기는 어드민에서 공개·철회·삭제할 때 바로 갱신되고, 투어 종료 여부는 최대 5분 안에 반영된다 */
 export const revalidate = 300;
 
 /** REV 전체 (SCREEN-SPEC §5.10). 후기는 원문 그대로이며 평점이 없다. 필터는 URL(?tour=)에 남는다. */
 export default async function ReviewsPage() {
   const tours = await reviewTourOptions();
+  const reviews = await listReviews();
   const next = (await listOpenTours())[0];
   return (
     <>
@@ -28,7 +29,7 @@ export default async function ReviewsPage() {
             label="투어별 후기"
             param="tour"
             options={tours.map((t) => ({ value: t.slug, label: t.title }))}
-            items={listReviews().map((r) => ({ id: r.id, values: r.tourSlug ? [r.tourSlug] : [], node: <ReviewCard {...reviewCard(r, tours)} /> }))}
+            items={reviews.map((r) => ({ id: r.id, values: r.tourSlug ? [r.tourSlug] : [], node: <ReviewCard {...reviewCard(r, tours)} /> }))}
             surface="light"
             listClassName={pages.grid3}
             pagination={{ mode: "more", size: 12 }}

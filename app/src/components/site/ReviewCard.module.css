@@ -12,7 +12,8 @@
   font-size: 15px;
   line-height: 1.85;
   overflow-wrap: break-word;
-  white-space: pre-line;
+  /* 원문을 가공하지 않는다: 줄바꿈과 연속 띄어쓰기를 쓴 그대로 보여 준다 (ADMIN-DESIGN §24) */
+  white-space: pre-wrap;
 }
 
 .caption {
