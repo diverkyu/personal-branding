@@ -8,7 +8,7 @@ import type { AdminSession } from "@/lib/auth/types";
 import { logger } from "@/lib/logger";
 import type { AdminDb } from "./db";
 
-export type AuditAction = "inquiry.view" | "inquiry.status_change" | "inquiry.memo_update" | "inquiry.delete" | "inquiry.export" | "settings.update" | "consent.publish" | "media.upload" | "media.alt_update" | "media.delete" | "content.create" | "content.save" | "content.transition" | "content.discard_draft" | "content.publish_draft" | "content.recruit_status" | "review.create" | "review.save" | "review.status" | "review.withdraw" | "review.delete" | "content.delete" | "content.retry_job" | "content.publish_scheduled" | "trash.restore" | "trash.purge";
+export type AuditAction = "inquiry.view" | "inquiry.status_change" | "inquiry.memo_update" | "inquiry.delete" | "inquiry.export" | "settings.update" | "consent.publish" | "media.upload" | "media.alt_update" | "media.delete" | "content.create" | "content.save" | "content.transition" | "content.discard_draft" | "content.publish_draft" | "content.recruit_status" | "review.create" | "review.save" | "review.status" | "review.withdraw" | "review.delete" | "content.delete" | "content.retry_job" | "content.publish_scheduled" | "trash.restore" | "trash.purge" | "about.save" | "about.publish" | "about.discard" | "about.unpublish" | "taxonomy.rename" | "taxonomy.remove";
 
 export const AUDIT_LABELS: Record<AuditAction, string> = {
   "inquiry.view": "신청·문의 열람",
@@ -37,6 +37,12 @@ export const AUDIT_LABELS: Record<AuditAction, string> = {
   "content.publish_scheduled": "예약 발행 실행(자동)",
   "trash.restore": "휴지통에서 복원",
   "trash.purge": "영구 삭제",
+  "about.save": "About 저장(수정 중)",
+  "about.publish": "About 공개 반영",
+  "about.discard": "About 수정 내용 버리기",
+  "about.unpublish": "About 공개 중단",
+  "taxonomy.rename": "태그·카테고리 이름 바꾸기·합치기",
+  "taxonomy.remove": "태그 지우기",
 };
 
 export interface AuditEntry {
