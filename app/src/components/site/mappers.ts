@@ -31,10 +31,11 @@ export function tourArchiveCard(t: Tour): TourArchiveCardData {
   return { href: tourHref(t), title: t.title, extras: t.extras, thumbVariant: t.thumbVariant };
 }
 
-export function equipmentCard(e: Equipment): EquipmentCardData {
+export function equipmentCard(e: Equipment & { cover?: { src: string; alt: string } }): EquipmentCardData {
+  const label = e.buttonLabel || undefined;
   const action: EquipmentCardData["action"] =
-    e.action === "external" && e.externalUrl ? { type: "external", href: e.externalUrl } : e.action === "inquiry" ? { type: "inquiry", href: "/contact" } : undefined;
-  return { href: equipmentHref(e), name: e.name, category: e.category, reason: e.reason, action, affiliate: e.affiliate, thumbVariant: e.thumbVariant };
+    e.action === "external" && e.externalUrl ? { type: "external", href: e.externalUrl, label } : e.action === "inquiry" ? { type: "inquiry", href: "/contact", label } : undefined;
+  return { href: equipmentHref(e), name: e.name, category: e.category, reason: e.reason, action, affiliate: e.affiliate, image: e.cover, thumbVariant: e.thumbVariant };
 }
 
 export function reviewCard(r: Review, tours: Tour[]): ReviewCardData {

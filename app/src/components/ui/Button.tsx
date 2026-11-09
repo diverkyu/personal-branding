@@ -19,7 +19,11 @@ interface CommonProps {
   className?: string;
 }
 
-type LinkProps = CommonProps & { href: string };
+type LinkProps = CommonProps & {
+  href: string;
+  /** 외부 링크의 rel 을 바꾼다 (제휴 링크는 "sponsored nofollow noopener noreferrer") */
+  rel?: string;
+};
 type ActionProps = CommonProps &
   Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className" | "children"> & {
     /** 제출·저장 중. 중복 제출을 막고 보조기기에 진행 중임을 알린다 */
@@ -42,7 +46,7 @@ export function Button(props: ButtonProps) {
 
   if ("href" in rest) {
     return (
-      <SmartLink href={rest.href} className={classes} {...data}>
+      <SmartLink href={rest.href} rel={rest.rel} className={classes} {...data}>
         {content}
       </SmartLink>
     );

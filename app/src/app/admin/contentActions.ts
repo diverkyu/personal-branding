@@ -90,18 +90,39 @@ function editFromForm(formData: FormData): ContentEdit {
   };
 }
 
-/** 투어 입력(f_ 로 시작하는 칸)을 유형별 항목으로 묶는다. 스토리 화면에는 이 칸이 없고, 서버는 유형 정의에 따라 쓰거나 버린다 */
-function fieldsFromForm(formData: FormData): Record<string, unknown> {
-  let gallery: unknown = [];
-  const raw = text(formData, "galleryJson", 20_000);
-  if (raw) {
-    try {
-      gallery = JSON.parse(raw);
-    } catch {
-      throw new AppError("validation", "갤러리를 읽을 수 없습니다. 새로고침한 뒤 다시 시도해 주세요.");
-    }
+function jsonList(formData: FormData, key: string, what: string): unknown[] {
+  const raw = text(formData, key, 20_000);
+  if (!raw) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    throw new AppError("validation", `${what}을(를) 읽을 수 없습니다. 새로고침한 뒤 다시 시도해 주세요.`);
   }
+}
+
+/**
+ * 유형별 입력(f_ 로 시작하는 칸)을 항목으로 묶는다. 투어·장비 입력을 모두 담고, 서버가 글의 유형에 따라
+ * 필요한 것만 검사해 쓰고 나머지는 버린다 (스토리는 모두 버린다).
+ */
+function fieldsFromForm(formData: FormData): Record<string, unknown> {
+  const gallery = jsonList(formData, "galleryJson", "갤러리");
+  const equipmentImages = jsonList(formData, "imagesJson", "추가 이미지").map((i) => (i && typeof i === "object" ? (i as { mediaId?: unknown }).mediaId : undefined));
   return {
+    // 장비
+    category: text(formData, "f_category", 200),
+    brand: text(formData, "f_brand", 200),
+    features: text(formData, "f_features", 3000).split(/\r?\n/),
+    thumbMediaId: text(formData, "f_thumb", 64),
+    images: equipmentImages,
+    priceNote: text(formData, "f_priceNote", 200),
+    checkedAt: text(formData, "f_checkedAt", 20),
+    action: text(formData, "f_action", 20),
+    externalUrl: text(formData, "f_externalUrl", 600),
+    buttonLabel: text(formData, "f_buttonLabel", 100),
+    affiliate: text(formData, "f_affiliate", 10) === "on",
+    sortOrder: text(formData, "f_sortOrder", 10),
+    // 투어
     startDate: text(formData, "f_startDate", 20),
     endDate: text(formData, "f_endDate", 20),
     place: text(formData, "f_place", 300),
@@ -116,7 +137,7 @@ function fieldsFromForm(formData: FormData): Record<string, unknown> {
 export async function saveContentAction(_: ContentState, formData: FormData): Promise<ContentState> {
   const admin = await requireAdmin();
   const id = text(formData, "id", 64);
-  const values = Object.fromEntries(["title", "slug", "summary", "tags", "answers", "seoTitle", "seoDescription", "origin", "originNote", "f_startDate", "f_endDate", "f_place", "f_recruit", "f_capacity", "f_feeNote", "f_videos"].map((k) => [k, text(formData, k, 5000)]));
+  const values = Object.fromEntries(["title", "slug", "summary", "tags", "answers", "seoTitle", "seoDescription", "origin", "originNote", "f_startDate", "f_endDate", "f_place", "f_recruit", "f_capacity", "f_feeNote", "f_videos", "f_category", "f_thumb", "f_brand", "f_features", "f_priceNote", "f_checkedAt", "f_action", "f_externalUrl", "f_buttonLabel", "f_affiliate", "f_sortOrder"].map((k) => [k, text(formData, k, 5000)]));
   try {
     const db = adminDb();
     const saved = await saveContent(db, admin, id, versionOf(formData), editFromForm(formData));

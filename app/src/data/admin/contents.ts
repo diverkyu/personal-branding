@@ -55,13 +55,16 @@ function cleanList(values: string[], max: number, maxLen: number, label: string)
 }
 
 export function cleanEdit(input: ContentEdit, type: string = "story"): CleanEdit {
+  const typeDef = CONTENT_TYPES[type];
+  const titleMax = typeDef?.titleMax ?? LIMITS.title;
+  const summaryMax = typeDef?.summaryMax ?? LIMITS.summary;
   const title = input.title.replace(/\s+/g, " ").trim();
   if (!title) throw new AppError("validation", "제목을 입력해 주세요.");
-  if (title.length > LIMITS.title) throw new AppError("validation", `제목은 ${LIMITS.title}자까지 쓸 수 있습니다.`);
+  if (title.length > titleMax) throw new AppError("validation", `제목은 ${titleMax}자까지 쓸 수 있습니다.`);
   const slugError = validateSlug(input.slug);
   if (slugError) throw new AppError("validation", slugError);
   const summary = input.summary.replace(/\s+/g, " ").trim();
-  if (summary.length > LIMITS.summary) throw new AppError("validation", `요약은 ${LIMITS.summary}자까지 쓸 수 있습니다.`);
+  if (summary.length > summaryMax) throw new AppError("validation", `${typeDef?.summaryLabel ?? "요약"}은(는) ${summaryMax}자까지 쓸 수 있습니다.`);
   const seoTitle = input.seoTitle.replace(/\s+/g, " ").trim();
   const seoDescription = input.seoDescription.replace(/\s+/g, " ").trim();
   if (seoTitle.length > LIMITS.seoTitle) throw new AppError("validation", `검색 제목은 ${LIMITS.seoTitle}자까지 쓸 수 있습니다.`);
@@ -223,8 +226,9 @@ async function uniqueSlug(db: AdminDb, type: string, base: string): Promise<stri
 export async function createContent(db: AdminDb, admin: AdminSession, input: { type: string; title: string }): Promise<ContentRow> {
   if (!isContentType(input.type)) throw new AppError("validation", "알 수 없는 콘텐츠 유형입니다.");
   const title = input.title.replace(/\s+/g, " ").trim();
+  const titleMax = CONTENT_TYPES[input.type]?.titleMax ?? LIMITS.title;
   if (!title) throw new AppError("validation", "제목을 입력해 주세요.");
-  if (title.length > LIMITS.title) throw new AppError("validation", `제목은 ${LIMITS.title}자까지 쓸 수 있습니다.`);
+  if (title.length > titleMax) throw new AppError("validation", `제목은 ${titleMax}자까지 쓸 수 있습니다.`);
   const fromTitle = slugFromTitle(title);
   const base = validateSlug(fromTitle) === null ? fromTitle : `${input.type}-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}`;
   const slug = await uniqueSlug(db, input.type, base);
@@ -255,7 +259,7 @@ async function assertFieldMedia(db: AdminDb, type: string, fields: Record<string
   const ids = CONTENT_TYPES[type]?.fields?.mediaIds(fields) ?? [];
   if (ids.length === 0) return;
   const found = await db.select({ id: media.id }).from(media).where(and(inArray(media.id, ids), isNull(media.deletedAt)));
-  if (found.length !== ids.length) throw new AppError("validation", "갤러리에 삭제되었거나 없는 이미지가 있습니다. 이미지를 빼고 다시 저장해 주세요.");
+  if (found.length !== ids.length) throw new AppError("validation", `${CONTENT_TYPES[type]?.fields?.mediaLabel ?? "이미지"}에 삭제되었거나 없는 이미지가 있습니다. 이미지를 빼고 다시 저장해 주세요.`);
 }
 
 /**
@@ -275,16 +279,18 @@ export async function publishProblems(db: AdminDb, admin: AdminSession, row: Con
       if (missing > 0) problems.push(`본문 이미지 ${missing}개에 대체 텍스트가 없습니다. 어드민 > 미디어에서 입력해 주세요.`);
     }
   }
-  const def = CONTENT_TYPES[row.type]?.fields;
+  const typeDef = CONTENT_TYPES[row.type];
+  if (typeDef?.summaryRequired && !editableView(row).summary.trim()) problems.push(`${typeDef.summaryLabel ?? "요약"}을(를) 입력해 주세요.`);
+  const def = typeDef?.fields;
   if (def) {
     const fields = editableView(row).fields;
     problems.push(...def.problems(fields));
     const ids = def.mediaIds(fields);
     if (ids.length > 0) {
       const rows = await db.select({ id: media.id, alt: media.alt }).from(media).where(and(inArray(media.id, ids), isNull(media.deletedAt)));
-      if (rows.length !== ids.length) problems.push("갤러리에 삭제되었거나 없는 이미지가 있습니다.");
+      if (rows.length !== ids.length) problems.push(`${def.mediaLabel}에 삭제되었거나 없는 이미지가 있습니다.`);
       const missing = rows.filter((r) => !r.alt || !r.alt.trim()).length;
-      if (missing > 0) problems.push(`갤러리 사진 ${missing}개에 대체 텍스트가 없습니다. 어드민 > 미디어에서 입력해 주세요.`);
+      if (missing > 0) problems.push(`${def.mediaLabel} ${missing}개에 대체 텍스트가 없습니다. 어드민 > 미디어에서 입력해 주세요.`);
     }
   }
   return problems;
@@ -325,7 +331,7 @@ function checkInput(row: ContentRow, reviewed: boolean) {
   return {
     title: view.title,
     slug: row.slug,
-    bodyEmpty: !body.ok || isBodyEmpty(body.doc),
+    bodyEmpty: !CONTENT_TYPES[row.type]?.bodyOptional && (!body.ok || isBodyEmpty(body.doc)),
     summary: view.summary,
     origin: view.origin,
     reviewed,
@@ -515,6 +521,13 @@ export async function listTourOptions(db: AdminDb, admin: AdminSession): Promise
     .map((r) => ({ slug: r.slug, title: r.title, start: String((r.fields as Record<string, unknown>)?.startDate ?? "") }))
     .sort((a, b) => b.start.localeCompare(a.start))
     .map(({ slug, title }) => ({ slug, title }));
+}
+
+/** 장비 입력에서 고를 수 있는 카테고리: 삭제되지 않은 장비가 쓰고 있는 것 (가나다순) */
+export async function listEquipmentCategoryNames(db: AdminDb, admin: AdminSession): Promise<string[]> {
+  void admin;
+  const rows = await db.select({ fields: contents.fields }).from(contents).where(and(eq(contents.type, "equipment"), isNull(contents.deletedAt)));
+  return [...new Set(rows.map((r) => String((r.fields as Record<string, unknown>)?.category ?? "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, "ko"));
 }
 
 export function summaryOf(row: ContentRow): string {

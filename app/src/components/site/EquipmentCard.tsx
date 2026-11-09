@@ -33,6 +33,9 @@ interface EquipmentCardProps extends EquipmentCardData {
   className?: string;
 }
 
+/** 제휴 링크는 검색엔진에 광고성 링크임을 알린다 */
+export const affiliateRel = (affiliate: boolean): string | undefined => (affiliate ? "sponsored nofollow noopener noreferrer" : undefined);
+
 const DEFAULT_LABEL = { external: "구매처 보기", inquiry: "문의하기" } as const;
 
 export function EquipmentCard({ href, name, category, reason, action, affiliate = false, affiliateNotice, image, thumbVariant, className, headingLevel = 3 }: EquipmentCardProps) {
@@ -49,7 +52,7 @@ export function EquipmentCard({ href, name, category, reason, action, affiliate 
       <p className={styles.reason}>{reason}</p>
       {action ? (
         <div className={styles.action}>
-          <Button href={action.href} variant={action.type === "external" ? "primary" : "outline"} size="S" icon={action.type === "external" ? "arrow-up-right" : undefined}>
+          <Button href={action.href} rel={affiliateRel(action.type === "external" && affiliate)} variant={action.type === "external" ? "primary" : "outline"} size="S" icon={action.type === "external" ? "arrow-up-right" : undefined}>
             {action.label ?? DEFAULT_LABEL[action.type]}
           </Button>
           {affiliate && affiliateNotice ? <p className={styles.notice}>{affiliateNotice}</p> : null}

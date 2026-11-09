@@ -26,7 +26,25 @@ export interface GalleryEntry {
  * 갤러리 고르기. 미디어 라이브러리의 이미지를 골라 순서·설명을 정한다. 값은 숨은 입력(galleryJson)으로 폼과 함께 간다.
  * 대체 텍스트는 이미지(미디어)에 저장된 것을 쓰므로, 없는 이미지는 경고를 보여 주고 발행 점검에서 막는다.
  */
-function GalleryField({ initial, media }: { initial: GalleryEntry[]; media: PickerMedia[] }) {
+export function GalleryField({
+  initial,
+  media,
+  name = "galleryJson",
+  legend = "갤러리",
+  noun = "사진",
+  max = TOUR_LIMITS.gallery,
+  captions = true,
+}: {
+  initial: GalleryEntry[];
+  media: PickerMedia[];
+  /** 값을 담는 숨은 입력의 이름 */
+  name?: string;
+  legend?: string;
+  noun?: string;
+  max?: number;
+  /** false 이면 사진 설명 입력을 숨긴다 */
+  captions?: boolean;
+}) {
   const [items, setItems] = useState<GalleryEntry[]>(initial);
   const [pick, setPick] = useState("");
   const byId = new Map(media.map((m) => [m.id, m]));
@@ -42,8 +60,8 @@ function GalleryField({ initial, media }: { initial: GalleryEntry[]; media: Pick
 
   return (
     <fieldset className={styles.fieldset}>
-      <legend className={styles.fieldLabel}>갤러리 (사진 {items.length}/{TOUR_LIMITS.gallery}장)</legend>
-      <input type="hidden" name="galleryJson" value={JSON.stringify(items)} />
+      <legend className={styles.fieldLabel}>{legend} ({noun} {items.length}/{max}장)</legend>
+      <input type="hidden" name={name} value={JSON.stringify(items)} />
       {items.length === 0 ? (
         <p className={styles.note} style={{ margin: "0 0 8px" }}>
           아직 넣은 사진이 없습니다. 어드민 &gt; 미디어에 먼저 올린 사진을 고를 수 있습니다.
@@ -61,28 +79,30 @@ function GalleryField({ initial, media }: { initial: GalleryEntry[]; media: Pick
                   <span className={styles.note}>목록에 없음</span>
                 )}
                 <div style={{ display: "grid", gap: 6 }}>
-                  <input
-                    type="text"
-                    aria-label={`${i + 1}번째 사진 설명`}
-                    placeholder="사진 설명 (선택)"
-                    value={item.caption}
-                    maxLength={TOUR_LIMITS.caption}
-                    onChange={(e) => setItems((list) => list.map((x, j) => (j === i ? { ...x, caption: e.target.value } : x)))}
-                    className={styles.select}
-                  />
+                  {captions ? (
+                    <input
+                      type="text"
+                      aria-label={`${i + 1}번째 ${noun} 설명`}
+                      placeholder={`${noun} 설명 (선택)`}
+                      value={item.caption}
+                      maxLength={TOUR_LIMITS.caption}
+                      onChange={(e) => setItems((list) => list.map((x, j) => (j === i ? { ...x, caption: e.target.value } : x)))}
+                      className={styles.select}
+                    />
+                  ) : null}
                   {m && !m.alt.trim() ? (
                     <span className={styles.note} role="status" style={{ margin: 0 }}>
                       대체 텍스트가 없습니다. 어드민 &gt; 미디어에서 입력하지 않으면 발행할 수 없습니다.
                     </span>
                   ) : null}
                   <span className={styles.row}>
-                    <button type="button" className={styles.smallButton} onClick={() => move(i, -1)} disabled={i === 0} aria-label={`${i + 1}번째 사진 위로`}>
+                    <button type="button" className={styles.smallButton} onClick={() => move(i, -1)} disabled={i === 0} aria-label={`${i + 1}번째 ${noun} 위로`}>
                       위로
                     </button>
-                    <button type="button" className={styles.smallButton} onClick={() => move(i, 1)} disabled={i === items.length - 1} aria-label={`${i + 1}번째 사진 아래로`}>
+                    <button type="button" className={styles.smallButton} onClick={() => move(i, 1)} disabled={i === items.length - 1} aria-label={`${i + 1}번째 ${noun} 아래로`}>
                       아래로
                     </button>
-                    <button type="button" className={styles.linkButton} onClick={() => setItems((list) => list.filter((_, j) => j !== i))} aria-label={`${i + 1}번째 사진 빼기`}>
+                    <button type="button" className={styles.linkButton} onClick={() => setItems((list) => list.filter((_, j) => j !== i))} aria-label={`${i + 1}번째 ${noun} 빼기`}>
                       빼기
                     </button>
                   </span>
@@ -92,10 +112,10 @@ function GalleryField({ initial, media }: { initial: GalleryEntry[]; media: Pick
           })}
         </ol>
       )}
-      {items.length < TOUR_LIMITS.gallery ? (
+      {items.length < max ? (
         <div className={styles.row}>
-          <select aria-label="추가할 사진" value={pick} onChange={(e) => setPick(e.target.value)} className={styles.select} style={{ maxWidth: 360 }}>
-            <option value="">사진 고르기…</option>
+          <select aria-label={`추가할 ${noun}`} value={pick} onChange={(e) => setPick(e.target.value)} className={styles.select} style={{ maxWidth: 360 }}>
+            <option value="">{noun} 고르기…</option>
             {available.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.alt.trim() ? m.alt : `(대체 텍스트 없음) ${m.id.slice(0, 8)}`}

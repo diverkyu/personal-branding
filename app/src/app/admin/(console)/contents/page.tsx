@@ -41,6 +41,7 @@ export default async function ContentsPage({ searchParams }: { searchParams: Sea
       <section className={styles.panel} style={{ marginBottom: 16, display: "grid", gap: 16 }} aria-label="새 콘텐츠 만들기">
         <NewContentForm type="story" noun="스토리" nameLabel="제목" />
         <NewContentForm type="tour" noun="투어" nameLabel="이름" />
+        <NewContentForm type="equipment" noun="장비" nameLabel="이름" />
       </section>
 
       <nav className={styles.row} aria-label="유형으로 거르기" style={{ margin: "8px 0" }}>
@@ -77,7 +78,7 @@ export default async function ContentsPage({ searchParams }: { searchParams: Sea
       {items.length === 0 ? (
         <div className={styles.panel}>
           <p className={styles.note} style={{ margin: 0 }}>
-            {query.status || query.q ? "조건에 맞는 콘텐츠가 없습니다." : "아직 콘텐츠가 없습니다. 위에서 첫 스토리나 투어를 만들어 보세요."}
+            {query.status || query.q ? "조건에 맞는 콘텐츠가 없습니다." : "아직 콘텐츠가 없습니다. 위에서 첫 스토리·투어·장비를 만들어 보세요."}
           </p>
         </div>
       ) : (

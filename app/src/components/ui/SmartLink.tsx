@@ -13,30 +13,30 @@ type SmartLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & { 
  * - 사이트 안 주소(/…, #…)는 next/link, http(s)는 새 탭 + rel, mailto·tel 은 일반 앵커.
  * - javascript:, data: 같은 위험한 스킴은 "#"으로 바꿔 렌더링하지 않는다.
  */
-export function SmartLink({ href, children, ...rest }: SmartLinkProps) {
+export function SmartLink({ href, children, rel, ...rest }: SmartLinkProps) {
   if (isExternalHref(href)) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" {...rest}>
+      <a href={href} target="_blank" {...rest} rel={rel ?? "noopener noreferrer"}>
         {children}
       </a>
     );
   }
   if (href.startsWith("/") || href.startsWith("#")) {
     return (
-      <Link href={href} {...rest}>
+      <Link href={href} rel={rel} {...rest}>
         {children}
       </Link>
     );
   }
   if (/^(mailto|tel):/i.test(href)) {
     return (
-      <a href={href} {...rest}>
+      <a href={href} rel={rel} {...rest}>
         {children}
       </a>
     );
   }
   return (
-    <a href="#" {...rest}>
+    <a href="#" rel={rel} {...rest}>
       {children}
     </a>
   );
