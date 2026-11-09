@@ -1,3 +1,4 @@
+import { EMPTY_EQUIPMENT_FIELDS, EQUIPMENT_LIMITS, cleanEquipmentFields, equipmentMediaIds, equipmentProblems, readEquipmentFields } from "./equipmentFields";
 import { EMPTY_TOUR_FIELDS, cleanTourFields, readTourFields, tourMediaIds, tourProblems } from "./tourFields";
 
 /**
@@ -13,6 +14,8 @@ export interface FieldsDef {
   problems: (stored: unknown) => string[];
   /** 이 항목이 쓰는 이미지 id (존재 확인·사용 집계에 쓴다) */
   mediaIds: (stored: unknown) => string[];
+  /** 발행 점검 문구에서 이미지를 부르는 이름 (예: "갤러리 사진") */
+  mediaLabel: string;
 }
 
 export interface ContentTypeDef {
@@ -23,6 +26,17 @@ export interface ContentTypeDef {
   publicPath: (slug: string) => string;
   /** 유형별 항목. 없으면 공통 항목만 쓴다 */
   fields?: FieldsDef;
+  /** 제목 최대 글자 수 (기본 80) */
+  titleMax?: number;
+  /** 요약 최대 글자 수 (기본 300). 장비는 "한 줄 추천 이유"라 짧다 */
+  summaryMax?: number;
+  /** true 이면 요약이 비어 있을 때 발행할 수 없다 */
+  summaryRequired?: boolean;
+  /** true 이면 본문이 비어 있어도 발행할 수 있다 (장비의 추천 이유 상세처럼 선택인 경우) */
+  bodyOptional?: boolean;
+  /** 화면에서 요약·본문을 부르는 이름 */
+  summaryLabel?: string;
+  bodyLabel?: string;
 }
 
 export const CONTENT_TYPES: Record<string, ContentTypeDef> = {
@@ -36,6 +50,26 @@ export const CONTENT_TYPES: Record<string, ContentTypeDef> = {
       clean: (input) => cleanTourFields(input) as unknown as Record<string, unknown>,
       problems: (stored) => tourProblems(readTourFields(stored)),
       mediaIds: (stored) => tourMediaIds(readTourFields(stored)),
+      mediaLabel: "갤러리 사진",
+    },
+    bodyLabel: "투어 소개",
+  },
+  equipment: {
+    key: "equipment",
+    label: "장비",
+    publicPath: (slug) => `/freediving/equipment/${slug}`,
+    titleMax: EQUIPMENT_LIMITS.title,
+    summaryMax: EQUIPMENT_LIMITS.summary,
+    summaryRequired: true,
+    bodyOptional: true,
+    summaryLabel: "한 줄 추천 이유",
+    bodyLabel: "추천 이유 상세 (선택)",
+    fields: {
+      empty: () => ({ ...EMPTY_EQUIPMENT_FIELDS }) as unknown as Record<string, unknown>,
+      clean: (input) => cleanEquipmentFields(input) as unknown as Record<string, unknown>,
+      problems: (stored) => equipmentProblems(readEquipmentFields(stored)),
+      mediaIds: (stored) => equipmentMediaIds(readEquipmentFields(stored)),
+      mediaLabel: "장비 이미지",
     },
   },
 };

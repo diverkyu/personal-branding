@@ -17,6 +17,8 @@ import {
   type ContentState,
 } from "../../contentActions";
 import styles from "../../admin.module.css";
+import { CONTENT_TYPES } from "@/content/types";
+import { EquipmentFieldsSection, type EquipmentFieldsValues } from "./EquipmentFieldsSection";
 import { TourFieldsSection, type GalleryEntry, type TourFieldsValues } from "./TourFieldsSection";
 
 function Notice({ state }: { state: ContentState }) {
@@ -58,6 +60,11 @@ export interface EditInitial {
   /** 투어일 때만 */
   tourFields?: TourFieldsValues;
   tourGallery?: GalleryEntry[];
+  /** 장비일 때만 */
+  equipmentFields?: EquipmentFieldsValues;
+  equipmentImages?: GalleryEntry[];
+  /** 장비 카테고리 후보 (이미 쓰고 있는 것) */
+  categories?: string[];
   version: number;
   title: string;
   slug: string;
@@ -83,6 +90,22 @@ export function EditForm({ initial, media }: { initial: EditInitial; media: Pick
   const [state, action, pending] = useActionState<ContentState, FormData>(saveContentAction, {});
   const v = state.error ? state.values : undefined;
   const pick = (key: keyof EditInitial & string, name: string = key) => (v?.[name] ?? (initial[key] as string));
+  const ef = initial.equipmentFields;
+  const equipmentValues: EquipmentFieldsValues | undefined = ef && {
+    category: v?.f_category ?? ef.category,
+    brand: v?.f_brand ?? ef.brand,
+    features: v?.f_features ?? ef.features,
+    thumbMediaId: v?.f_thumb ?? ef.thumbMediaId,
+    priceNote: v?.f_priceNote ?? ef.priceNote,
+    checkedAt: v?.f_checkedAt ?? ef.checkedAt,
+    action: v?.f_action ?? ef.action,
+    externalUrl: v?.f_externalUrl ?? ef.externalUrl,
+    buttonLabel: v?.f_buttonLabel ?? ef.buttonLabel,
+    affiliate: v ? v.f_affiliate === "on" : ef.affiliate,
+    sortOrder: v?.f_sortOrder ?? ef.sortOrder,
+  };
+  const typeDef = CONTENT_TYPES[initial.type];
+  const summaryLabel = typeDef?.summaryLabel ? `${typeDef.summaryLabel} (${typeDef.summaryMax}자 이하)` : "요약 (160자 이하)";
   const tf = initial.tourFields;
   const tourValues: TourFieldsValues | undefined = tf && {
     startDate: v?.f_startDate ?? tf.startDate,
@@ -112,11 +135,21 @@ export function EditForm({ initial, media }: { initial: EditInitial; media: Pick
         surface="light"
       />
       {initial.slugLocked ? <input type="hidden" name="slug" value={initial.slug} /> : null}
-      <Textarea key={`su-${k}`} id="c-summary" name="summary" label="요약 (160자 이하)" rows={2} defaultValue={pick("summary")} hint="발행 전 점검에서 160자를 넘으면 막힙니다. 비우면 본문 앞부분을 씁니다." surface="light" />
+      <Textarea
+        key={`su-${k}`}
+        id="c-summary"
+        name="summary"
+        label={summaryLabel}
+        rows={2}
+        defaultValue={pick("summary")}
+        hint={typeDef?.summaryRequired ? "카드에 보이는 한 줄입니다. 발행하려면 필요합니다." : "발행 전 점검에서 160자를 넘으면 막힙니다. 비우면 본문 앞부분을 씁니다."}
+        surface="light"
+      />
+      {equipmentValues ? <EquipmentFieldsSection values={equipmentValues} images={initial.equipmentImages ?? []} media={media} categories={initial.categories ?? []} keySuffix={k} /> : null}
       {tourValues ? <TourFieldsSection values={tourValues} gallery={initial.tourGallery ?? []} media={media} recruitLocked={initial.slugLocked} keySuffix={k} /> : null}
       <div>
         <p className={styles.fieldLabel} id="body-label">
-          {initial.type === "tour" ? "투어 소개" : "본문"}
+          {typeDef?.bodyLabel ?? "본문"}
         </p>
         <RichEditor initial={initial.bodyDoc} media={media} resetKey={initial.version} />
       </div>

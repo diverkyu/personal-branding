@@ -11,13 +11,14 @@ import { PageIntro } from "@/components/layout/PageIntro";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { TextLink } from "@/components/ui/TextLink";
-import { listEquipment, listEquipmentCategories, listFeaturedReviews } from "@/data";
+import { listFeaturedReviews } from "@/data";
+import { listEquipment, listEquipmentCategories } from "@/data/equipment";
 import { listPastTours, listUpcomingTours, reviewTourOptions } from "@/data/tours";
 import pages from "../pages.module.css";
 
 export const metadata: Metadata = { title: "Freediving" };
 
-/** 투어는 어드민에서 발행·취소·마감할 때 바로 갱신되고, 종료 여부는 최대 5분 안에 반영된다 */
+/** 투어·장비는 어드민에서 발행·취소·마감할 때 바로 갱신되고, 종료 여부와 예약 시각은 최대 5분 안에 반영된다 */
 export const revalidate = 300;
 
 const UPCOMING_LIMIT = 4;
@@ -28,7 +29,8 @@ const EQUIPMENT_LIMIT = 8;
 export default async function FreedivingPage() {
   const upcoming = await listUpcomingTours();
   const past = await listPastTours();
-  const equipment = listEquipment().slice(0, EQUIPMENT_LIMIT);
+  const equipment = (await listEquipment()).slice(0, EQUIPMENT_LIMIT);
+  const equipmentCategories = await listEquipmentCategories();
   const reviews = listFeaturedReviews(3);
   const tourOptions = await reviewTourOptions();
 
@@ -97,7 +99,7 @@ export default async function FreedivingPage() {
             <FilteredList
               label="장비 카테고리"
               param="category"
-              options={listEquipmentCategories().map((c) => ({ value: c, label: c }))}
+              options={equipmentCategories.map((c) => ({ value: c, label: c }))}
               items={equipment.map((e) => ({ id: e.slug, values: [e.category], node: <EquipmentCard {...equipmentCard(e)} affiliateNotice={AFFILIATE_NOTICE} /> }))}
               listClassName={pages.grid4}
               empty={<p className={pages.empty}>준비 중입니다.</p>}

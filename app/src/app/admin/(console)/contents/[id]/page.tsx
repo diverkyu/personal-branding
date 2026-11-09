@@ -3,12 +3,13 @@ import { notFound } from "next/navigation";
 import { EMPTY_BODY, sanitizeBody } from "@/content/body";
 import { STATUS_LABELS, allowedTransitions, suggestPublishAt, type ContentStatus } from "@/content/publish";
 import { CONTENT_TYPES } from "@/content/types";
-import { editableView, getContent, publishProblems } from "@/data/admin/contents";
+import { editableView, getContent, listEquipmentCategoryNames, publishProblems } from "@/data/admin/contents";
 import { adminDb } from "@/data/admin/dbServer";
 import { listMediaForPicker } from "@/data/admin/media";
 import { requireAdmin } from "@/lib/auth/session";
 import { formatDateTimeKst } from "@/lib/format";
 import styles from "../../../admin.module.css";
+import { readEquipmentFields } from "@/content/equipmentFields";
 import { readTourFields } from "@/content/tourFields";
 import { DeleteContentForm, DraftBanner, EditForm, RecruitForm, TransitionForm } from "../ContentForms";
 
@@ -36,6 +37,8 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
   const nextWeek = suggestPublishAt();
   const isTour = row.type === "tour";
   const tour = isTour ? readTourFields(view.fields) : null;
+  const equipment = row.type === "equipment" ? readEquipmentFields(view.fields) : null;
+  const categories = equipment ? await listEquipmentCategoryNames(db, admin) : [];
 
   return (
     <>
@@ -64,6 +67,23 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
                 ? { startDate: tour.startDate, endDate: tour.endDate, place: tour.place, recruit: tour.recruit, capacity: tour.capacity === null ? "" : String(tour.capacity), feeNote: tour.feeNote, videos: tour.videos.join("\n") }
                 : undefined,
               tourGallery: tour?.gallery,
+              equipmentFields: equipment
+                ? {
+                    category: equipment.category,
+                    brand: equipment.brand,
+                    features: equipment.features.join("\n"),
+                    thumbMediaId: equipment.thumbMediaId ?? "",
+                    priceNote: equipment.priceNote,
+                    checkedAt: equipment.checkedAt,
+                    action: equipment.action,
+                    externalUrl: equipment.externalUrl,
+                    buttonLabel: equipment.buttonLabel,
+                    affiliate: equipment.affiliate,
+                    sortOrder: String(equipment.sortOrder),
+                  }
+                : undefined,
+              equipmentImages: equipment?.images.map((mediaId) => ({ mediaId, caption: "" })),
+              categories,
               version: row.version,
               title: view.title,
               slug: row.slug,

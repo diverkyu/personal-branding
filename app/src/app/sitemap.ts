@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { resolveSiteUrl } from "@/config/env";
-import { listEquipment } from "@/data";
+import { listEquipment } from "@/data/equipment";
 import { listPastTours, listUpcomingTours } from "@/data/tours";
 import { listStories } from "@/data/stories";
 
@@ -15,6 +15,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...fixed.map((path) => ({ url: `${origin}${path}` })),
     ...(await listStories()).map((s) => ({ url: `${origin}/story/${s.slug}`, lastModified: s.publishedAtIso })),
     ...[...(await listUpcomingTours()), ...(await listPastTours())].map((t) => ({ url: `${origin}/freediving/tours/${t.slug}` })),
-    ...listEquipment().map((e) => ({ url: `${origin}/freediving/equipment/${e.slug}` })),
+    ...(await listEquipment()).map((e) => ({ url: `${origin}/freediving/equipment/${e.slug}` })),
   ];
 }

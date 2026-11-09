@@ -66,6 +66,8 @@ export interface Equipment {
   action: EquipmentActionType;
   /** action 이 external 이면 외부 주소 */
   externalUrl?: string;
+  /** 행동 버튼 라벨. 없으면 기본값("구매처 보기" / "문의하기") */
+  buttonLabel?: string;
   affiliate?: boolean;
   thumbVariant: ThumbVariant;
 }

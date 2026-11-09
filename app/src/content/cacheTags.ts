@@ -7,5 +7,8 @@ export const STORIES_MAX_AGE_SECONDS = 300;
 /** 투어(공개 목록·상세·신청 화면) 캐시 태그 */
 export const TOURS_TAG = "contents-tour";
 
+/** 장비(공개 목록·상세) 캐시 태그 */
+export const EQUIPMENT_TAG = "contents-equipment";
+
 /** 콘텐츠가 바뀌면 갱신해야 하는 공개 캐시 태그 전부 */
-export const PUBLIC_CONTENT_TAGS = [STORIES_TAG, TOURS_TAG] as const;
+export const PUBLIC_CONTENT_TAGS = [STORIES_TAG, TOURS_TAG, EQUIPMENT_TAG] as const;
