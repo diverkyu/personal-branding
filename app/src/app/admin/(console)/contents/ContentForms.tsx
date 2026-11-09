@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Textarea, TextField } from "@/components/ui/Field";
 import { RichEditor, type PickerMedia } from "@/editor/RichEditor";
+import { RECRUIT_LABELS, RECRUIT_VALUES } from "@/content/tourFields";
 import {
   createContentAction,
   deleteContentAction,
@@ -11,10 +12,12 @@ import {
   publishDraftAction,
   retryJobAction,
   saveContentAction,
+  setRecruitAction,
   transitionContentAction,
   type ContentState,
 } from "../../contentActions";
 import styles from "../../admin.module.css";
+import { TourFieldsSection, type GalleryEntry, type TourFieldsValues } from "./TourFieldsSection";
 
 function Notice({ state }: { state: ContentState }) {
   return (
@@ -33,13 +36,13 @@ function Notice({ state }: { state: ContentState }) {
   );
 }
 
-export function NewContentForm() {
+export function NewContentForm({ type = "story", noun = "스토리", nameLabel = "제목" }: { type?: string; noun?: string; nameLabel?: string }) {
   const [state, action, pending] = useActionState<ContentState, FormData>(createContentAction, {});
   return (
-    <form action={action} className={styles.row} noValidate aria-label="새 스토리 만들기">
-      <input type="hidden" name="type" value="story" />
+    <form action={action} className={styles.row} noValidate aria-label={`새 ${noun} 만들기`}>
+      <input type="hidden" name="type" value={type} />
       <div style={{ flex: "1 1 260px" }}>
-        <TextField id="new-title" key={state.values?.title ?? ""} name="title" label="새 스토리 제목" defaultValue={state.values?.title} maxLength={85} surface="light" error={state.error} />
+        <TextField id={`new-title-${type}`} key={state.values?.title ?? ""} name="title" label={`새 ${noun} ${nameLabel}`} defaultValue={state.values?.title} maxLength={85} surface="light" error={state.error} />
       </div>
       <Button type="submit" busy={pending} variant="dark" surface="light" size="S">
         {pending ? "만드는 중" : "만들기"}
@@ -50,6 +53,11 @@ export function NewContentForm() {
 
 export interface EditInitial {
   id: string;
+  /** 콘텐츠 유형. 투어이면 투어 정보 입력이 더해진다 */
+  type: string;
+  /** 투어일 때만 */
+  tourFields?: TourFieldsValues;
+  tourGallery?: GalleryEntry[];
   version: number;
   title: string;
   slug: string;
@@ -75,6 +83,16 @@ export function EditForm({ initial, media }: { initial: EditInitial; media: Pick
   const [state, action, pending] = useActionState<ContentState, FormData>(saveContentAction, {});
   const v = state.error ? state.values : undefined;
   const pick = (key: keyof EditInitial & string, name: string = key) => (v?.[name] ?? (initial[key] as string));
+  const tf = initial.tourFields;
+  const tourValues: TourFieldsValues | undefined = tf && {
+    startDate: v?.f_startDate ?? tf.startDate,
+    endDate: v?.f_endDate ?? tf.endDate,
+    place: v?.f_place ?? tf.place,
+    recruit: v?.f_recruit ?? tf.recruit,
+    capacity: v?.f_capacity ?? tf.capacity,
+    feeNote: v?.f_feeNote ?? tf.feeNote,
+    videos: v?.f_videos ?? tf.videos,
+  };
   const k = `${initial.version}-${state.error ? JSON.stringify(state.values).length : 0}`;
   return (
     <form action={action} className={styles.form} noValidate aria-label="콘텐츠 편집">
@@ -95,9 +113,10 @@ export function EditForm({ initial, media }: { initial: EditInitial; media: Pick
       />
       {initial.slugLocked ? <input type="hidden" name="slug" value={initial.slug} /> : null}
       <Textarea key={`su-${k}`} id="c-summary" name="summary" label="요약 (160자 이하)" rows={2} defaultValue={pick("summary")} hint="발행 전 점검에서 160자를 넘으면 막힙니다. 비우면 본문 앞부분을 씁니다." surface="light" />
+      {tourValues ? <TourFieldsSection values={tourValues} gallery={initial.tourGallery ?? []} media={media} recruitLocked={initial.slugLocked} keySuffix={k} /> : null}
       <div>
         <p className={styles.fieldLabel} id="body-label">
-          본문
+          {initial.type === "tour" ? "투어 소개" : "본문"}
         </p>
         <RichEditor initial={initial.bodyDoc} media={media} resetKey={initial.version} />
       </div>
@@ -120,6 +139,33 @@ export function EditForm({ initial, media }: { initial: EditInitial; media: Pick
       <TextField key={`on-${k}`} id="c-origin-note" name="originNote" label="제작 메모 (공개되지 않음)" defaultValue={pick("originNote")} surface="light" />
       <Button type="submit" busy={pending} variant="dark" surface="light" size="S">
         {pending ? "저장 중" : "저장"}
+      </Button>
+    </form>
+  );
+}
+
+/** 투어의 모집 상태를 바로 바꾼다 (수정 내용 발행을 거치지 않고 공개 화면에 즉시 반영) */
+export function RecruitForm({ id, version, current }: { id: string; version: number; current: string }) {
+  const [state, action, pending] = useActionState<ContentState, FormData>(setRecruitAction, {});
+  return (
+    <form action={action} className={styles.form} noValidate aria-label="모집 상태 바꾸기">
+      <Notice state={state} />
+      <input type="hidden" name="id" value={id} />
+      <input type="hidden" name="version" value={version} />
+      <div>
+        <label htmlFor="recruit-now" className={styles.fieldLabel}>
+          모집 상태
+        </label>
+        <select id="recruit-now" name="recruit" defaultValue={current} className={styles.select}>
+          {RECRUIT_VALUES.map((v) => (
+            <option key={v} value={v}>
+              {RECRUIT_LABELS[v]}
+            </option>
+          ))}
+        </select>
+      </div>
+      <Button type="submit" busy={pending} variant="dark" surface="light" size="S">
+        {pending ? "바꾸는 중" : "모집 상태 바꾸기"}
       </Button>
     </form>
   );

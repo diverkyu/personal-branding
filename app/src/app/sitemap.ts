@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { resolveSiteUrl } from "@/config/env";
-import { listEquipment, listPastTours, listUpcomingTours } from "@/data";
+import { listEquipment } from "@/data";
+import { listPastTours, listUpcomingTours } from "@/data/tours";
 import { listStories } from "@/data/stories";
 
 /** 공개 주소 목록. 개발용(/dev)·어드민은 넣지 않는다. 주소는 SITE_URL 기준이다. */
@@ -13,7 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...fixed.map((path) => ({ url: `${origin}${path}` })),
     ...(await listStories()).map((s) => ({ url: `${origin}/story/${s.slug}`, lastModified: s.publishedAtIso })),
-    ...[...listUpcomingTours(), ...listPastTours()].map((t) => ({ url: `${origin}/freediving/tours/${t.slug}` })),
+    ...[...(await listUpcomingTours()), ...(await listPastTours())].map((t) => ({ url: `${origin}/freediving/tours/${t.slug}` })),
     ...listEquipment().map((e) => ({ url: `${origin}/freediving/equipment/${e.slug}` })),
   ];
 }

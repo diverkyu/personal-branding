@@ -12,8 +12,9 @@ export const metadata = { title: "전체 콘텐츠 · KYU 어드민" };
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-function href(params: { status?: string; q?: string; page?: number }): string {
+function href(params: { type?: string; status?: string; q?: string; page?: number }): string {
   const sp = new URLSearchParams();
+  if (params.type) sp.set("type", params.type);
   if (params.status) sp.set("status", params.status);
   if (params.q) sp.set("q", params.q);
   if (params.page && params.page > 1) sp.set("page", String(params.page));
@@ -37,16 +38,28 @@ export default async function ContentsPage({ searchParams }: { searchParams: Sea
         </p>
       ) : null}
 
-      <section className={styles.panel} style={{ marginBottom: 16 }} aria-label="새 글 만들기">
-        <NewContentForm />
+      <section className={styles.panel} style={{ marginBottom: 16, display: "grid", gap: 16 }} aria-label="새 콘텐츠 만들기">
+        <NewContentForm type="story" noun="스토리" nameLabel="제목" />
+        <NewContentForm type="tour" noun="투어" nameLabel="이름" />
       </section>
 
+      <nav className={styles.row} aria-label="유형으로 거르기" style={{ margin: "8px 0" }}>
+        <Link href={href({ status: query.status, q: query.q })} className={styles.statusTag} aria-current={!query.type ? "true" : undefined} style={!query.type ? { fontWeight: 700, borderColor: "var(--kyu-navy)" } : undefined}>
+          모든 유형
+        </Link>
+        {Object.values(CONTENT_TYPES).map((t) => (
+          <Link key={t.key} href={href({ type: t.key, status: query.status, q: query.q })} className={styles.statusTag} aria-current={query.type === t.key ? "true" : undefined} style={query.type === t.key ? { fontWeight: 700, borderColor: "var(--kyu-navy)" } : undefined}>
+            {t.label}
+          </Link>
+        ))}
+      </nav>
+
       <nav className={styles.row} aria-label="상태로 거르기" style={{ margin: "8px 0" }}>
-        <Link href={href({ q: query.q })} className={styles.statusTag} aria-current={!query.status ? "true" : undefined} style={!query.status ? { fontWeight: 700, borderColor: "var(--kyu-navy)" } : undefined}>
+        <Link href={href({ type: query.type, q: query.q })} className={styles.statusTag} aria-current={!query.status ? "true" : undefined} style={!query.status ? { fontWeight: 700, borderColor: "var(--kyu-navy)" } : undefined}>
           전체 {all}
         </Link>
         {STATUSES.map((s) => (
-          <Link key={s} href={href({ status: s, q: query.q })} className={styles.statusTag} aria-current={query.status === s ? "true" : undefined} style={query.status === s ? { fontWeight: 700, borderColor: "var(--kyu-navy)" } : undefined}>
+          <Link key={s} href={href({ type: query.type, status: s, q: query.q })} className={styles.statusTag} aria-current={query.status === s ? "true" : undefined} style={query.status === s ? { fontWeight: 700, borderColor: "var(--kyu-navy)" } : undefined}>
             {STATUS_LABELS[s]} {counts[s]}
           </Link>
         ))}
@@ -54,6 +67,7 @@ export default async function ContentsPage({ searchParams }: { searchParams: Sea
 
       <form method="get" className={styles.row} role="search" aria-label="제목 검색" style={{ margin: "8px 0 16px" }}>
         {query.status ? <input type="hidden" name="status" value={query.status} /> : null}
+        {query.type ? <input type="hidden" name="type" value={query.type} /> : null}
         <input type="search" name="q" defaultValue={query.q ?? ""} maxLength={60} placeholder="제목·주소 이름 검색" aria-label="제목·주소 이름 검색" className={styles.select} style={{ maxWidth: 320 }} />
         <button type="submit" className={styles.smallButton}>
           검색
@@ -63,7 +77,7 @@ export default async function ContentsPage({ searchParams }: { searchParams: Sea
       {items.length === 0 ? (
         <div className={styles.panel}>
           <p className={styles.note} style={{ margin: 0 }}>
-            {query.status || query.q ? "조건에 맞는 콘텐츠가 없습니다." : "아직 콘텐츠가 없습니다. 위에서 첫 스토리를 만들어 보세요."}
+            {query.status || query.q ? "조건에 맞는 콘텐츠가 없습니다." : "아직 콘텐츠가 없습니다. 위에서 첫 스토리나 투어를 만들어 보세요."}
           </p>
         </div>
       ) : (
@@ -103,12 +117,12 @@ export default async function ContentsPage({ searchParams }: { searchParams: Sea
       {pages > 1 ? (
         <nav className={styles.row} aria-label="쪽 이동" style={{ marginTop: 16 }}>
           {page > 1 ? (
-            <Link href={href({ status: query.status, q: query.q, page: page - 1 })} className={styles.smallButton}>
+            <Link href={href({ type: query.type, status: query.status, q: query.q, page: page - 1 })} className={styles.smallButton}>
               이전
             </Link>
           ) : null}
           {page < pages ? (
-            <Link href={href({ status: query.status, q: query.q, page: page + 1 })} className={styles.smallButton}>
+            <Link href={href({ type: query.type, status: query.status, q: query.q, page: page + 1 })} className={styles.smallButton}>
               다음
             </Link>
           ) : null}

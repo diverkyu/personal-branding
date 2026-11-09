@@ -1,6 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { STORIES_TAG } from "@/content/cacheTags";
+import { PUBLIC_CONTENT_TAGS } from "@/content/cacheTags";
 import { adminDb } from "@/data/admin/dbServer";
 import { runDuePublishJobs } from "@/data/publishJobs";
 import { logger } from "@/lib/logger";
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     const summary = await runDuePublishJobs(adminDb());
     // 새로 발행된 글이 있으면 정적으로 만든 공개 페이지를 갱신한다
     if (summary.published > 0) {
-      revalidateTag(STORIES_TAG, { expire: 0 });
+      for (const tag of PUBLIC_CONTENT_TAGS) revalidateTag(tag, { expire: 0 });
       revalidatePath("/", "layout");
     }
     logger.info("cron.publish", { outcome: "success", ...summary });

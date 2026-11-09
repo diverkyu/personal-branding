@@ -1,8 +1,8 @@
 import Link from "next/link";
+import { listTourOptions } from "@/data/admin/contents";
 import { adminDb } from "@/data/admin/dbServer";
 import { listInquiries } from "@/data/admin/inquiries";
 import { ALL_STATUSES, KIND_LABELS, STATUS_LABELS, inquiryQueryString, parseInquiryQuery } from "@/data/admin/inquiryQuery";
-import { listPastTours, listUpcomingTours } from "@/data";
 import { requireAdmin } from "@/lib/auth/session";
 import { formatDateTimeKst } from "@/lib/format";
 import styles from "../../admin.module.css";
@@ -16,7 +16,7 @@ export default async function InquiriesPage({ searchParams }: { searchParams: Se
   const params = await searchParams;
   const query = parseInquiryQuery(params);
   const { items, total, page, pageSize, newCount } = await listInquiries(adminDb(), admin, query);
-  const tours = [...listUpcomingTours(), ...listPastTours()];
+  const tours = await listTourOptions(adminDb(), admin);
   const tourTitle = (slug: string) => tours.find((t) => t.slug === slug)?.title ?? slug;
   const pages = Math.max(1, Math.ceil(total / pageSize));
   const link = (p: number) => `/admin/inquiries${inquiryQueryString({ ...query, page: p })}`;

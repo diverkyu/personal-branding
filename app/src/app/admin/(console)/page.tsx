@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { adminDb } from "@/data/admin/dbServer";
-import { contentDashboard } from "@/data/admin/contents";
+import { contentDashboard, listTourOptions } from "@/data/admin/contents";
 import { inquiryDashboard } from "@/data/admin/inquiries";
 import { KIND_LABELS, STATUS_LABELS } from "@/data/admin/inquiryQuery";
-import { getTour } from "@/data";
 import { requireAdmin } from "@/lib/auth/session";
 import { formatDateTimeKst } from "@/lib/format";
 import styles from "../admin.module.css";
@@ -16,6 +15,7 @@ export default async function DashboardPage() {
   const db = adminDb();
   const { newCount, recent } = await inquiryDashboard(db, admin);
   const content = await contentDashboard(db, admin);
+  const tourTitles = new Map((await listTourOptions(db, admin)).map((t) => [t.slug, t.title]));
   return (
     <>
       <h1 className={styles.h1}>대시보드</h1>
@@ -63,7 +63,7 @@ export default async function DashboardPage() {
               <tr key={item.id}>
                 <td data-label="접수일시">{formatDateTimeKst(item.receivedAt)}</td>
                 <td data-label="유형">{KIND_LABELS[item.kind]}</td>
-                <td data-label="투어">{getTour(item.tourSlug)?.title ?? item.tourSlug}</td>
+                <td data-label="투어">{tourTitles.get(item.tourSlug) ?? item.tourSlug}</td>
                 <td data-label="이름">
                   <Link href={`/admin/inquiries/${item.id}`} className={styles.rowLink}>
                     {item.name}

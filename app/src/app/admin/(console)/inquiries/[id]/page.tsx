@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { adminDb } from "@/data/admin/dbServer";
 import { getInquiry } from "@/data/admin/inquiries";
 import { KIND_LABELS, STATUS_LABELS, allowedStatuses, type InquiryKindFilter, type InquiryStatus } from "@/data/admin/inquiryQuery";
-import { getTour } from "@/data";
+import { listTourOptions } from "@/data/admin/contents";
 import { requireAdmin } from "@/lib/auth/session";
 import { formatDateTimeKst } from "@/lib/format";
 import styles from "../../../admin.module.css";
@@ -18,11 +18,12 @@ export default async function InquiryDetailPage({ params }: { params: Promise<{ 
   const row = await getInquiry(adminDb(), admin, id);
   if (!row) notFound();
   const kind = row.kind as InquiryKindFilter;
+  const tourTitle = (await listTourOptions(adminDb(), admin)).find((t) => t.slug === row.tourSlug)?.title ?? row.tourSlug;
   const options = allowedStatuses(kind).map((value) => ({ value, label: STATUS_LABELS[value as InquiryStatus] }));
   const rows: [string, string][] = [
     ["접수일시", formatDateTimeKst(row.receivedAt)],
     ["유형", KIND_LABELS[kind]],
-    ["투어", getTour(row.tourSlug)?.title ?? row.tourSlug],
+    ["투어", tourTitle],
     ["이름", row.name],
     ["이메일", row.email],
     ...(kind === "reservation"

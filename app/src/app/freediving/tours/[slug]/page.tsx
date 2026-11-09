@@ -17,7 +17,9 @@ import { Section } from "@/components/ui/Section";
 import { STATUS_LABELS, StatusBadge } from "@/components/ui/StatusBadge";
 import { TextLink } from "@/components/ui/TextLink";
 import { Thumb } from "@/components/ui/Thumb";
-import { getTour, listReviewsForTour, listUpcomingTours, listPastTours, reviewTourOptions } from "@/data";
+import { ContentBody } from "@/content/ContentBody";
+import { listReviewsForTour } from "@/data";
+import { getTour, listPastTours, listUpcomingTours, reviewTourOptions } from "@/data/tours";
 import { formatPeriod } from "@/lib/format";
 import pages from "../../../pages.module.css";
 import styles from "./page.module.css";
@@ -26,24 +28,27 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return [...listUpcomingTours(), ...listPastTours()].map((t) => ({ slug: t.slug }));
+/** 투어는 어드민에서 발행·취소·마감할 때 바로 갱신되고, 종료 여부는 최대 5분 안에 반영된다 */
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  return [...(await listUpcomingTours()), ...(await listPastTours())].map((t) => ({ slug: t.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const tour = getTour((await params).slug);
-  return tour ? { title: tour.title, description: tour.summary } : {};
+  const tour = await getTour((await params).slug);
+  return tour ? { title: tour.seoTitle || tour.title, description: tour.seoDescription || tour.summary } : {};
 }
 
 /** TOUR 상세 + 예약 문의 (SCREEN-SPEC §5.7). 상태에 따라 문의 카드가 달라진다. */
 export default async function TourDetailPage({ params }: Props) {
   const consents = { reservation: await getConsent("reservation"), notice: await getConsent("notice") };
-  const tour = getTour((await params).slug);
+  const tour = await getTour((await params).slug);
   if (!tour) notFound();
   const reviews = listReviewsForTour(tour.slug);
   const origin = resolveSiteUrl(process.env).url.origin;
-  const tourOptions = reviewTourOptions();
-  const related = [...listUpcomingTours(), ...listPastTours()].filter((t) => t.slug !== tour.slug && t.status === tour.status).slice(0, 2);
+  const tourOptions = await reviewTourOptions();
+  const related = [...(await listUpcomingTours()), ...(await listPastTours())].filter((t) => t.slug !== tour.slug && t.status === tour.status).slice(0, 2);
 
   return (
     <Section tone="light" sub>
@@ -57,7 +62,7 @@ export default async function TourDetailPage({ params }: Props) {
         <span aria-current="page">{tour.title}</span>
       </nav>
       <div className={styles.media}>
-        <Thumb height={460} variant={tour.thumbVariant} />
+        <Thumb height={460} variant={tour.thumbVariant} src={tour.cover?.src} alt={tour.cover?.alt} />
         <span className={styles.badge}>
           <StatusBadge status={tour.status} />
         </span>
@@ -75,10 +80,8 @@ export default async function TourDetailPage({ params }: Props) {
           />
           <h2 className={styles.h2}>투어 소개</h2>
           <div className={pages.prose}>
-            {tour.description.map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
-            {tour.feeNote ? <p>{tour.feeNote}</p> : null}
+            {tour.doc ? <ContentBody doc={tour.doc} media={new Map((tour.media ?? []).map((m) => [m.id, m]))} /> : tour.description.map((p, i) => <p key={i}>{p}</p>)}
+            {tour.feeNote ? <p style={{ whiteSpace: "pre-line" }}>{tour.feeNote}</p> : null}
           </div>
 
           {tour.gallery && tour.gallery.length > 0 ? (

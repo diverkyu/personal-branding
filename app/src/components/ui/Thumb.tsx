@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { cx } from "@/lib/cx";
 import styles from "./Thumb.module.css";
 
@@ -19,7 +18,9 @@ interface ThumbProps {
 export function Thumb({ height, src, alt = "", variant = "sea-a", className }: ThumbProps) {
   return (
     <div className={cx(styles.thumb, className)} style={{ height }} data-variant={variant} data-placeholder={src ? undefined : ""}>
-      {src ? <Image src={src} alt={alt} fill sizes="(max-width: 680px) 100vw, 33vw" className={styles.image} /> : null}
+      {/* 어드민 미디어는 올릴 때 서버가 이미 WebP 로 줄여 저장하므로 이미지 최적화 서비스를 거치지 않는다(호스팅·도메인 설정에 묶이지 않는다) */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {src ? <img src={src} alt={alt} loading="lazy" decoding="async" className={styles.image} /> : null}
     </div>
   );
 }

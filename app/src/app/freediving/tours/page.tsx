@@ -6,16 +6,20 @@ import { TourCard } from "@/components/site/TourCard";
 import { tourArchiveCard, tourCard } from "@/components/site/mappers";
 import { PageIntro } from "@/components/layout/PageIntro";
 import { Section } from "@/components/ui/Section";
-import { listPastTours, listUpcomingTours } from "@/data";
+import { listPastTours, listUpcomingTours } from "@/data/tours";
 import pages from "../../pages.module.css";
 
 export const metadata: Metadata = { title: "투어" };
 
+/** 투어는 어드민에서 발행·취소·마감할 때 바로 갱신되고, 종료 여부는 최대 5분 안에 반영된다 */
+export const revalidate = 300;
+
 /** TOUR 목록 (SCREEN-SPEC §5.6). 필터는 URL(?status=)에 남는다. 기본은 진행 예정이 위, 지난 투어가 아래. */
-export default function ToursPage() {
+export default async function ToursPage() {
+  const [upcoming, past] = await Promise.all([listUpcomingTours(), listPastTours()]);
   const items: FilteredItem[] = [
-    ...listUpcomingTours().map((t) => ({ id: t.slug, values: ["upcoming"], node: <TourCard {...tourCard(t)} cta="자세히 보기" headingLevel={2} /> })),
-    ...listPastTours().map((t) => ({ id: t.slug, values: ["past"], node: <TourArchiveCard {...tourArchiveCard(t)} headingLevel={2} /> })),
+    ...upcoming.map((t) => ({ id: t.slug, values: ["upcoming"], node: <TourCard {...tourCard(t)} cta="자세히 보기" headingLevel={2} /> })),
+    ...past.map((t) => ({ id: t.slug, values: ["past"], node: <TourArchiveCard {...tourArchiveCard(t)} headingLevel={2} /> })),
   ];
   return (
     <>
