@@ -1,10 +1,10 @@
 # 화면 시안 (Phase 1)
 
-문서 버전 0.35.0 · 2026-11-10 · [CONCEPT.md](../CONCEPT.md)의 사이트 구조와 톤 가이드를 화면으로 옮긴 시안이다.
+문서 버전 0.40.0 · 2026-11-10 · [CONCEPT.md](../CONCEPT.md)의 사이트 구조와 톤 가이드를 화면으로 옮긴 시안이다.
 
 ## 보는 법
 
-**로그인 없이 보기 (권장)**: [`kyu-mockup.html`](kyu-mockup.html) 파일 하나를 내려받아 더블클릭하면 브라우저에서 열린다. 모든 화면(홈 데스크톱·모바일, Freediving, 투어 상세, Story, **Films 목록·작품 상세(0.35.0 제안)**, 어드민, 디자인 시스템)을 상단 버튼으로 바꿔 볼 수 있고, 데스크톱 화면은 폭을 데스크톱 / 태블릿 / 모바일로 바꿔 볼 수 있다. Claude 계정이나 설치가 필요 없다. (글꼴을 불러오려면 인터넷 연결이 필요하다.) GitHub에서는 코드로 보이므로 **"Download raw file"로 내려받아 연다.**
+**로그인 없이 보기 (권장)**: [`kyu-mockup.html`](kyu-mockup.html) 파일 하나를 내려받아 더블클릭하면 브라우저에서 열린다. 모든 화면(홈 데스크톱·모바일, Freediving, 투어 상세, Story, **Films 목록·작품 상세(0.35.0 제안)**, **여행 추천 목록·상세(0.40.0 제안)**, 어드민, 디자인 시스템)을 상단 버튼으로 바꿔 볼 수 있고, 데스크톱 화면은 폭을 데스크톱 / 태블릿 / 모바일로 바꿔 볼 수 있다. Claude 계정이나 설치가 필요 없다. (글꼴을 불러오려면 인터넷 연결이 필요하다.) GitHub에서는 코드로 보이므로 **"Download raw file"로 내려받아 연다.**
 
 
 - 온라인 시안: <https://claude.ai/artifact/3VHorbKS61EHt2SxVWwre2> (**비공개 링크**. 소유자가 공유해야 열린다)
@@ -21,6 +21,8 @@
 | `Story.dc.html` | Story 목록 |
 | `Films.dc.html` | **Films 목록 (0.35.0 제안)** — 대표 작품, 다른 작품, AI 특강 소식 띠. 명세 [SCREEN-SPEC §5.14](../SCREEN-SPEC.md) |
 | `FilmDetail.dc.html` | **Films 작품 상세 (0.35.0 제안)** — 영상, 영상 소개, 제작 노트(3칸). 명세 [SCREEN-SPEC §5.15](../SCREEN-SPEC.md) |
+| `Travel.dc.html` | **여행 추천 목록 (0.40.0 제안)** — 지역·난이도 필터, 카드, 오래된 정보 표시. 명세 [SCREEN-SPEC §5.16](../SCREEN-SPEC.md) |
+| `TravelDetail.dc.html` | **여행 추천 상세 (0.40.0 제안)** — 여행 정보 표, 본문, 이전·다음, 여행 문의 띠. 명세 [SCREEN-SPEC §5.17](../SCREEN-SPEC.md) |
 | `Admin.dc.html` | CMS 어드민 대시보드 |
 | `DesignSystem.dc.html` | 디자인 시스템 (토큰·컴포넌트 보기). 명세는 [DESIGN-SYSTEM.md](../DESIGN-SYSTEM.md) |
 | `kyu-mockup.html` | 위 화면을 한 파일로 묶은 뷰어 (로그인 불필요) |

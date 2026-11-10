@@ -1,6 +1,6 @@
 # 어드민 기술 설계
 
-> 문서 버전 **0.39.0** (PRD·CONCEPT·SCREEN-SPEC 등과 같은 세트 버전, [CHANGELOG](CHANGELOG.md)) · 상태: 검토 중
+> 문서 버전 **0.40.0** (PRD·CONCEPT·SCREEN-SPEC 등과 같은 세트 버전, [CHANGELOG](CHANGELOG.md)) · 상태: 검토 중
 
 [SCREEN-SPEC §7](SCREEN-SPEC.md)이 어드민 **화면·필드**를 정했다면, 이 문서는 그것을 **어떻게 만들지**를 정한다. 인증, 권한, 데이터 모델, 편집기, 이미지, 저장·충돌 처리, 구현 순서를 다룬다. 화면 필드와 제약은 SCREEN-SPEC을 따르고 여기서 반복하지 않는다.
 
@@ -258,7 +258,7 @@ DASH-01~06은 모두 단순 집계/최근 목록 쿼리다 (인덱스: `inquirie
 | --- | --- | --- | --- |
 | 스토리 | `story` | `/story/[slug]` | (공통만) |
 | 영상 | `video` | `/films/[slug]` (**구현됨** — §30, SCREEN-SPEC §5.15) | video_url, duration, has_captions |
-| 여행 추천 | `travel` | `/travel/[slug]` (공개 화면은 후속 — §27, 경로는 그때 확정) | region, season, level, budget, place, checked_on |
+| 여행 추천 | `travel` | `/freediving/travel/[slug]` (**제안** — SCREEN-SPEC §12.2 T-1 컨펌 대기, 공개 화면은 후속 — §27) | region, season, level, budget, place, checked_on |
 
 ### 14.2 발행 상태와 전이
 
