@@ -1,22 +1,122 @@
 {
   "v": 3,
-  "createdOnFiles": { "v": 1, "at": "2026-11-08T00:00:00Z" },
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-11-08T00:00:00Z"
+  },
   "title": "KYU 사이트 화면 시안",
-  "launch": { "view": "canvas" },
+  "launch": {
+    "view": "canvas"
+  },
   "pages": [],
   "boards": {
-    "Main.dc.html": { "x": 0, "y": 0, "w": 1440, "h": 3700, "title": "홈 (데스크톱)", "expand": "fill", "is_interactive": true },
-    "HomeMobile.dc.html": { "x": 1560, "y": 0, "w": 390, "h": 5400, "title": "홈 (모바일)", "expand": "fill", "is_interactive": true },
-    "Freediving.dc.html": { "x": 0, "y": 3820, "w": 1440, "h": 2700, "title": "Freediving 허브", "expand": "fill", "is_interactive": true },
-    "Tour.dc.html": { "x": 0, "y": 6640, "w": 1440, "h": 2500, "title": "투어 상세 + 예약 문의", "expand": "fill", "is_interactive": true },
-    "Story.dc.html": { "x": 0, "y": 9260, "w": 1440, "h": 1900, "title": "Story 목록", "expand": "fill", "is_interactive": true },
-    "Admin.dc.html": { "x": 0, "y": 11280, "w": 1440, "h": 1100, "title": "CMS 어드민 (대시보드)", "expand": "fill" },
-    "DesignSystem.dc.html": { "x": 1560, "y": 5520, "w": 1440, "h": 2700, "title": "디자인 시스템", "expand": "fill", "is_interactive": true }
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 3700,
+      "title": "홈 (데스크톱)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "HomeMobile.dc.html": {
+      "x": 1560,
+      "y": 0,
+      "w": 390,
+      "h": 5400,
+      "title": "홈 (모바일)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Freediving.dc.html": {
+      "x": 0,
+      "y": 3820,
+      "w": 1440,
+      "h": 2700,
+      "title": "Freediving 허브",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Tour.dc.html": {
+      "x": 0,
+      "y": 6640,
+      "w": 1440,
+      "h": 2500,
+      "title": "투어 상세 + 예약 문의",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Story.dc.html": {
+      "x": 0,
+      "y": 9260,
+      "w": 1440,
+      "h": 1900,
+      "title": "Story 목록",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Admin.dc.html": {
+      "x": 0,
+      "y": 11280,
+      "w": 1440,
+      "h": 1100,
+      "title": "CMS 어드민 (대시보드)",
+      "expand": "fill"
+    },
+    "DesignSystem.dc.html": {
+      "x": 1560,
+      "y": 5520,
+      "w": 1440,
+      "h": 2700,
+      "title": "디자인 시스템",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Films.dc.html": {
+      "x": 0,
+      "y": 13500,
+      "w": 1440,
+      "h": 2900,
+      "title": "Films 목록",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "FilmDetail.dc.html": {
+      "x": 1560,
+      "y": 13500,
+      "w": 1440,
+      "h": 2700,
+      "title": "Films 작품 상세",
+      "expand": "fill",
+      "is_interactive": true
+    }
   },
-  "order": ["Main.dc.html", "HomeMobile.dc.html", "Freediving.dc.html", "Tour.dc.html", "Story.dc.html", "Admin.dc.html", "DesignSystem.dc.html"],
+  "order": [
+    "Main.dc.html",
+    "HomeMobile.dc.html",
+    "Freediving.dc.html",
+    "Tour.dc.html",
+    "Story.dc.html",
+    "Films.dc.html",
+    "FilmDetail.dc.html",
+    "Admin.dc.html",
+    "DesignSystem.dc.html"
+  ],
   "notes": {
-    "t1": { "x": 0, "y": -300, "text": "KYU 사이트 화면 시안 · Phase 1 (문서 v0.5.0 기준)", "kind": "title1", "maxW": 1440 },
-    "s1": { "x": 1560, "y": -620, "w": 380, "text": "샘플 화면입니다. 일정, 장소, 후기, 글 제목은 자리표시이며 실제 콘텐츠가 아닙니다. 확정 카피와 색상은 기존 시안(v0.1.0)을 따릅니다.", "fill": "orange" }
+    "t1": {
+      "x": 0,
+      "y": -300,
+      "text": "KYU 사이트 화면 시안 · Phase 1 (문서 v0.5.0 기준)",
+      "kind": "title1",
+      "maxW": 1440
+    },
+    "s1": {
+      "x": 1560,
+      "y": -620,
+      "w": 380,
+      "text": "샘플 화면입니다. 일정, 장소, 후기, 글 제목은 자리표시이며 실제 콘텐츠가 아닙니다. 확정 카피와 색상은 기존 시안(v0.1.0)을 따릅니다.",
+      "fill": "orange"
+    }
   },
   "designSystems": []
 }
