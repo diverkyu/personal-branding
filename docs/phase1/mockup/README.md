@@ -21,6 +21,7 @@
 | `Story.dc.html` | Story 목록 |
 | `Films.dc.html` | **Films 목록 (0.35.0 제안)** — 대표 작품, 다른 작품, AI 특강 소식 띠. 명세 [SCREEN-SPEC §5.14](../SCREEN-SPEC.md) |
 | `FilmDetail.dc.html` | **Films 작품 상세 (0.35.0 제안)** — 영상, 영상 소개, 제작 노트(3칸). 명세 [SCREEN-SPEC §5.15](../SCREEN-SPEC.md) |
+| `TravelMenu.dc.html` | **여행 추천 메뉴 위치·결정 요약 (0.42.0 제안)** — 컴퓨터·휴대폰 메뉴 그림, 공개 전·후 비교, 결정 9개(T-1~T-9) 카드. 규강 컨펌용 |
 | `Travel.dc.html` | **여행 추천 목록 (0.40.0 제안)** — 지역·난이도 필터, 카드, 오래된 정보 표시. 명세 [SCREEN-SPEC §5.16](../SCREEN-SPEC.md) |
 | `TravelDetail.dc.html` | **여행 추천 상세 (0.40.0 제안)** — 여행 정보 표, 본문, 이전·다음, 여행 문의 띠. 명세 [SCREEN-SPEC §5.17](../SCREEN-SPEC.md) |
 | `Admin.dc.html` | CMS 어드민 대시보드 |

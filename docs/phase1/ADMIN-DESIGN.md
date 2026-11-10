@@ -1,6 +1,6 @@
 # 어드민 기술 설계
 
-> 문서 버전 **0.41.0** (PRD·CONCEPT·SCREEN-SPEC 등과 같은 세트 버전, [CHANGELOG](CHANGELOG.md)) · 상태: 검토 중
+> 문서 버전 **0.42.0** (PRD·CONCEPT·SCREEN-SPEC 등과 같은 세트 버전, [CHANGELOG](CHANGELOG.md)) · 상태: 검토 중
 
 [SCREEN-SPEC §7](SCREEN-SPEC.md)이 어드민 **화면·필드**를 정했다면, 이 문서는 그것을 **어떻게 만들지**를 정한다. 인증, 권한, 데이터 모델, 편집기, 이미지, 저장·충돌 처리, 구현 순서를 다룬다. 화면 필드와 제약은 SCREEN-SPEC을 따르고 여기서 반복하지 않는다.
 
