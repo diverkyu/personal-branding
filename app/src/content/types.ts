@@ -1,6 +1,6 @@
 import { EMPTY_EQUIPMENT_FIELDS, EQUIPMENT_LIMITS, cleanEquipmentFields, equipmentMediaIds, equipmentProblems, readEquipmentFields } from "./equipmentFields";
 import { EMPTY_TRAVEL_FIELDS, cleanTravelFields, readTravelFields, travelProblems } from "./travelFields";
-import { EMPTY_VIDEO_FIELDS, cleanVideoFields, readVideoFields, videoProblems } from "./videoFields";
+import { EMPTY_VIDEO_FIELDS, cleanVideoFields, readVideoFields, videoMediaIds, videoProblems } from "./videoFields";
 import { EMPTY_TOUR_FIELDS, cleanTourFields, readTourFields, tourMediaIds, tourProblems } from "./tourFields";
 
 /**
@@ -87,8 +87,8 @@ export const CONTENT_TYPES: Record<string, ContentTypeDef> = {
       empty: () => ({ ...EMPTY_VIDEO_FIELDS }) as unknown as Record<string, unknown>,
       clean: (input) => cleanVideoFields(input) as unknown as Record<string, unknown>,
       problems: (stored) => videoProblems(readVideoFields(stored)),
-      mediaIds: () => [],
-      mediaLabel: "이미지",
+      mediaIds: (stored) => videoMediaIds(readVideoFields(stored)),
+      mediaLabel: "포스터 이미지",
     },
   },
   travel: {

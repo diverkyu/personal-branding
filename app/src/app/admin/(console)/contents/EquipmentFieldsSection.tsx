@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Textarea, TextField } from "@/components/ui/Field";
 import type { PickerMedia } from "@/editor/RichEditor";
 import { ACTION_LABELS, ACTION_VALUES, DEFAULT_BUTTON_LABEL, EQUIPMENT_LIMITS } from "@/content/equipmentFields";
@@ -22,23 +22,29 @@ export interface EquipmentFieldsValues {
   sortOrder: string;
 }
 
-/** 대표 이미지 고르기 (한 장). 선택한 이미지를 바로 보여 주고, 대체 텍스트가 없으면 경고한다 */
-function ThumbPicker({ initial, media }: { initial: string; media: PickerMedia[] }) {
+/**
+ * 이미지 한 장 고르기 (장비 대표 이미지·영상 포스터). 선택한 이미지를 바로 보여 주고, 대체 텍스트가 없으면 경고한다.
+ * 선택칸에는 이름이 없고 값은 숨은 입력(name)이 보낸다. 선택칸은 **uncontrolled**(defaultValue)이다: 값을 상태로 쥐고 있는 controlled 선택칸은
+ * 서버 액션이 끝나고 React 가 폼을 되돌릴 때 화면 값만 첫 항목("이미지 고르기…")으로 돌아가고 상태·저장은 그대로여서 "저장은 됐는데 선택이 비어 보이는"
+ * 문제가 생긴다(영상 포스터 시험에서 발견). 상태는 미리보기·숨은 입력용으로만 두고, 저장·오류 때마다 호출하는 쪽이 key 를 바꿔 새로 만든다.
+ */
+export function ThumbPicker({ initial, media, name = "f_thumb", legend = "대표 이미지 (발행하려면 필요합니다)", pickLabel = "대표 이미지 고르기", removeLabel = "대표 이미지 빼기", requiredNote = "발행할 수 없습니다" }: { initial: string; media: PickerMedia[]; name?: string; legend?: string; pickLabel?: string; removeLabel?: string; requiredNote?: string }) {
   const [id, setId] = useState(initial);
+  const select = useRef<HTMLSelectElement>(null);
   const chosen = media.find((m) => m.id === id);
   return (
     <fieldset className={styles.fieldset}>
-      <legend className={styles.fieldLabel}>대표 이미지 (발행하려면 필요합니다)</legend>
-      <input type="hidden" name="f_thumb" value={id} />
+      <legend className={styles.fieldLabel}>{legend}</legend>
+      <input type="hidden" name={name} value={id} />
       <div className={styles.row} style={{ alignItems: "flex-start" }}>
         {chosen ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={chosen.url} alt={chosen.alt} width={96} height={96} style={{ objectFit: "cover", width: 96, height: 96 }} />
         ) : null}
         <div style={{ display: "grid", gap: 6 }}>
-          <select aria-label="대표 이미지 고르기" value={id} onChange={(e) => setId(e.target.value)} className={styles.select} style={{ maxWidth: 360 }}>
+          <select ref={select} aria-label={pickLabel} defaultValue={initial} onChange={(e) => setId(e.target.value)} className={styles.select} style={{ maxWidth: 360 }}>
             <option value="">이미지 고르기…</option>
-            {id && !chosen ? <option value={id}>(목록에 없는 이미지)</option> : null}
+            {initial && !media.some((m) => m.id === initial) ? <option value={initial}>(목록에 없는 이미지)</option> : null}
             {media.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.alt.trim() ? m.alt : `(대체 텍스트 없음) ${m.id.slice(0, 8)}`}
@@ -47,12 +53,15 @@ function ThumbPicker({ initial, media }: { initial: string; media: PickerMedia[]
           </select>
           {chosen && !chosen.alt.trim() ? (
             <span className={styles.note} role="status" style={{ margin: 0 }}>
-              대체 텍스트가 없습니다. 어드민 &gt; 미디어에서 입력하지 않으면 발행할 수 없습니다.
+              대체 텍스트가 없습니다. 어드민 &gt; 미디어에서 입력하지 않으면 {requiredNote}.
             </span>
           ) : null}
           {id ? (
-            <button type="button" className={styles.linkButton} onClick={() => setId("")}>
-              대표 이미지 빼기
+            <button type="button" className={styles.linkButton} onClick={() => {
+                setId("");
+                if (select.current) select.current.value = "";
+              }}>
+              {removeLabel}
             </button>
           ) : null}
         </div>

@@ -114,6 +114,12 @@ export function EditForm({ initial, media }: { initial: EditInitial; media: Pick
     videoUrl: v?.f_videoUrl ?? vf.videoUrl,
     duration: v?.f_duration ?? vf.duration,
     hasCaptions: v ? v.f_captions === "on" : vf.hasCaptions,
+    posterMediaId: v?.f_poster ?? vf.posterMediaId,
+    cutLabel: v?.f_cutLabel ?? vf.cutLabel,
+    featured: v ? v.f_featured === "on" : vf.featured,
+    sceneIntent: v?.f_sceneIntent ?? vf.sceneIntent,
+    promptNotes: v?.f_promptNotes ?? vf.promptNotes,
+    editNotes: v?.f_editNotes ?? vf.editNotes,
   };
   const tvf = initial.travelFields;
   const travelValues: TravelFieldsValues | undefined = tvf && {
@@ -166,7 +172,7 @@ export function EditForm({ initial, media }: { initial: EditInitial; media: Pick
         surface="light"
       />
       {equipmentValues ? <EquipmentFieldsSection values={equipmentValues} images={initial.equipmentImages ?? []} media={media} categories={initial.categories ?? []} keySuffix={k} /> : null}
-      {videoValues ? <VideoFieldsSection values={videoValues} keySuffix={k} /> : null}
+      {videoValues ? <VideoFieldsSection values={videoValues} media={media} keySuffix={k} /> : null}
       {travelValues ? <TravelFieldsSection values={travelValues} keySuffix={k} /> : null}
       {tourValues ? <TourFieldsSection values={tourValues} gallery={initial.tourGallery ?? []} media={media} recruitLocked={initial.slugLocked} keySuffix={k} /> : null}
       <div>
