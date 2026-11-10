@@ -128,7 +128,7 @@ describe("신청·문의 목록", () => {
   it("목록 조회는 개인정보 상세(연락처·문의 내용)를 돌려주지 않는다", async () => {
     await seed({ message: "비밀 문의", phone: "010-1234-5678" });
     const { items } = await listInquiries(db, admin, parseInquiryQuery({}));
-    expect(Object.keys(items[0]!).sort()).toEqual(["email", "id", "kind", "name", "receivedAt", "status", "tourSlug"]);
+    expect(Object.keys(items[0]!).sort()).toEqual(["email", "id", "kind", "name", "notifyStatus", "receivedAt", "status", "tourSlug"]);
   });
 
   it("대시보드는 새 신청 수와 최근 5건을 돌려준다", async () => {
@@ -136,6 +136,13 @@ describe("신청·문의 목록", () => {
     const d = await inquiryDashboard(db, admin);
     expect(d.newCount).toBe(5);
     expect(d.recent).toHaveLength(5);
+  });
+
+  it("대시보드는 알림 메일이 실패했고 아직 신규인 신청 수를 센다 (처리한 것은 제외)", async () => {
+    await seed({ email: "f1@example.com", notifyStatus: "failed" });
+    await seed({ email: "f2@example.com", notifyStatus: "failed", status: "checked" });
+    await seed({ email: "ok@example.com", notifyStatus: "sent" });
+    expect((await inquiryDashboard(db, admin)).notifyFailed).toBe(1);
   });
 });
 

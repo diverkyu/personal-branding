@@ -20,6 +20,8 @@ export interface InquirySummary {
   email: string;
   receivedAt: Date;
   status: InquiryStatus;
+  /** 접수 알림 메일 결과 (failed 이면 어드민에 표시) */
+  notifyStatus: string | null;
 }
 
 export const EXPORT_LIMIT = 5000;
@@ -33,6 +35,7 @@ const summaryColumns = {
   email: inquiries.email,
   receivedAt: inquiries.receivedAt,
   status: inquiries.status,
+  notifyStatus: inquiries.notifyStatus,
 };
 
 function escapeLike(value: string): string {
@@ -76,12 +79,14 @@ export async function listInquiries(
   return { items, total: totalRow?.value ?? 0, page: query.page, pageSize: INQUIRY_PAGE_SIZE, newCount: newRow?.value ?? 0 };
 }
 
-/** 대시보드용: 새 신청 수와 최근 5건 */
-export async function inquiryDashboard(db: AdminDb, admin: AdminSession): Promise<{ newCount: number; recent: InquirySummary[] }> {
+/** 대시보드용: 새 신청 수, 알림 메일 실패 수(DASH-04), 최근 5건 */
+export async function inquiryDashboard(db: AdminDb, admin: AdminSession): Promise<{ newCount: number; notifyFailed: number; recent: InquirySummary[] }> {
   void admin;
   const [newRow] = await db.select({ value: count() }).from(inquiries).where(eq(inquiries.status, "new"));
+  // 알림 메일이 실패했고 아직 "신규"인 신청 (처리하면 더 알릴 필요가 없다)
+  const [failedRow] = await db.select({ value: count() }).from(inquiries).where(and(eq(inquiries.notifyStatus, "failed"), eq(inquiries.status, "new")));
   const recent = (await db.select(summaryColumns).from(inquiries).orderBy(desc(inquiries.receivedAt)).limit(5)) as InquirySummary[];
-  return { newCount: newRow?.value ?? 0, recent };
+  return { newCount: newRow?.value ?? 0, notifyFailed: failedRow?.value ?? 0, recent };
 }
 
 /** 상세. 열람은 활동 기록에 남는다. 없거나 형식이 틀리면 null (화면은 404) */

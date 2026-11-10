@@ -1,4 +1,5 @@
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
+import { eq } from "drizzle-orm";
 import { inquiries } from "@/db/schema";
 import type { InquiryInput, NoticeInput } from "@/lib/forms/inquiry";
 import type { InquiryStore } from "./inquiryStore";
@@ -33,6 +34,9 @@ export function createPostgresInquiryStore(db: AnyPgDatabase): InquiryStore {
         .returning({ id: inquiries.id });
       if (!row) throw new Error("저장 결과가 비어 있습니다");
       return { id: row.id };
+    },
+    async markNotify(id, status) {
+      await db.update(inquiries).set({ notifyStatus: status }).where(eq(inquiries.id, id));
     },
   };
 }

@@ -18,6 +18,8 @@ export interface StoredInquiry {
 
 export interface InquiryStore {
   save(entry: Omit<StoredInquiry, "id">): Promise<{ id: string }>;
+  /** 접수 알림 메일의 결과를 남긴다 (실패를 어드민에 보이기 위해). 저장소가 지원하지 않으면 없다 */
+  markNotify?(id: string, status: "sent" | "failed"): Promise<void>;
 }
 
 const memory: StoredInquiry[] = [];
@@ -65,6 +67,10 @@ function postgresStore(url: string): InquiryStore {
         async save(entry) {
           const [{ getDb }, { createPostgresInquiryStore }] = await Promise.all([import("@/db/client"), import("./postgresInquiryStore")]);
           return createPostgresInquiryStore(getDb(url)).save(entry);
+        },
+        async markNotify(id, status) {
+          const [{ getDb }, { createPostgresInquiryStore }] = await Promise.all([import("@/db/client"), import("./postgresInquiryStore")]);
+          return createPostgresInquiryStore(getDb(url)).markNotify!(id, status);
         },
       },
     };

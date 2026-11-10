@@ -6,6 +6,9 @@ import type { AdminDb } from "@/data/admin/db";
 import { getInquiryStore } from "@/data/inquiryStore";
 import { getDb } from "@/db/client";
 import { resolveConsentVersion } from "@/settings/store";
+import { resolveSiteUrl } from "@/config/env";
+import { getMailer, notifyInquiry } from "@/mail/mail";
+import { getSiteSettings } from "@/settings/read";
 import { processSubmission } from "@/lib/forms/process";
 import { createDuplicateGuard, createRateLimiter } from "@/lib/forms/rateLimit";
 import type { FormState } from "@/lib/forms/state";
@@ -22,6 +25,14 @@ function consentResolver() {
   return (kind: "reservation" | "notice", claimed: string | undefined) => resolveConsentVersion(getDb(url) as unknown as AdminDb, kind, claimed);
 }
 
+/** 접수 알림 메일. 수신 주소는 사이트 설정(알림 수신 이메일), 발송 키는 환경변수. 둘 중 하나라도 없으면 보내지 않는다 */
+function notifier() {
+  return async (kind: "reservation" | "notice", id: string) => {
+    const settings = await getSiteSettings();
+    return notifyInquiry({ mailer: getMailer(), recipient: settings["notify.email"], siteOrigin: resolveSiteUrl(process.env).url.origin }, kind, id);
+  };
+}
+
 async function clientIp(): Promise<string> {
   const h = await headers();
   return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
@@ -29,9 +40,9 @@ async function clientIp(): Promise<string> {
 
 /** 투어 slug 는 폼에 묶어(bind) 받는다. 서버에서 투어와 모집 상태를 다시 확인한다. */
 export async function submitReservation(slug: string, _prev: FormState, data: FormData): Promise<FormState> {
-  return processSubmission("reservation", await getTourForInquiry(slug), data, await clientIp(), { store: getInquiryStore(), limiter, duplicates, resolveConsentVersion: consentResolver() });
+  return processSubmission("reservation", await getTourForInquiry(slug), data, await clientIp(), { store: getInquiryStore(), limiter, duplicates, resolveConsentVersion: consentResolver(), notify: notifier() });
 }
 
 export async function submitNotice(slug: string, _prev: FormState, data: FormData): Promise<FormState> {
-  return processSubmission("notice", await getTourForInquiry(slug), data, await clientIp(), { store: getInquiryStore(), limiter, duplicates, resolveConsentVersion: consentResolver() });
+  return processSubmission("notice", await getTourForInquiry(slug), data, await clientIp(), { store: getInquiryStore(), limiter, duplicates, resolveConsentVersion: consentResolver(), notify: notifier() });
 }

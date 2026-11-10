@@ -124,6 +124,53 @@ describe("제출 처리 (INT-06)", () => {
   });
 });
 
+describe("접수 알림 메일 (SECURITY §8)", () => {
+  beforeEach(() => resetMemoryStore());
+  const goodNotify = (calls: string[]) => async (kind: "reservation" | "notice", id: string) => {
+    calls.push(`${kind}:${id}`);
+    return { outcome: "sent" as const };
+  };
+
+  it("저장한 뒤 알림을 보내고 결과를 저장소에 남긴다", async () => {
+    const calls: string[] = [];
+    const marks: string[] = [];
+    const store = { save: async () => ({ id: "abc" }), markNotify: async (id: string, s: string) => void marks.push(`${id}:${s}`) };
+    const r = await processSubmission("reservation", recruiting, form(GOOD), "7.7.7.7", deps({ store, notify: goodNotify(calls) }));
+    expect(r.status).toBe("success");
+    expect(calls).toEqual(["reservation:abc"]);
+    expect(marks).toEqual(["abc:sent"]);
+  });
+
+  it("알림이 실패해도 신청은 성공이고, 실패가 저장소에 남는다", async () => {
+    const marks: string[] = [];
+    const store = { save: async () => ({ id: "x1" }), markNotify: async (id: string, s: string) => void marks.push(`${id}:${s}`) };
+    const r = await processSubmission("reservation", recruiting, form(GOOD), "8.8.8.8", deps({ store, notify: async () => ({ outcome: "failed", reason: "http_500" }) }));
+    expect(r.status).toBe("success");
+    expect(marks).toEqual(["x1:failed"]);
+  });
+
+  it("알림이 예외를 던져도 신청은 성공이다", async () => {
+    const store = { save: async () => ({ id: "x2" }) };
+    const r = await processSubmission("reservation", recruiting, form(GOOD), "9.9.9.9", deps({ store, notify: () => Promise.reject(new Error("boom")) }));
+    expect(r.status).toBe("success");
+  });
+
+  it("보내지 않았으면(skipped) 결과를 기록하지 않는다", async () => {
+    const marks: string[] = [];
+    const store = { save: async () => ({ id: "x3" }), markNotify: async (id: string, s: string) => void marks.push(`${id}:${s}`) };
+    await processSubmission("reservation", recruiting, form(GOOD), "9.9.9.8", deps({ store, notify: async () => ({ outcome: "skipped" }) }));
+    expect(marks).toEqual([]);
+  });
+
+  it("저장에 실패하면 알림을 보내지 않는다", async () => {
+    const calls: string[] = [];
+    const broken = { save: () => Promise.reject(new Error("db down")) };
+    const r = await processSubmission("reservation", recruiting, form(GOOD), "9.9.9.7", deps({ store: broken, notify: goodNotify(calls) }));
+    expect(r.status).toBe("failed");
+    expect(calls).toEqual([]);
+  });
+});
+
 describe("저장소 선택", () => {
   it("설정이 없거나 알 수 없는 값이면 저장소가 없다 (운영 기본은 접수 불가)", () => {
     expect(getInquiryStore({})).toBeUndefined();
