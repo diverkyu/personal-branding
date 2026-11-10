@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.35.0** | 2026-11-10 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude |
+| **0.36.0** | 2026-11-10 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 상위: [PRD.md](PRD.md) · [CONCEPT.md](CONCEPT.md) · 시각: [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) · 화면 시안: [mockup/](mockup/README.md) · 지침: [DEVELOPMENT.md](DEVELOPMENT.md) · [SECURITY.md](SECURITY.md)
 
@@ -576,7 +576,7 @@ AI 영상 섹션이다(0.35.0 제안). 규강의 구상([PRODUCT-CONCEPT](../PRO
 
 수정 이력을 남기고, 철회 요청 시 즉시 비공개로 전환한다.
 
-#### 영상 (ADM-VIDEO) — **0.35.0 제안** (현재 구현된 영상 항목에 더하는 것)
+#### 영상 (ADM-VIDEO) — 0.35.0 확정, **0.36.0 어드민 입력 구현됨**(ADMIN-DESIGN §29)
 
 현재 어드민의 영상 유형에는 영상 주소·길이·자막이 있다([ADMIN-DESIGN §27](ADMIN-DESIGN.md)). 아래는 공개 화면(§5.14·5.15)을 위해 더하는 항목이다. **마이그레이션 없음**(`fields` 칸에 저장).
 
