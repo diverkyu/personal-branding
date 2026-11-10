@@ -13,8 +13,11 @@ export const EQUIPMENT_TAG = "contents-equipment";
 /** 수강 후기(공개 후기 화면·홈·허브·투어 상세) 캐시 태그 */
 export const REVIEWS_TAG = "reviews";
 
+/** 영상(Films 목록·작품 상세) 캐시 태그 */
+export const VIDEOS_TAG = "contents-video";
+
 /** About(규강 소개) 캐시 태그 */
 export const ABOUT_TAG = "about";
 
 /** 콘텐츠가 바뀌면 갱신해야 하는 공개 캐시 태그 전부 */
-export const PUBLIC_CONTENT_TAGS = [STORIES_TAG, TOURS_TAG, EQUIPMENT_TAG, REVIEWS_TAG, ABOUT_TAG] as const;
+export const PUBLIC_CONTENT_TAGS = [STORIES_TAG, TOURS_TAG, EQUIPMENT_TAG, REVIEWS_TAG, ABOUT_TAG, VIDEOS_TAG] as const;

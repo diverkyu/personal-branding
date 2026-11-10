@@ -1,0 +1,84 @@
+.root {
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--kyu-ink-sub);
+}
+
+.item {
+  border-top: 1px solid var(--kyu-line);
+}
+
+.item:last-child {
+  border-bottom: 1px solid var(--kyu-line);
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  min-height: var(--kyu-touch);
+  padding: 22px 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.name {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--kyu-ink-sub);
+}
+
+.chev {
+  display: inline-flex;
+  flex: none;
+}
+
+.item[open] .chev {
+  transform: rotate(180deg);
+}
+
+.text {
+  margin: 0 0 28px;
+  font-size: 15px;
+  line-height: 1.95;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  margin: 0 0 28px;
+  padding: 20px;
+  background: var(--kyu-navy);
+  color: var(--kyu-lime);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

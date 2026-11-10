@@ -1,0 +1,73 @@
+.card {
+  position: relative;
+  min-width: 0;
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--kyu-sea-light), var(--kyu-sea-mid) 50%, var(--kyu-sea-deep));
+}
+
+.poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--kyu-lime);
+  color: var(--kyu-navy);
+}
+
+.duration {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background: rgb(7 30 41 / 80%);
+  color: var(--kyu-paper);
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 3px 8px;
+}
+
+.meta {
+  margin: 16px 0 6px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--kyu-ink-sub);
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+
+.summary {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--kyu-ink-sub);
+}
+
+/* 링크 영역을 카드 전체로 넓힌다 */
+.link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}

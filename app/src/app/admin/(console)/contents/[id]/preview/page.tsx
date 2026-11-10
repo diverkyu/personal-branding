@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { collectMediaIds, sanitizeBody } from "@/content/body";
+import { FilmDetailView } from "@/components/site/FilmDetailView";
+import { contactConfig } from "@/config/site";
+import { collectMediaIds, isBodyEmpty, sanitizeBody } from "@/content/body";
+import { readVideoFields } from "@/content/videoFields";
+import { kstDate } from "@/data/storyQueries";
+import { getSiteSettings } from "@/settings/read";
 import { ContentBody } from "@/content/ContentBody";
 import { editableView, getContent } from "@/data/admin/contents";
 import { adminDb } from "@/data/admin/dbServer";
@@ -20,6 +25,49 @@ export default async function ContentPreviewPage({ params }: { params: Promise<{
   const view = editableView(row);
   const body = sanitizeBody(view.body);
   const media = body.ok ? await getMediaByIds(db, admin, collectMediaIds(body.doc)) : [];
+
+  // 영상은 공개 작품 상세와 같은 모양으로 보여 준다 (수정 중인 내용 기준, 공개되지 않는다)
+  if (row.type === "video") {
+    const f = readVideoFields(view.fields);
+    const [poster] = f.posterMediaId ? await getMediaByIds(db, admin, [f.posterMediaId]) : [];
+    const settings = await getSiteSettings();
+    const doc = body.ok && !isBodyEmpty(body.doc) ? body.doc : null;
+    return (
+      <>
+        <p className={styles.alert} style={{ marginBottom: 16 }}>
+          미리보기입니다. 공개되지 않은 화면이며, 수정 중인 내용이 보입니다. 포스터·영상 주소가 비어 있으면 그 부분은 비어 보입니다.{" "}
+          <Link href={`/admin/contents/${row.id}`} className={styles.linkButton}>
+            편집으로 돌아가기
+          </Link>
+        </p>
+        <FilmDetailView
+          film={{
+            slug: row.slug,
+            title: view.title,
+            summary: view.summary,
+            publishedAt: kstDate(new Date()),
+            publishedAtIso: new Date().toISOString(),
+            tags: view.tags,
+            duration: f.duration,
+            hasCaptions: f.hasCaptions,
+            cutLabel: f.cutLabel,
+            featured: f.featured,
+            videoUrl: f.videoUrl,
+            poster: poster ? { src: poster.url, alt: poster.alt || "(대체 텍스트 없음)", width: poster.width, height: poster.height } : { src: "", alt: "", width: 1280, height: 720 },
+            notes: { sceneIntent: f.sceneIntent, promptNotes: f.promptNotes, editNotes: f.editNotes },
+            doc,
+            media,
+            seoTitle: view.seoTitle,
+            seoDescription: view.seoDescription,
+          }}
+          newer={null}
+          older={null}
+          email={settings["contact.email"] ?? contactConfig.email}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <p className={styles.alert} style={{ marginBottom: 16 }}>

@@ -14,6 +14,13 @@ export const VIDEO_LIMITS = { url: 300, duration: 8, cutLabel: 20, note: 1500 } 
 export const NOTE_KEYS = ["sceneIntent", "promptNotes", "editNotes"] as const;
 export type NoteKey = (typeof NOTE_KEYS)[number];
 export const NOTE_LABELS: Record<NoteKey, string> = { sceneIntent: "장면 의도", promptNotes: "프롬프트 · 스킬", editNotes: "편집 판단" };
+/** 공개 화면(제작 노트 칸 제목 아래)에 보이는 설명 */
+export const NOTE_PUBLIC_HINTS: Record<NoteKey, string> = {
+  sceneIntent: "이 장면으로 무엇을 말하려 했는지",
+  promptNotes: "실제로 쓴 구절이나 제작 기법",
+  editNotes: "컷을 고르고 이은 이유, 다음에 고칠 점",
+};
+/** 어드민 입력 칸의 안내 */
 export const NOTE_HINTS: Record<NoteKey, string> = {
   sceneIntent: "이 장면으로 무엇을 말하려 했는지",
   promptNotes: "실제로 쓴 구절이나 제작 기법. 공개하고 싶지 않으면 비워 두세요",

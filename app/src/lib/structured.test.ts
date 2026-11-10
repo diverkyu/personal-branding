@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { stories, tours } from "@/data/fixtures";
-import { articleLd, breadcrumbLd, eventLd, safeJson, websiteLd } from "./structured";
+import { articleLd, breadcrumbLd, eventLd, safeJson, videoLd, websiteLd } from "./structured";
 
 const ORIGIN = "https://example.test";
 
@@ -32,5 +32,16 @@ describe("구조화 데이터", () => {
     expect(out).not.toContain("</script>");
     expect(out).not.toContain("<");
     expect(JSON.parse(out).name).toBe("</script><script>alert(1)</script>");
+  });
+
+  it("VideoObject 는 화면에 있는 값만 담고 제작 노트는 담지 않으며 길이를 ISO 8601 로 쓴다", () => {
+    const ld = videoLd("https://diverkyu.example", { slug: "a", title: "작품", summary: "", publishedAtIso: "2026-11-01T00:00:00.000Z", duration: "3:25", videoUrl: "https://youtu.be/dQw4w9WgXcQ", poster: { src: "/media/p.webp" } });
+    expect(ld).toMatchObject({ "@type": "VideoObject", name: "작품", description: "작품", duration: "PT3M25S", thumbnailUrl: "https://diverkyu.example/media/p.webp", url: "https://diverkyu.example/films/a" });
+    expect((ld.embedUrl as string).startsWith("https://www.youtube-nocookie.com/embed/")).toBe(true);
+    expect(Object.keys(ld).join(",")).not.toMatch(/note|prompt/i);
+    const noDuration = videoLd("https://x.example", { slug: "b", title: "t", summary: "s", publishedAtIso: "2026-11-01T00:00:00.000Z", duration: "", videoUrl: "https://example.com/v", poster: { src: "" } });
+    expect(noDuration).not.toHaveProperty("duration");
+    expect(noDuration).not.toHaveProperty("embedUrl");
+    expect(noDuration).not.toHaveProperty("thumbnailUrl");
   });
 });

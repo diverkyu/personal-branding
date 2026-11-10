@@ -42,3 +42,11 @@ export function parseVideoUrl(raw: string): VideoSource | null {
 function youtube(id: string): VideoSource {
   return { provider: "youtube", id, embedUrl: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`, watchUrl: `https://www.youtube.com/watch?v=${id}` };
 }
+
+/** "3:25" → "PT3M25S", "1:02:30" → "PT1H2M30S" (구조화 데이터용). 모양이 틀리면 null */
+export function isoDuration(duration: string): string | null {
+  const m = /^(?:(\d{1,2}):)?([0-5]?\d):([0-5]\d)$/.exec(duration);
+  if (!m) return null;
+  const [, h, min, sec] = m;
+  return `PT${h ? `${Number(h)}H` : ""}${Number(min)}M${Number(sec)}S`;
+}

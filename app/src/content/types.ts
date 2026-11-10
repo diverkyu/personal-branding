@@ -79,7 +79,7 @@ export const CONTENT_TYPES: Record<string, ContentTypeDef> = {
   video: {
     key: "video",
     label: "영상",
-    noPublicNote: "영상은 아직 공개 화면이 없습니다. 발행해도 사이트에는 나타나지 않고, 내용을 미리 준비해 두는 용도입니다.",
+    publicPath: (slug) => `/films/${slug}`,
     summaryLabel: "영상 설명",
     bodyLabel: "영상 소개 (선택)",
     bodyOptional: true,

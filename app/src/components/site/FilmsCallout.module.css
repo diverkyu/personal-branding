@@ -1,0 +1,27 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text {
+  max-width: 620px;
+}
+
+.title {
+  margin-top: 16px;
+  font-size: clamp(26px, 3.2vw, 34px);
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: -1.5px;
+  word-break: keep-all;
+}
+
+.body {
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--kyu-teal-text);
+}
