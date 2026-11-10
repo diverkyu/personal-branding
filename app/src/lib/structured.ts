@@ -4,6 +4,7 @@
  */
 import type { Story, Tour } from "@/types/content";
 import { siteConfig } from "@/config/site";
+import { isoDuration, parseVideoUrl } from "@/lib/video";
 
 type Json = Record<string, unknown>;
 
@@ -63,4 +64,29 @@ export function breadcrumbLd(origin: string, items: Array<{ name: string; path: 
 /** <script> 안에 넣어도 안전하도록 JSON 을 직렬화한다 (`</script>`·HTML 주석 시작을 이스케이프) */
 export function safeJson(data: Json): string {
   return JSON.stringify(data).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+}
+
+/**
+ * 영상 작품(Films)은 화면에 있는 내용만 담는다: 제목·설명·포스터·공개일·길이·재생 주소. 제작 노트는 담지 않는다.
+ * 재생 주소(embedUrl)는 허용 도메인(YouTube nocookie·Vimeo)의 임베드 주소다.
+ */
+export function videoLd(
+  origin: string,
+  film: { slug: string; title: string; summary: string; publishedAtIso: string; duration: string; videoUrl: string; poster: { src: string } },
+): Json {
+  const source = parseVideoUrl(film.videoUrl);
+  const duration = isoDuration(film.duration);
+  return {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: film.title,
+    description: film.summary || film.title,
+    uploadDate: film.publishedAtIso,
+    inLanguage: "ko",
+    ...(film.poster.src ? { thumbnailUrl: abs(origin, film.poster.src) } : {}),
+    ...(duration ? { duration } : {}),
+    ...(source ? { embedUrl: source.embedUrl } : {}),
+    url: abs(origin, `/films/${film.slug}`),
+    author: { "@type": "Person", name: siteConfig.ownerName },
+  };
 }

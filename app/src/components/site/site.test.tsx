@@ -1,6 +1,9 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { EquipmentCard } from "./EquipmentCard";
+import { FilmCard } from "./FilmCard";
+import { FilmPlayer } from "./FilmPlayer";
+import { MakingOf } from "./MakingOf";
 import { InfoRow } from "./InfoRow";
 import { ReviewCard } from "./ReviewCard";
 import { StoryCard } from "./StoryCard";
@@ -112,5 +115,56 @@ describe("InfoRow", () => {
     expect(out).toContain("<dl");
     expect(out).toContain("<dt");
     expect(out).toContain("12.05");
+  });
+});
+
+describe("Films", () => {
+  const notes = (over: Partial<Record<"sceneIntent" | "promptNotes" | "editNotes", string>> = {}) => ({ sceneIntent: "", promptNotes: "", editNotes: "", ...over });
+
+  it("제작 노트는 비운 칸을 그리지 않고, 첫 칸만 펼쳐 둔다", () => {
+    const out = html(<MakingOf notes={notes({ sceneIntent: "의도", editNotes: "편집" })} />);
+    expect(out).toContain("장면 의도");
+    expect(out).toContain("편집 판단");
+    expect(out).not.toContain("프롬프트");
+    expect(out.match(/<details/g)).toHaveLength(2);
+    expect(out.match(/<details[^>]* open=""/g)).toHaveLength(1);
+    expect(out).toContain('id="making-of"');
+  });
+
+  it("세 칸이 모두 비면 영역 전체를 그리지 않는다", () => {
+    expect(html(<MakingOf notes={notes()} />)).toBe("");
+  });
+
+  it("제작 노트의 글은 글자로만 그린다 — HTML 모양 글자가 태그가 되지 않는다", () => {
+    const out = html(<MakingOf notes={notes({ promptNotes: "A <b>crab</b> <script>alert(1)</script>" })} />);
+    expect(out).toContain("&lt;b&gt;crab&lt;/b&gt;");
+    expect(out).toContain("&lt;script&gt;");
+    expect(out).not.toMatch(/<b>crab/);
+    expect(out).not.toMatch(/<script>alert/);
+    expect(out).toContain("<pre");
+  });
+
+  it("재생기는 누르기 전에는 iframe 도 외부 주소도 없다 (포스터와 재생 버튼, 원본 링크만)", () => {
+    const out = html(<FilmPlayer videoUrl="https://www.youtube.com/watch?v=dQw4w9WgXcQ" title="작품" poster={{ src: "/media/p.webp", alt: "포스터" }} badge="ROUGH CUT" />);
+    expect(out).not.toContain("<iframe");
+    expect(out).not.toContain("youtube-nocookie");
+    expect(out).toContain('aria-label="작품 재생"');
+    expect(out).toContain("ROUGH CUT");
+    expect(out).toContain('src="/media/p.webp"');
+    expect(out).toContain('href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"');
+    expect(out).toContain("원본 링크(YouTube)에서 보기");
+  });
+
+  it("허용 도메인이 아닌 영상 주소는 재생기를 그리지 않는다", () => {
+    expect(html(<FilmPlayer videoUrl="https://example.com/v.mp4" title="작품" />)).toBe("");
+    expect(html(<FilmPlayer videoUrl="javascript:alert(1)" title="작품" />)).toBe("");
+  });
+
+  it("작품 카드는 제목이 링크이고 길이·자막·날짜를 보여 준다", () => {
+    const out = html(<FilmCard href="/films/a" title="작품" dateLabel="2026.11.08" duration="1:00" hasCaptions poster={{ src: "/p.webp", alt: "포스터" }} />);
+    expect(out).toMatch(/<a [^>]*href="\/films\/a"[^>]*>작품<\/a>/);
+    expect(out).toContain("1:00");
+    expect(out).toContain("자막 있음");
+    expect(out).toContain("2026.11.08");
   });
 });
