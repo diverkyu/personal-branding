@@ -74,7 +74,8 @@ test.describe("데스크톱 메뉴", () => {
     await page.goto("/");
     const nav = page.getByRole("navigation", { name: "주 메뉴" });
     const labels = await nav.locator("> ul > li").evaluateAll((items) => items.map((li) => (li.querySelector("a")?.textContent ?? "").trim()));
-    expect(labels).toEqual(["About", "Story", "Freediving"]);
+    // 시험 서버는 가상 작품 1건이 있어 Films 가 보인다 (작품이 없으면 숨김: 단위 시험 navItems)
+    expect(labels).toEqual(["About", "Story", "Freediving", "Films"]);
     await expect(page.getByRole("banner").getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/contact");
     await expect(page.getByRole("button", { name: /MENU/ })).toBeHidden();
   });

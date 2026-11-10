@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { FOOTER_LINKS, NAV_ITEMS, isCurrentPath } from "@/config/nav";
+import { FOOTER_LINKS, NAV_ITEMS, isCurrentPath, navItems } from "@/config/nav";
 import { SiteFooter } from "./SiteFooter";
 import { SkipLink } from "./SkipLink";
 
@@ -8,6 +8,11 @@ describe("메뉴 설정", () => {
   it("라벨과 순서가 고정이다: About → Story → Freediving", () => {
     expect(NAV_ITEMS.map((item) => item.label)).toEqual(["About", "Story", "Freediving"]);
     expect(NAV_ITEMS[2]?.children?.map((c) => c.href)).toEqual(["/freediving/tours", "/freediving/equipment", "/freediving/reviews"]);
+  });
+
+  it("Films 는 첫 작품을 공개한 뒤에만 Freediving 뒤에 붙는다", () => {
+    expect(navItems(false).map((i) => i.label)).toEqual(["About", "Story", "Freediving"]);
+    expect(navItems(true).map((i) => i.label)).toEqual(["About", "Story", "Freediving", "Films"]);
   });
 
   it("현재 경로 판정은 하위 경로를 포함하되 접두어만 같은 경로는 제외한다", () => {

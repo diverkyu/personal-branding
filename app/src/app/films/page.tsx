@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { contactConfig } from "@/config/site";
-import { filmsConfig } from "@/config/films";
+import { filmsConfig, filmsCopy } from "@/config/films";
 import { NOTE_KEYS } from "@/content/videoFields";
 import { featuredOf, tagsOf } from "@/data/filmQueries";
 import { listFilms } from "@/data/films";
@@ -34,6 +34,7 @@ export default async function FilmsPage() {
   const featured = featuredOf(films);
   const others = films.filter((f) => f !== featured);
   const settings = await getSiteSettings();
+  const copy = filmsCopy(settings);
   const email = settings["contact.email"] ?? contactConfig.email;
   const items: FilteredItem[] = others.map((f) => ({
     id: f.slug,
@@ -51,12 +52,15 @@ export default async function FilmsPage() {
           size="h1"
           title={
             <>
-              {filmsConfig.title[0]}
-              <br />
-              {filmsConfig.title[1]}
+              {copy.titleLines.map((line, i) => (
+                <span key={i}>
+                  {i > 0 ? <br /> : null}
+                  {line}
+                </span>
+              ))}
             </>
           }
-          description={filmsConfig.subtitle}
+          description={copy.subtitle}
         />
         {featured ? (
           <div className={styles.featured}>
@@ -102,7 +106,7 @@ export default async function FilmsPage() {
         </Section>
       ) : null}
 
-      <FilmsCallout email={email} />
+      <FilmsCallout email={email} title={copy.calloutTitle} body={copy.calloutBody} />
     </>
   );
 }

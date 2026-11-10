@@ -3,6 +3,10 @@ import { describe, expect, it } from "vitest";
 import { EquipmentCard } from "./EquipmentCard";
 import { FilmCard } from "./FilmCard";
 import { FilmPlayer } from "./FilmPlayer";
+import { ContactSection } from "./ContactSection";
+import { HomeFilms } from "./HomeFilms";
+import { filmsCopy } from "@/config/films";
+import type { FilmItem } from "@/data/filmQueries";
 import { MakingOf } from "./MakingOf";
 import { InfoRow } from "./InfoRow";
 import { ReviewCard } from "./ReviewCard";
@@ -166,5 +170,45 @@ describe("Films", () => {
     expect(out).toContain("1:00");
     expect(out).toContain("자막 있음");
     expect(out).toContain("2026.11.08");
+  });
+});
+
+describe("홈 Films 구역·Contact 특강 링크 (7c)", () => {
+  const film: FilmItem = {
+    slug: "a", title: "작품", summary: "한 줄", publishedAt: "2026-11-01", publishedAtIso: "2026-11-01T00:00:00+09:00", tags: [], duration: "1:00", hasCaptions: false,
+    cutLabel: "ROUGH CUT", featured: true, videoUrl: "https://youtu.be/dQw4w9WgXcQ", poster: { src: "/p.webp", alt: "포스터", width: 1280, height: 720 },
+    notes: { sceneIntent: "", promptNotes: "", editNotes: "" },
+  } as FilmItem;
+
+  it("홈 구역은 재생기(iframe)를 두지 않고 상세로 보내며, 제작 노트가 없으면 '작품 보기'다", () => {
+    const out = html(<HomeFilms film={film} copy={filmsCopy()} />);
+    expect(out).not.toContain("<iframe");
+    expect(out).toContain('href="/films/a"');
+    expect(out).toContain("작품 보기");
+    expect(out).not.toContain("제작 노트 보기");
+    expect(out).toContain("Films 전체 보기");
+    expect(out).toContain("04 / FILMS");
+  });
+
+  it("제작 노트가 있으면 첫 버튼이 #making-of 로 간다", () => {
+    const out = html(<HomeFilms film={{ ...film, notes: { sceneIntent: "의도", promptNotes: "", editNotes: "" } }} copy={filmsCopy()} />);
+    expect(out).toContain('href="/films/a#making-of"');
+    expect(out).toContain("작품과 제작 노트 보기");
+  });
+
+  it("사이트 설정 문구가 기본값을 대신하고, 비면 기본값이다", () => {
+    expect(filmsCopy({ "films.subtitle": "새 부제" }).subtitle).toBe("새 부제");
+    expect(filmsCopy({ "films.subtitle": "  " }).subtitle).toContain("상상으로 만든");
+    expect(filmsCopy({ "films.title": "한 줄\n두 줄" }).titleLines).toEqual(["한 줄", "두 줄"]);
+  });
+
+  it("Contact 는 Films 가 보일 때만 05 번호와 특강 링크를 가진다", () => {
+    const off = html(<ContactSection email="a@b.co" />).replace(/<!-- -->/g, "");
+    const on = html(<ContactSection email="a@b.co" withFilms />).replace(/<!-- -->/g, "");
+    expect(off).toContain("04 / LET");
+    expect(off).not.toContain("AI 영상 특강");
+    expect(on).toContain("05 / LET");
+    expect(on).toContain("AI 영상 특강 소식 요청하기");
+    expect(on).toContain("mailto:a@b.co?subject=");
   });
 });

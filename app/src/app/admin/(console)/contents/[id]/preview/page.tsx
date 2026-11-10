@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { filmsCopy } from "@/config/films";
 import { FilmDetailView } from "@/components/site/FilmDetailView";
 import { contactConfig } from "@/config/site";
 import { collectMediaIds, isBodyEmpty, sanitizeBody } from "@/content/body";
@@ -63,6 +64,7 @@ export default async function ContentPreviewPage({ params }: { params: Promise<{
           newer={null}
           older={null}
           email={settings["contact.email"] ?? contactConfig.email}
+          copy={filmsCopy(settings)}
         />
       </>
     );

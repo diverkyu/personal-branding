@@ -4,7 +4,7 @@ import { FilmsCallout } from "@/components/site/FilmsCallout";
 import { MakingOf } from "@/components/site/MakingOf";
 import { Section } from "@/components/ui/Section";
 import { SmartLink } from "@/components/ui/SmartLink";
-import { filmsConfig } from "@/config/films";
+import { filmsCopy, type FilmsCopy } from "@/config/films";
 import { ContentBody } from "@/content/ContentBody";
 import { NOTE_KEYS } from "@/content/videoFields";
 import type { FilmDetail, FilmItem } from "@/data/filmQueries";
@@ -15,7 +15,7 @@ import styles from "./FilmDetailView.module.css";
  * 작품 상세 본체 (SCREEN-SPEC §5.15). 공개 `/films/[slug]` 와 어드민 미리보기가 함께 쓴다.
  * 순서는 고정: 경로 → 영상 → AI 제작 표기 → 제목·정보 → 영상 소개와 제작 노트 → 이전·다음 → 특강 소식 띠.
  */
-export function FilmDetailView({ film, newer, older, email }: { film: FilmDetail; newer: FilmItem | null; older: FilmItem | null; email: string }) {
+export function FilmDetailView({ film, newer, older, email, copy = filmsCopy() }: { film: FilmDetail; newer: FilmItem | null; older: FilmItem | null; email: string; copy?: FilmsCopy }) {
   const meta = [formatDate(film.publishedAt), film.duration, film.hasCaptions ? "자막 있음" : ""].filter(Boolean).join(" · ");
   const hasIntro = film.doc !== null;
   const hasNotes = NOTE_KEYS.some((k) => film.notes[k] !== "");
@@ -27,7 +27,7 @@ export function FilmDetailView({ film, newer, older, email }: { film: FilmDetail
         </nav>
         <FilmPlayer videoUrl={film.videoUrl} title={film.title} poster={film.poster} badge={film.cutLabel || undefined} />
         <p className={styles.notice}>
-          AI 제작 · {filmsConfig.aiNotice}
+          AI 제작 · {copy.aiNotice}
         </p>
         <p className={styles.meta}>{meta}</p>
         <div className={styles.head}>
@@ -73,7 +73,7 @@ export function FilmDetailView({ film, newer, older, email }: { film: FilmDetail
         </Section>
       ) : null}
 
-      <FilmsCallout email={email} />
+      <FilmsCallout email={email} title={copy.calloutTitle} body={copy.calloutBody} />
     </>
   );
 }
