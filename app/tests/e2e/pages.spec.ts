@@ -178,3 +178,26 @@ test.describe("Contact", () => {
     await expect(page.getByText("이 주소를 선택해 복사해주세요: contact@example.com")).toBeVisible();
   });
 });
+
+test.describe("Films 메뉴·홈 구역·Contact 특강 링크 (7c)", () => {
+  test("작품이 있으면 홈에 Films 구역이 보이고 재생 요청 없이 상세로 이어진다", async ({ page }) => {
+    const external: string[] = [];
+    page.on("request", (r) => {
+      if (/youtube|vimeo/.test(r.url())) external.push(r.url());
+    });
+    await page.goto("/");
+    const section = page.getByRole("region", { name: /물속에서 떠올린/ });
+    await expect(section).toBeVisible();
+    await expect(section.getByRole("link", { name: "Films 전체 보기" })).toHaveAttribute("href", "/films");
+    await section.getByRole("link", { name: /보러 가기/ }).click();
+    await expect(page).toHaveURL(/\/films\/sample-film$/);
+    expect(external).toEqual([]);
+  });
+
+  test("Contact 는 05 번호와 특강 소식 메일 링크를 가진다", async ({ page }) => {
+    await page.goto("/contact");
+    await expect(page.getByText(/05 \/ LET/)).toBeVisible();
+    const link = page.getByRole("link", { name: /AI 영상 특강 소식 요청하기/ });
+    expect(decodeURIComponent((await link.getAttribute("href")) ?? "")).toContain("subject=[KYU] AI 특강 소식 요청");
+  });
+});

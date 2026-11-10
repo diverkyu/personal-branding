@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { CONTACT_ITEM, NAV_ITEMS, isCurrentPath, type NavItem } from "@/config/nav";
+import { CONTACT_ITEM, isCurrentPath, navItems, type NavItem } from "@/config/nav";
 import { Icon } from "@/components/ui/Icon";
 import { cx } from "@/lib/cx";
 import { Logo } from "./Logo";
@@ -13,7 +13,8 @@ const MOBILE_QUERY = "(max-width: 680px)";
 const CLOSE_DELAY_MS = 150;
 
 /** 헤더 (SCREEN-SPEC §4.1 GL-H, INT-01 모바일 메뉴, INT-02 Freediving 하위 메뉴). */
-export function SiteHeader() {
+export function SiteHeader({ showFilms = false }: { showFilms?: boolean }) {
+  const items = navItems(showFilms);
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -89,7 +90,7 @@ export function SiteHeader() {
 
         <nav className={styles.desktop} aria-label="주 메뉴">
           <ul>
-            {NAV_ITEMS.map((item) => (
+            {items.map((item) => (
               <li key={item.href}>{item.children ? <DropdownItem item={item} pathname={pathname} /> : <NavLink href={item.href} label={item.label} pathname={pathname} />}</li>
             ))}
           </ul>
@@ -116,7 +117,7 @@ export function SiteHeader() {
       <div id="mobile-menu" ref={panelRef} className={styles.panel} hidden={!menuOpen}>
         <nav aria-label="모바일 메뉴">
           <ul>
-            {NAV_ITEMS.map((item) => (
+            {items.map((item) => (
               <li key={item.href}>
                 <Link href={item.href} aria-current={pathname === item.href ? "page" : undefined} onClick={() => closeMenu(false)}>
                   {item.label}

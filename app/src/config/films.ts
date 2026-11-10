@@ -1,6 +1,6 @@
 /**
  * Films(AI 영상) 화면의 고정 문구 (SCREEN-SPEC §5.14·5.15, §12.1 결정 11·14·18).
- * 7c 에서 사이트 설정(사이트 설정 > Films)으로 옮겨 규강이 어드민에서 고칠 수 있게 한다. 그 전까지는 이 기본값이다.
+ * 소개 카피·부제·AI 제작 표기·특강 띠 문구는 사이트 설정(사이트 설정 > Films)에서 고친다. 여기 값은 설정이 비었을 때의 기본값이다.
  * AI 제작 표기 문구는 규강이 확정해야 한다(지금은 자리표시 문구).
  */
 export const filmsConfig = {
@@ -19,6 +19,26 @@ export const filmsConfig = {
     mailBody: "AI 영상 특강 소식을 받고 싶습니다.\n\n이름(선택):\n",
   },
 } as const;
+
+/** 사이트 설정(`films.*`)에서 온 문구. 값이 없거나 비면 위 기본값을 쓴다 */
+export interface FilmsCopy {
+  titleLines: string[];
+  subtitle: string;
+  aiNotice: string;
+  calloutTitle: string;
+  calloutBody: string;
+}
+
+export function filmsCopy(settings: Record<string, string> = {}): FilmsCopy {
+  const pick = (key: string, fallback: string) => (settings[key]?.trim() ? settings[key]! : fallback);
+  return {
+    titleLines: pick("films.title", filmsConfig.title.join("\n")).split("\n"),
+    subtitle: pick("films.subtitle", filmsConfig.subtitle),
+    aiNotice: pick("films.aiNotice", filmsConfig.aiNotice),
+    calloutTitle: pick("films.calloutTitle", filmsConfig.callout.title),
+    calloutBody: pick("films.calloutBody", filmsConfig.callout.body),
+  };
+}
 
 /** 특강 소식 요청 메일 주소 (제목·본문이 채워진다). 서버에 저장하지 않는다 */
 export function filmsMailto(email: string): string {

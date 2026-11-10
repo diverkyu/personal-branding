@@ -3,6 +3,7 @@ import { DM_Sans, Lora, Noto_Sans_KR } from "next/font/google";
 import { isIndexingAllowed, resolveSiteUrl } from "@/config/env";
 import { siteConfig } from "@/config/site";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { listFilms } from "@/data/films";
 import { getSiteSettings } from "@/settings/read";
 import { SiteFrame } from "@/components/layout/SiteFrame";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -56,10 +57,12 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const settings = await getSiteSettings();
+  // 공개 작품이 하나라도 있어야 메뉴에 Films 가 보인다
+  const showFilms = (await listFilms()).length > 0;
   return (
     <html lang="ko" className={`${dmSans.variable} ${notoSansKr.variable} ${lora.variable}`}>
       <body>
-        <SiteFrame skip={<SkipLink />} header={<SiteHeader />} footer={<SiteFooter owner={settings["footer.owner"]} />}>
+        <SiteFrame skip={<SkipLink />} header={<SiteHeader showFilms={showFilms} />} footer={<SiteFooter owner={settings["footer.owner"]} />}>
           {children}
         </SiteFrame>
       </body>

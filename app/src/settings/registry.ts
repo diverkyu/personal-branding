@@ -5,7 +5,7 @@
  * - 순수 코드라 서버 액션·화면·시험이 같은 규칙을 쓴다.
  */
 export type SettingType = "text" | "lines" | "email";
-export type SettingGroup = "home" | "contact" | "footer" | "seo";
+export type SettingGroup = "home" | "films" | "contact" | "footer" | "seo";
 
 export interface SettingDef {
   key: string;
@@ -26,10 +26,13 @@ export interface SettingDef {
 
 export const SETTING_GROUPS: { id: SettingGroup; title: string }[] = [
   { id: "home", title: "홈" },
+  { id: "films", title: "Films (AI 영상)" },
   { id: "contact", title: "연락" },
   { id: "footer", title: "푸터" },
   { id: "seo", title: "검색·공유" },
 ];
+
+import { filmsConfig } from "@/config/films";
 
 export const SETTINGS: SettingDef[] = [
   {
@@ -64,6 +67,55 @@ export const SETTINGS: SettingDef[] = [
     maxLines: 2,
     default: "프리다이빙 강사이자 AI 크리에이터, 이동규입니다.\n한 번의 호흡과 하나의 아이디어로 새로운 세계를 탐험합니다.",
     hint: "최대 2줄, 한 줄 40자까지",
+  },
+  {
+    key: "films.title",
+    group: "films",
+    label: "Films 제목",
+    usedAt: "Films 목록 제목, 홈 Films 구역 제목 (FILMS-01, HOME-24)",
+    type: "lines",
+    maxLength: 20,
+    maxLines: 2,
+    default: filmsConfig.title.join("\n"),
+    hint: "최대 2줄, 한 줄 20자까지",
+  },
+  {
+    key: "films.subtitle",
+    group: "films",
+    label: "Films 부제",
+    usedAt: "Films 목록 제목 아래, 홈 Films 구역 (FILMS-01, HOME-24)",
+    type: "text",
+    maxLength: 100,
+    default: filmsConfig.subtitle,
+  },
+  {
+    key: "films.aiNotice",
+    group: "films",
+    label: "AI 제작 표기 문구",
+    usedAt: "모든 작품 상세의 영상 바로 아래 (FILMD-13)",
+    type: "text",
+    maxLength: 100,
+    default: filmsConfig.aiNotice,
+    hint: "앞에 “AI 제작 ·”이 자동으로 붙습니다. 작품마다 끌 수 없습니다. 규강 님이 확정해 주세요.",
+  },
+  {
+    key: "films.calloutTitle",
+    group: "films",
+    label: "AI 특강 소식 띠 제목",
+    usedAt: "Films 목록·작품 상세 하단 (FILMS-09, FILMD-11)",
+    type: "text",
+    maxLength: 60,
+    default: filmsConfig.callout.title,
+  },
+  {
+    key: "films.calloutBody",
+    group: "films",
+    label: "AI 특강 소식 띠 안내문",
+    usedAt: "Films 목록·작품 상세 하단 (FILMS-09, FILMD-11)",
+    type: "text",
+    maxLength: 200,
+    default: filmsConfig.callout.body,
+    hint: "버튼은 제목이 채워진 메일 창을 열 뿐이며, 서버에 저장하지 않습니다.",
   },
   {
     key: "contact.email",

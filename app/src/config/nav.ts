@@ -25,6 +25,14 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
 ];
 
+/** Films 메뉴. 첫 작품을 공개하기 전에는 보이지 않는다 (SCREEN-SPEC §12.1 결정 10) */
+export const FILMS_ITEM: NavItem = { label: "Films", href: "/films" };
+
+/** 공개 작품이 있으면 Freediving 뒤에 Films 를 붙인다 */
+export function navItems(showFilms: boolean): readonly NavItem[] {
+  return showFilms ? [...NAV_ITEMS, FILMS_ITEM] : NAV_ITEMS;
+}
+
 export const CONTACT_ITEM: NavChild = { label: "Contact", href: "/contact" };
 
 export const FOOTER_LINKS: readonly NavChild[] = [

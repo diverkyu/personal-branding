@@ -13,6 +13,10 @@ import { Section } from "@/components/ui/Section";
 import { SectionHeader, SectionLabel } from "@/components/ui/SectionHeader";
 import { TextLink } from "@/components/ui/TextLink";
 import { listFeaturedReviews, reviewTourOptions } from "@/data/reviews";
+import { featuredOf } from "@/data/filmQueries";
+import { listFilms } from "@/data/films";
+import { filmsCopy } from "@/config/films";
+import { HomeFilms } from "@/components/site/HomeFilms";
 import { listOpenTours } from "@/data/tours";
 import { listStories } from "@/data/stories";
 import { getSiteSettings } from "@/settings/read";
@@ -23,7 +27,7 @@ import pages from "./pages.module.css";
 /** 발행·취소·삭제 때 바로 갱신되고, 예약 시각은 최대 5분 안에 반영된다 */
 export const revalidate = 300;
 
-/** 홈 (SCREEN-SPEC §5.1). 섹션 순서: 히어로 → 구분 띠 → About 요약 → Story → Freediving → Contact. Story·투어는 어드민 콘텐츠, 후기는 아직 가상 데이터. */
+/** 홈 (SCREEN-SPEC §5.1). 섹션 순서: 히어로 → 구분 띠 → About 요약 → Story → Freediving → Films(작품이 있을 때만) → Contact. Story·투어는 어드민 콘텐츠, 후기는 아직 가상 데이터. */
 export default async function HomePage() {
   const settings = await getSiteSettings();
   const slogan = splitSlogan(settings["home.slogan"] ?? "");
@@ -39,6 +43,8 @@ export default async function HomePage() {
   const tour = (await listOpenTours())[0];
   const reviews = await listFeaturedReviews(3);
   const tourOptions = await reviewTourOptions();
+  const films = await listFilms();
+  const featuredFilm = featuredOf(films);
 
   return (
     <>
@@ -178,7 +184,9 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <ContactSection email={settings["contact.email"]} intro={settings["contact.intro"]?.split("\n")} />
+      {featuredFilm ? <HomeFilms film={featuredFilm} copy={filmsCopy(settings)} /> : null}
+
+      <ContactSection withFilms={featuredFilm !== null} email={settings["contact.email"]} intro={settings["contact.intro"]?.split("\n")} />
     </>
   );
 }

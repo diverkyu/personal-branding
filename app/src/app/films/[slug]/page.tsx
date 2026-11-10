@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { FilmDetailView } from "@/components/site/FilmDetailView";
 import { JsonLd } from "@/components/site/JsonLd";
 import { resolveSiteUrl } from "@/config/env";
+import { filmsCopy } from "@/config/films";
 import { contactConfig } from "@/config/site";
 import { getFilm, getFilmNeighbors, listFilms } from "@/data/films";
 import { breadcrumbLd, videoLd } from "@/lib/structured";
@@ -40,7 +41,7 @@ export default async function FilmDetailPage({ params }: Props) {
     <>
       <JsonLd data={videoLd(origin, film)} />
       <JsonLd data={breadcrumbLd(origin, [{ name: "Films", path: "/films" }, { name: film.title, path: `/films/${film.slug}` }])} />
-      <FilmDetailView film={film} newer={newer} older={older} email={settings["contact.email"] ?? contactConfig.email} />
+      <FilmDetailView film={film} newer={newer} older={older} email={settings["contact.email"] ?? contactConfig.email} copy={filmsCopy(settings)} />
     </>
   );
 }
