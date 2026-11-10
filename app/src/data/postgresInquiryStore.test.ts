@@ -117,4 +117,13 @@ describe("제출 처리 + Postgres 저장소 (통합)", () => {
     expect(rows).toHaveLength(1);
     expect(rows[0]?.consentVersion).toBe(CONSENT_VERSION);
   });
+
+  it("알림 메일 결과(sent·failed)를 남기고, 다른 값은 DB 제약이 막는다", async () => {
+    const store = createPostgresInquiryStore(db);
+    const { id } = await store.save({ kind: "notice", tourSlug: "notify-tour", receivedAt: at, consentAt: at, consentVersion: CONSENT_VERSION, data: { name: "홍길동", email: "n@example.com" } });
+    expect((await db.select().from(inquiries).where(eq(inquiries.id, id)))[0]?.notifyStatus).toBeNull();
+    await store.markNotify!(id, "failed");
+    expect((await db.select().from(inquiries).where(eq(inquiries.id, id)))[0]?.notifyStatus).toBe("failed");
+    await expect(db.update(inquiries).set({ notifyStatus: "maybe" }).where(eq(inquiries.id, id))).rejects.toThrow();
+  });
 });

@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import type { InquiryKind, InquiryStore } from "@/data/inquiryStore";
 import type { Tour } from "@/types/content";
 import { logger } from "@/lib/logger";
+import type { NotifyOutcome } from "@/mail/mail";
 import { CONSENT_VERSION, isHoneypotFilled, preservedValues, validateInquiry, validateNotice } from "./inquiry";
 import type { createDuplicateGuard, createRateLimiter } from "./rateLimit";
 import type { FormState } from "./state";
@@ -21,6 +22,8 @@ export interface SubmissionDeps {
   now?: () => Date;
   /** 신청자가 본 동의 문구의 버전 표기를 확인한다. 없으면 옛 표기(CONSENT_VERSION)를 쓴다 (SECURITY §8) */
   resolveConsentVersion?: (kind: InquiryKind, claimed: string | undefined) => Promise<string>;
+  /** 저장이 끝난 뒤 알림 메일을 보낸다. 실패해도 신청 결과(성공)는 바뀌지 않는다 (SECURITY §8) */
+  notify?: (kind: InquiryKind, id: string) => Promise<{ outcome: NotifyOutcome; reason?: string }>;
 }
 
 const FAILED: FormState = { status: "failed" };
@@ -70,8 +73,9 @@ export async function processSubmission(
   }
 
   const receivedAt = now().toISOString();
+  let saved: { id: string } | undefined;
   try {
-    await logger.operation(
+    saved = await logger.operation(
       "inquiry.save",
       async () => {
         const claimed = data.get("consentVersion");
@@ -84,5 +88,19 @@ export async function processSubmission(
     // operation() 이 이미 오류를 구조화 로그로 남겼다. 사용자에게는 입력을 보존한 채 실패를 알린다.
     return { ...FAILED, values: preservedValues(data, FIELDS[kind]) };
   }
+  if (deps.notify && saved) await sendNotification(kind, saved.id, deps, base);
   return { status: "success" };
+}
+
+/** 알림은 저장 뒤의 부가 작업이다. 어떤 일이 생겨도 신청자에게는 영향이 없고, 결과는 저장소와 로그에 남는다 */
+async function sendNotification(kind: InquiryKind, id: string, deps: SubmissionDeps, base: Record<string, unknown>): Promise<void> {
+  try {
+    const result = await deps.notify!(kind, id);
+    if (result.outcome === "skipped") return;
+    if (result.outcome === "failed") logger.error("inquiry.notify_failed", { ...base, reason: result.reason ?? "unknown" });
+    else logger.info("inquiry.notify_sent", base);
+    await deps.store?.markNotify?.(id, result.outcome);
+  } catch {
+    logger.error("inquiry.notify_failed", { ...base, reason: "unexpected" });
+  }
 }

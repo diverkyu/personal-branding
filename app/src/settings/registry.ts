@@ -139,6 +139,16 @@ export const SETTINGS: SettingDef[] = [
     hint: "최대 2줄, 한 줄 40자까지",
   },
   {
+    key: "notify.email",
+    group: "contact",
+    label: "신청 알림 수신 이메일",
+    usedAt: "새 투어 신청·문의가 들어올 때 알림을 받을 주소 (시스템)",
+    type: "email",
+    maxLength: 120,
+    default: "",
+    hint: "비우면 알림 메일을 보내지 않습니다. 메일에는 신청 내용이 아니라 어드민 링크만 담깁니다(개인정보 보호). 메일 서비스 연결이 끝나야 실제로 보내집니다.",
+  },
+  {
     key: "footer.owner",
     group: "footer",
     label: "푸터 이름 표기",

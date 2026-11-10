@@ -133,6 +133,11 @@ export default async function InquiriesPage({ searchParams }: { searchParams: Se
                   <span className={styles.statusTag} data-status={item.status}>
                     {STATUS_LABELS[item.status]}
                   </span>
+                  {item.notifyStatus === "failed" ? (
+                    <span className={styles.note} style={{ margin: "0 0 0 8px" }}>
+                      · 알림 메일 실패
+                    </span>
+                  ) : null}
                 </td>
               </tr>
             ))}

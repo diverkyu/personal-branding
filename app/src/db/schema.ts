@@ -31,8 +31,11 @@ export const inquiries = pgTable(
     status: text("status").notNull().default("new"),
     /** 운영자 메모 (어드민) */
     memo: text("memo"),
+    /** 접수 알림 메일 결과: sent(보냄) / failed(실패 — 어드민에 표시). 비어 있으면 보내지 않았다(수신자·메일 서비스 미설정, 프리뷰) */
+    notifyStatus: text("notify_status"),
   },
   (t) => [
+    check("inquiries_notify_check", sql`${t.notifyStatus} is null or ${t.notifyStatus} in ('sent', 'failed')`),
     check("inquiries_kind_check", sql`${t.kind} in ('reservation', 'notice')`),
     check(
       "inquiries_status_check",

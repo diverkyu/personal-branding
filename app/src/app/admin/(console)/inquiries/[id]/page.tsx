@@ -45,6 +45,11 @@ export default async function InquiryDetailPage({ params }: { params: Promise<{ 
         </Link>
       </p>
       <h1 className={styles.h1}>{row.name}</h1>
+      {row.notifyStatus === "failed" ? (
+        <p className={styles.alert} role="status">
+          이 신청이 들어왔을 때 알림 메일을 보내지 못했습니다. 신청 내용은 정상적으로 저장되어 있습니다. 메일 서비스 연결(발송 키·발신 주소)과 사이트 설정의 알림 수신 이메일을 확인해 주세요.
+        </p>
+      ) : null}
       <p className={styles.note}>개인정보가 포함된 화면입니다. 신청자가 입력한 원본은 수정할 수 없습니다.</p>
 
       <div className={styles.twoCol}>

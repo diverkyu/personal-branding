@@ -13,7 +13,7 @@ export const metadata = { title: "대시보드 · KYU 어드민" };
 export default async function DashboardPage() {
   const admin = await requireAdmin();
   const db = adminDb();
-  const { newCount, recent } = await inquiryDashboard(db, admin);
+  const { newCount, notifyFailed, recent } = await inquiryDashboard(db, admin);
   const content = await contentDashboard(db, admin);
   const tourTitles = new Map((await listTourOptions(db, admin)).map((t) => [t.slug, t.title]));
   return (
@@ -21,6 +21,15 @@ export default async function DashboardPage() {
       <h1 className={styles.h1}>대시보드</h1>
       <p className={styles.note}>{admin.name} 님, 오늘 처리할 일입니다.</p>
 
+      {notifyFailed > 0 ? (
+        <p className={styles.alert} role="status">
+          알림 메일을 보내지 못한 새 신청이 {notifyFailed}건 있습니다. 신청 내용은 저장되어 있으니{" "}
+          <Link href="/admin/inquiries?status=new" className={styles.linkButton}>
+            신청·문의 목록
+          </Link>
+          에서 확인하고, 메일 서비스 연결을 점검해 주세요.
+        </p>
+      ) : null}
       <div className={styles.cards}>
         <Link href="/admin/inquiries?status=new" className={styles.statCard}>
           <span className={styles.statLabel}>새 투어 신청·문의</span>

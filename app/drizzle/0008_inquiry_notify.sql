@@ -1,0 +1,2 @@
+ALTER TABLE "inquiries" ADD COLUMN "notify_status" text;--> statement-breakpoint
+ALTER TABLE "inquiries" ADD CONSTRAINT "inquiries_notify_check" CHECK ("inquiries"."notify_status" is null or "inquiries"."notify_status" in ('sent', 'failed'));
