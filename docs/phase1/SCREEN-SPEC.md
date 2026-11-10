@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.41.0** | 2026-11-10 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude |
+| **0.42.0** | 2026-11-10 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 상위: [PRD.md](PRD.md) · [CONCEPT.md](CONCEPT.md) · 시각: [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) · 화면 시안: [mockup/](mockup/README.md) · 지침: [DEVELOPMENT.md](DEVELOPMENT.md) · [SECURITY.md](SECURITY.md)
 
