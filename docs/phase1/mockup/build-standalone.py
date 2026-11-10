@@ -18,6 +18,8 @@ SCREENS = [
     ('story', 'Story', 'Story 목록', 'wide'),
     ('films', 'Films', 'Films 목록', 'wide'),
     ('filmd', 'FilmDetail', 'Films 작품 상세', 'wide'),
+    ('travel', 'Travel', '여행 추천 목록', 'wide'),
+    ('traveld', 'TravelDetail', '여행 추천 상세', 'wide'),
     ('admin', 'Admin', '어드민', 'wide'),
     ('ds', 'DesignSystem', '디자인 시스템', 'wide'),
 ]
