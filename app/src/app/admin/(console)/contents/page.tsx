@@ -42,6 +42,11 @@ export default async function ContentsPage({ searchParams }: { searchParams: Sea
         <NewContentForm type="story" noun="스토리" nameLabel="제목" />
         <NewContentForm type="tour" noun="투어" nameLabel="이름" />
         <NewContentForm type="equipment" noun="장비" nameLabel="이름" />
+        <NewContentForm type="video" noun="영상" nameLabel="제목" />
+        <NewContentForm type="travel" noun="여행 추천" nameLabel="제목" />
+        <p className={styles.note} style={{ margin: 0 }}>
+          영상과 여행 추천은 아직 공개 화면이 없습니다. 발행해도 사이트에는 나타나지 않고, 내용을 미리 준비해 두는 용도입니다.
+        </p>
       </section>
 
       <nav className={styles.row} aria-label="유형으로 거르기" style={{ margin: "8px 0" }}>

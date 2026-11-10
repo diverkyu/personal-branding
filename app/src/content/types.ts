@@ -1,4 +1,6 @@
 import { EMPTY_EQUIPMENT_FIELDS, EQUIPMENT_LIMITS, cleanEquipmentFields, equipmentMediaIds, equipmentProblems, readEquipmentFields } from "./equipmentFields";
+import { EMPTY_TRAVEL_FIELDS, cleanTravelFields, readTravelFields, travelProblems } from "./travelFields";
+import { EMPTY_VIDEO_FIELDS, cleanVideoFields, readVideoFields, videoProblems } from "./videoFields";
 import { EMPTY_TOUR_FIELDS, cleanTourFields, readTourFields, tourMediaIds, tourProblems } from "./tourFields";
 
 /**
@@ -23,7 +25,9 @@ export interface ContentTypeDef {
   /** 메뉴·목록에 보이는 이름 */
   label: string;
   /** 주소 이름(slug)이 고유한 범위는 유형 안이다 */
-  publicPath: (slug: string) => string;
+  publicPath?: (slug: string) => string;
+  /** 공개 화면이 아직 없는 유형의 안내 문구. 있으면 어드민이 "발행해도 사이트에는 나타나지 않는다"고 알린다 */
+  noPublicNote?: string;
   /** 유형별 항목. 없으면 공통 항목만 쓴다 */
   fields?: FieldsDef;
   /** 제목 최대 글자 수 (기본 80) */
@@ -70,6 +74,36 @@ export const CONTENT_TYPES: Record<string, ContentTypeDef> = {
       problems: (stored) => equipmentProblems(readEquipmentFields(stored)),
       mediaIds: (stored) => equipmentMediaIds(readEquipmentFields(stored)),
       mediaLabel: "장비 이미지",
+    },
+  },
+  video: {
+    key: "video",
+    label: "영상",
+    noPublicNote: "영상은 아직 공개 화면이 없습니다. 발행해도 사이트에는 나타나지 않고, 내용을 미리 준비해 두는 용도입니다.",
+    summaryLabel: "영상 설명",
+    bodyLabel: "영상 소개 (선택)",
+    bodyOptional: true,
+    fields: {
+      empty: () => ({ ...EMPTY_VIDEO_FIELDS }) as unknown as Record<string, unknown>,
+      clean: (input) => cleanVideoFields(input) as unknown as Record<string, unknown>,
+      problems: (stored) => videoProblems(readVideoFields(stored)),
+      mediaIds: () => [],
+      mediaLabel: "이미지",
+    },
+  },
+  travel: {
+    key: "travel",
+    label: "여행 추천",
+    noPublicNote: "여행 추천은 아직 공개 화면이 없습니다. 발행해도 사이트에는 나타나지 않고, 내용을 미리 준비해 두는 용도입니다.",
+    summaryLabel: "한 줄 소개",
+    summaryRequired: true,
+    bodyLabel: "추천 내용",
+    fields: {
+      empty: () => ({ ...EMPTY_TRAVEL_FIELDS }) as unknown as Record<string, unknown>,
+      clean: (input) => cleanTravelFields(input) as unknown as Record<string, unknown>,
+      problems: (stored) => travelProblems(readTravelFields(stored)),
+      mediaIds: () => [],
+      mediaLabel: "이미지",
     },
   },
 };

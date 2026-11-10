@@ -116,6 +116,15 @@ function fieldsFromForm(formData: FormData): Record<string, unknown> {
     buttonLabel: text(formData, "f_buttonLabel", 100),
     affiliate: text(formData, "f_affiliate", 10) === "on",
     sortOrder: text(formData, "f_sortOrder", 10),
+    // 영상
+    videoUrl: text(formData, "f_videoUrl", 400),
+    duration: text(formData, "f_duration", 20),
+    hasCaptions: text(formData, "f_captions", 10) === "on",
+    // 여행 추천 (장소 place·정보 확인일 checkedAt 은 투어·장비와 같은 칸을 쓴다)
+    region: text(formData, "f_region", 200),
+    season: text(formData, "f_season", 200),
+    level: text(formData, "f_level", 30),
+    budget: text(formData, "f_budget", 200),
     // 투어
     startDate: text(formData, "f_startDate", 20),
     endDate: text(formData, "f_endDate", 20),
@@ -131,7 +140,7 @@ function fieldsFromForm(formData: FormData): Record<string, unknown> {
 export async function saveContentAction(_: ContentState, formData: FormData): Promise<ContentState> {
   const admin = await requireAdmin();
   const id = text(formData, "id", 64);
-  const values = Object.fromEntries(["title", "slug", "summary", "tags", "answers", "seoTitle", "seoDescription", "origin", "originNote", "f_startDate", "f_endDate", "f_place", "f_recruit", "f_capacity", "f_feeNote", "f_videos", "f_category", "f_thumb", "f_brand", "f_features", "f_priceNote", "f_checkedAt", "f_action", "f_externalUrl", "f_buttonLabel", "f_affiliate", "f_sortOrder"].map((k) => [k, text(formData, k, 5000)]));
+  const values = Object.fromEntries(["title", "slug", "summary", "tags", "answers", "seoTitle", "seoDescription", "origin", "originNote", "f_startDate", "f_endDate", "f_place", "f_recruit", "f_capacity", "f_feeNote", "f_videos", "f_category", "f_thumb", "f_brand", "f_features", "f_priceNote", "f_checkedAt", "f_action", "f_externalUrl", "f_buttonLabel", "f_affiliate", "f_sortOrder", "f_videoUrl", "f_duration", "f_captions", "f_region", "f_season", "f_level", "f_budget"].map((k) => [k, text(formData, k, 5000)]));
   try {
     const db = adminDb();
     const saved = await saveContent(db, admin, id, versionOf(formData), editFromForm(formData));

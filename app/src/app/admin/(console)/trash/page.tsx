@@ -10,7 +10,7 @@ export const metadata = { title: "휴지통 · KYU 어드민" };
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 const KIND_LABELS: Record<TrashKind, string> = { content: "콘텐츠", review: "수강 후기", media: "이미지" };
-const TYPE_LABELS: Record<string, string> = { story: "스토리", tour: "투어", equipment: "장비" };
+const TYPE_LABELS: Record<string, string> = { story: "스토리", tour: "투어", equipment: "장비", video: "영상", travel: "여행 추천" };
 
 const one = (v: string | string[] | undefined): string => (Array.isArray(v) ? (v[0] ?? "") : (v ?? ""));
 

@@ -20,6 +20,7 @@ import styles from "../../admin.module.css";
 import { CONTENT_TYPES } from "@/content/types";
 import { EquipmentFieldsSection, type EquipmentFieldsValues } from "./EquipmentFieldsSection";
 import { TourFieldsSection, type GalleryEntry, type TourFieldsValues } from "./TourFieldsSection";
+import { TravelFieldsSection, VideoFieldsSection, type TravelFieldsValues, type VideoFieldsValues } from "./VideoTravelSections";
 
 function Notice({ state }: { state: ContentState }) {
   return (
@@ -63,6 +64,10 @@ export interface EditInitial {
   /** 장비일 때만 */
   equipmentFields?: EquipmentFieldsValues;
   equipmentImages?: GalleryEntry[];
+  /** 영상일 때만 */
+  videoFields?: VideoFieldsValues;
+  /** 여행 추천일 때만 */
+  travelFields?: TravelFieldsValues;
   /** 장비 카테고리 후보 (이미 쓰고 있는 것) */
   categories?: string[];
   version: number;
@@ -103,6 +108,21 @@ export function EditForm({ initial, media }: { initial: EditInitial; media: Pick
     buttonLabel: v?.f_buttonLabel ?? ef.buttonLabel,
     affiliate: v ? v.f_affiliate === "on" : ef.affiliate,
     sortOrder: v?.f_sortOrder ?? ef.sortOrder,
+  };
+  const vf = initial.videoFields;
+  const videoValues: VideoFieldsValues | undefined = vf && {
+    videoUrl: v?.f_videoUrl ?? vf.videoUrl,
+    duration: v?.f_duration ?? vf.duration,
+    hasCaptions: v ? v.f_captions === "on" : vf.hasCaptions,
+  };
+  const tvf = initial.travelFields;
+  const travelValues: TravelFieldsValues | undefined = tvf && {
+    region: v?.f_region ?? tvf.region,
+    place: v?.f_place ?? tvf.place,
+    season: v?.f_season ?? tvf.season,
+    level: v?.f_level ?? tvf.level,
+    budget: v?.f_budget ?? tvf.budget,
+    checkedAt: v?.f_checkedAt ?? tvf.checkedAt,
   };
   const typeDef = CONTENT_TYPES[initial.type];
   const summaryLabel = typeDef?.summaryLabel ? `${typeDef.summaryLabel} (${typeDef.summaryMax}자 이하)` : "요약 (160자 이하)";
@@ -146,6 +166,8 @@ export function EditForm({ initial, media }: { initial: EditInitial; media: Pick
         surface="light"
       />
       {equipmentValues ? <EquipmentFieldsSection values={equipmentValues} images={initial.equipmentImages ?? []} media={media} categories={initial.categories ?? []} keySuffix={k} /> : null}
+      {videoValues ? <VideoFieldsSection values={videoValues} keySuffix={k} /> : null}
+      {travelValues ? <TravelFieldsSection values={travelValues} keySuffix={k} /> : null}
       {tourValues ? <TourFieldsSection values={tourValues} gallery={initial.tourGallery ?? []} media={media} recruitLocked={initial.slugLocked} keySuffix={k} /> : null}
       <div>
         <p className={styles.fieldLabel} id="body-label">
@@ -265,7 +287,7 @@ export function DeleteContentForm({ id }: { id: string }) {
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="confirm" value="yes" />
       <p className={styles.note} style={{ margin: 0 }}>
-        이 글을 삭제합니다. 예약되어 있으면 취소됩니다. (휴지통에서 복원하는 기능은 다음 단계에서 추가됩니다.)
+        이 글을 휴지통으로 보냅니다. 예약되어 있으면 취소되고, 30일 안에는 어드민의 휴지통에서 복원할 수 있습니다.
       </p>
       <Notice state={state} />
       <div className={styles.row}>

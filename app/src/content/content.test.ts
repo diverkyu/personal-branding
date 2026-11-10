@@ -175,6 +175,8 @@ describe("유형·주소 이름", () => {
     expect(isContentType("story")).toBe(true);
     expect(isContentType("constructor")).toBe(false);
     expect(isContentType("__proto__")).toBe(false);
-    expect(isContentType("video")).toBe(false);
+    expect(isContentType("video")).toBe(true);
+    expect(isContentType("travel")).toBe(true);
+    expect(isContentType("film")).toBe(false);
   });
 });
