@@ -91,7 +91,7 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
                     sortOrder: String(equipment.sortOrder),
                   }
                 : undefined,
-              videoFields: video ? { videoUrl: video.videoUrl, duration: video.duration, hasCaptions: video.hasCaptions } : undefined,
+              videoFields: video ? { videoUrl: video.videoUrl, duration: video.duration, hasCaptions: video.hasCaptions, posterMediaId: video.posterMediaId ?? "", cutLabel: video.cutLabel, featured: video.featured, sceneIntent: video.sceneIntent, promptNotes: video.promptNotes, editNotes: video.editNotes } : undefined,
               travelFields: travel ? { region: travel.region, place: travel.place, season: travel.season, level: travel.level, budget: travel.budget, checkedAt: travel.checkedAt } : undefined,
               equipmentImages: equipment?.images.map((mediaId) => ({ mediaId, caption: "" })),
               categories,

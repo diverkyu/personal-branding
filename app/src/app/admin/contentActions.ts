@@ -120,6 +120,12 @@ function fieldsFromForm(formData: FormData): Record<string, unknown> {
     videoUrl: text(formData, "f_videoUrl", 400),
     duration: text(formData, "f_duration", 20),
     hasCaptions: text(formData, "f_captions", 10) === "on",
+    posterMediaId: text(formData, "f_poster", 64),
+    cutLabel: text(formData, "f_cutLabel", 200),
+    featured: text(formData, "f_featured", 10) === "on",
+    sceneIntent: text(formData, "f_sceneIntent", 4000),
+    promptNotes: text(formData, "f_promptNotes", 4000),
+    editNotes: text(formData, "f_editNotes", 4000),
     // 여행 추천 (장소 place·정보 확인일 checkedAt 은 투어·장비와 같은 칸을 쓴다)
     region: text(formData, "f_region", 200),
     season: text(formData, "f_season", 200),
@@ -140,7 +146,7 @@ function fieldsFromForm(formData: FormData): Record<string, unknown> {
 export async function saveContentAction(_: ContentState, formData: FormData): Promise<ContentState> {
   const admin = await requireAdmin();
   const id = text(formData, "id", 64);
-  const values = Object.fromEntries(["title", "slug", "summary", "tags", "answers", "seoTitle", "seoDescription", "origin", "originNote", "f_startDate", "f_endDate", "f_place", "f_recruit", "f_capacity", "f_feeNote", "f_videos", "f_category", "f_thumb", "f_brand", "f_features", "f_priceNote", "f_checkedAt", "f_action", "f_externalUrl", "f_buttonLabel", "f_affiliate", "f_sortOrder", "f_videoUrl", "f_duration", "f_captions", "f_region", "f_season", "f_level", "f_budget"].map((k) => [k, text(formData, k, 5000)]));
+  const values = Object.fromEntries(["title", "slug", "summary", "tags", "answers", "seoTitle", "seoDescription", "origin", "originNote", "f_startDate", "f_endDate", "f_place", "f_recruit", "f_capacity", "f_feeNote", "f_videos", "f_category", "f_thumb", "f_brand", "f_features", "f_priceNote", "f_checkedAt", "f_action", "f_externalUrl", "f_buttonLabel", "f_affiliate", "f_sortOrder", "f_videoUrl", "f_duration", "f_captions", "f_poster", "f_cutLabel", "f_featured", "f_sceneIntent", "f_promptNotes", "f_editNotes", "f_region", "f_season", "f_level", "f_budget"].map((k) => [k, text(formData, k, 5000)]));
   try {
     const db = adminDb();
     const saved = await saveContent(db, admin, id, versionOf(formData), editFromForm(formData));
