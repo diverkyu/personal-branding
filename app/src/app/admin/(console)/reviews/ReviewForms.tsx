@@ -214,7 +214,7 @@ export function DeleteReviewForm({ id }: { id: string }) {
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="confirm" value="yes" />
       <p className={styles.note} style={{ margin: 0 }}>
-        이 후기를 삭제합니다. 공개 중이면 바로 내려갑니다. 수정 이력은 남습니다. (복원 기능은 다음 단계에서 추가됩니다.)
+        이 후기를 삭제합니다. 공개 중이면 바로 내려갑니다. 수정 이력은 남습니다. 30일 안에는 어드민의 휴지통에서 복원할 수 있습니다.
       </p>
       <Notice state={state} />
       <div className={styles.row}>
