@@ -28,9 +28,15 @@ export const NAV_ITEMS: readonly NavItem[] = [
 /** Films 메뉴. 첫 작품을 공개하기 전에는 보이지 않는다 (SCREEN-SPEC §12.1 결정 10) */
 export const FILMS_ITEM: NavItem = { label: "Films", href: "/films" };
 
-/** 공개 작품이 있으면 Freediving 뒤에 Films 를 붙인다 */
-export function navItems(showFilms: boolean): readonly NavItem[] {
-  return showFilms ? [...NAV_ITEMS, FILMS_ITEM] : NAV_ITEMS;
+/** 여행 추천 하위 메뉴. 첫 글을 공개하기 전에는 보이지 않는다 (SCREEN-SPEC §12.2 결정 T-1·T-2) */
+export const TRAVEL_CHILD: NavChild = { label: "여행 추천", href: "/freediving/travel" };
+
+/** 공개 작품이 있으면 Freediving 뒤에 Films 를 붙이고, 공개 여행 추천이 있으면 Freediving 하위에 여행 추천을 붙인다 */
+export function navItems(showFilms: boolean, showTravel = false): readonly NavItem[] {
+  const base = showTravel
+    ? NAV_ITEMS.map((item) => (item.children ? { ...item, children: [...item.children, TRAVEL_CHILD] } : item))
+    : NAV_ITEMS;
+  return showFilms ? [...base, FILMS_ITEM] : base;
 }
 
 export const CONTACT_ITEM: NavChild = { label: "Contact", href: "/contact" };

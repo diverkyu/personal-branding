@@ -13,6 +13,11 @@ describe("메뉴 설정", () => {
   it("Films 는 첫 작품을 공개한 뒤에만 Freediving 뒤에 붙는다", () => {
     expect(navItems(false).map((i) => i.label)).toEqual(["About", "Story", "Freediving"]);
     expect(navItems(true).map((i) => i.label)).toEqual(["About", "Story", "Freediving", "Films"]);
+    // 여행 추천은 Freediving 하위에만 붙고, 최상위 메뉴는 늘지 않는다 (결정 T-1)
+    const withTravel = navItems(false, true);
+    expect(withTravel.map((i) => i.label)).toEqual(["About", "Story", "Freediving"]);
+    expect(withTravel.find((i) => i.label === "Freediving")?.children?.map((c) => c.label)).toEqual(["투어", "장비", "후기", "여행 추천"]);
+    expect(navItems(false).find((i) => i.label === "Freediving")?.children?.map((c) => c.label)).toEqual(["투어", "장비", "후기"]);
   });
 
   it("현재 경로 판정은 하위 경로를 포함하되 접두어만 같은 경로는 제외한다", () => {

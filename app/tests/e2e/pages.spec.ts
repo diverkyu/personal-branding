@@ -12,6 +12,8 @@ const ROUTES = [
   { path: "/freediving/equipment", h1: "제가 추천하는 장비." },
   { path: "/freediving/equipment/sample-mask", h1: "마스크 예시 A" },
   { path: "/freediving/reviews", h1: "함께 물에 들어간 사람들의 이야기." },
+  { path: "/freediving/travel", h1: "바다를 만나러" },
+  { path: "/freediving/travel/sample-travel-jeju", h1: "여행 제목이 들어갑니다 (제주)" },
   { path: "/contact", h1: "다음 탐험은," },
   { path: "/privacy", h1: "개인정보 처리방침" },
 ] as const;
@@ -67,7 +69,7 @@ test.describe("공개 화면", () => {
   });
 
   test("존재하지 않는 글·투어·장비는 404", async ({ request }) => {
-    for (const path of ["/story/nope", "/freediving/tours/nope", "/freediving/equipment/nope"]) {
+    for (const path of ["/story/nope", "/freediving/tours/nope", "/freediving/equipment/nope", "/freediving/travel/nope"]) {
       expect((await request.get(path)).status(), path).toBe(404);
     }
   });
@@ -199,5 +201,98 @@ test.describe("Films 메뉴·홈 구역·Contact 특강 링크 (7c)", () => {
     await expect(page.getByText(/05 \/ LET/)).toBeVisible();
     const link = page.getByRole("link", { name: /AI 영상 특강 소식 요청하기/ });
     expect(decodeURIComponent((await link.getAttribute("href")) ?? "")).toContain("subject=[KYU] AI 특강 소식 요청");
+  });
+});
+
+test.describe("여행 추천 공개 화면", () => {
+  // 시험 서버는 가상 여행 추천 3건이 있다: 제주(입문) · 필리핀 보홀(중급) · 이집트 다합(상급, 확인일 오래됨)
+  test("목록: 카드 3개, 지역·난이도 필터가 함께 걸리고 URL 에 남으며, 초기화할 수 있다", async ({ page }) => {
+    await page.goto("/freediving/travel");
+    const cards = page.getByRole("article");
+    await expect(cards).toHaveCount(3);
+    await expect(page.getByText(/시기·예산은 작성한 날의 참고 정보/)).toBeVisible();
+
+    await page.getByRole("group", { name: "지역" }).getByRole("button", { name: "제주" }).click();
+    await expect(cards).toHaveCount(1);
+    await expect(page).toHaveURL(/region=/);
+
+    await page.getByRole("group", { name: "난이도" }).getByRole("button", { name: "상급" }).click();
+    await expect(page.getByText("조건에 맞는 여행 추천이 없습니다.")).toBeVisible();
+    await page.getByRole("button", { name: "필터 초기화" }).click();
+    await expect(cards).toHaveCount(3);
+    await expect(page).not.toHaveURL(/region=|level=/);
+  });
+
+  test("목록: 모르는 필터 값이 주소에 있으면 전체를 보여 준다", async ({ page }) => {
+    await page.goto("/freediving/travel?region=없는지역&level=nope&page=999");
+    await expect(page.getByRole("article")).toHaveCount(3);
+  });
+
+  test("목록: 오래된 정보는 글자로 알리고 이미지는 쓰지 않는다", async ({ page }) => {
+    await page.goto("/freediving/travel");
+    await expect(page.getByText("정보 확인일이 오래되었습니다")).toHaveCount(1);
+    await expect(page.getByRole("article").locator("img")).toHaveCount(0);
+  });
+
+  test("영역 이동 칩에 여행 추천이 있고 현재 위치로 표시된다", async ({ page }) => {
+    await page.goto("/freediving/travel");
+    const nav = page.getByRole("navigation", { name: "Freediving 영역 이동" });
+    await expect(nav.getByRole("link", { name: "여행 추천" })).toHaveAttribute("aria-current", "page");
+    await expect(nav.getByRole("link", { name: "투어" })).toHaveAttribute("href", "/freediving/tours");
+  });
+
+  test("Freediving 허브에 여행 추천 칩·구역이 있고 전체 보기로 이어진다", async ({ page }) => {
+    await page.goto("/freediving");
+    await expect(page.getByRole("navigation", { name: "Freediving 영역 이동" }).getByRole("link", { name: "여행 추천" })).toBeVisible();
+    const section = page.locator("#travel");
+    await expect(section.getByRole("article")).toHaveCount(3);
+    await section.getByRole("link", { name: "여행 추천 전체 보기" }).click();
+    await expect(page).toHaveURL(/\/freediving\/travel$/);
+  });
+
+  test("홈에는 여행 추천 구역이 없다 (결정 T-8)", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByText("바다를 만나러")).toHaveCount(0);
+  });
+
+  test("메뉴: Freediving 하위에 여행 추천이 있고 최상위 메뉴는 늘지 않는다", async ({ page }) => {
+    await page.goto("/");
+    // 메뉴 패널은 680px 이하에서 쓴다 (layout.spec.ts 와 같은 기준)
+    if ((page.viewportSize()?.width ?? 0) <= 680) {
+      await page.getByRole("button", { name: /MENU/ }).click();
+      await expect(page.locator("#mobile-menu").getByRole("link", { name: "여행 추천" })).toHaveAttribute("href", "/freediving/travel");
+    } else {
+      const nav = page.getByRole("navigation", { name: "주 메뉴" });
+      await nav.getByRole("link", { name: "Freediving" }).hover();
+      await expect(nav.getByRole("link", { name: "여행 추천" })).toBeVisible();
+      expect(await nav.locator("> ul > li").count()).toBe(4);
+    }
+  });
+
+  test("상세: 정보 표·참고 문구·문의 메일, 이전·다음 글", async ({ page }) => {
+    await page.goto("/freediving/travel/sample-travel-bohol");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("보홀");
+    for (const t of ["지역", "장소", "추천 시기", "난이도"]) await expect(page.getByText(t, { exact: true })).toBeVisible();
+    await expect(page.getByText(/참고 정보이며 달라질 수 있습니다/)).toBeVisible();
+    const mail = page.getByRole("link", { name: "메일로 문의하기" });
+    const href = decodeURIComponent((await mail.getAttribute("href")) ?? "");
+    expect(href).toContain("subject=[KYU] 여행 문의");
+    expect(href).not.toContain("보홀");
+    // 목록 순서: 제주 → 보홀 → 다합 (최신순). 보홀은 가운데라 이전·다음이 모두 있다
+    await expect(page.getByRole("navigation", { name: "이전·다음 글" })).toContainText("이전 글");
+    await expect(page.getByRole("navigation", { name: "이전·다음 글" })).toContainText("다음 글");
+  });
+
+  test("상세: 오래된 정보는 경고 띠가 보인다", async ({ page }) => {
+    await page.goto("/freediving/travel/sample-travel-old");
+    await expect(page.getByText("정보가 오래되었을 수 있습니다")).toBeVisible();
+    await page.goto("/freediving/travel/sample-travel-jeju");
+    await expect(page.getByText("정보가 오래되었을 수 있습니다")).toHaveCount(0);
+  });
+
+  test("사이트맵에 여행 추천 주소가 있다", async ({ request }) => {
+    const xml = await (await request.get("/sitemap.xml")).text();
+    expect(xml).toContain("/freediving/travel/sample-travel-jeju");
+    expect(xml).toContain("/freediving/travel<");
   });
 });
