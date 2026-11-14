@@ -5,7 +5,7 @@
  * - 순수 코드라 서버 액션·화면·시험이 같은 규칙을 쓴다.
  */
 export type SettingType = "text" | "lines" | "email";
-export type SettingGroup = "home" | "films" | "contact" | "footer" | "seo";
+export type SettingGroup = "home" | "films" | "travel" | "contact" | "footer" | "seo";
 
 export interface SettingDef {
   key: string;
@@ -27,12 +27,14 @@ export interface SettingDef {
 export const SETTING_GROUPS: { id: SettingGroup; title: string }[] = [
   { id: "home", title: "홈" },
   { id: "films", title: "Films (AI 영상)" },
+  { id: "travel", title: "여행 추천" },
   { id: "contact", title: "연락" },
   { id: "footer", title: "푸터" },
   { id: "seo", title: "검색·공유" },
 ];
 
 import { filmsConfig } from "@/config/films";
+import { travelConfig } from "@/config/travel";
 
 export const SETTINGS: SettingDef[] = [
   {
@@ -116,6 +118,35 @@ export const SETTINGS: SettingDef[] = [
     maxLength: 200,
     default: filmsConfig.callout.body,
     hint: "버튼은 제목이 채워진 메일 창을 열 뿐이며, 서버에 저장하지 않습니다.",
+  },
+  {
+    key: "travel.title",
+    group: "travel",
+    label: "여행 추천 제목",
+    usedAt: "여행 추천 목록 제목 (TRAVEL-02)",
+    type: "lines",
+    maxLength: 20,
+    maxLines: 2,
+    default: travelConfig.title.join("\n"),
+    hint: "최대 2줄, 한 줄 20자까지",
+  },
+  {
+    key: "travel.subtitle",
+    group: "travel",
+    label: "여행 추천 부제",
+    usedAt: "여행 추천 목록 제목 아래 (TRAVEL-02)",
+    type: "text",
+    maxLength: 100,
+    default: travelConfig.subtitle,
+  },
+  {
+    key: "travel.empty",
+    group: "travel",
+    label: "여행 추천 빈 상태 문구",
+    usedAt: "공개된 여행 추천이 없을 때 직접 주소로 열었을 때 (TRAVEL-09)",
+    type: "text",
+    maxLength: 60,
+    default: travelConfig.empty,
   },
   {
     key: "contact.email",

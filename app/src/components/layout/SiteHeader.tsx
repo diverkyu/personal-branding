@@ -13,8 +13,8 @@ const MOBILE_QUERY = "(max-width: 680px)";
 const CLOSE_DELAY_MS = 150;
 
 /** 헤더 (SCREEN-SPEC §4.1 GL-H, INT-01 모바일 메뉴, INT-02 Freediving 하위 메뉴). */
-export function SiteHeader({ showFilms = false }: { showFilms?: boolean }) {
-  const items = navItems(showFilms);
+export function SiteHeader({ showFilms = false, showTravel = false }: { showFilms?: boolean; showTravel?: boolean }) {
+  const items = navItems(showFilms, showTravel);
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);

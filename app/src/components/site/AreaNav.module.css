@@ -16,7 +16,8 @@
   color: var(--kyu-paper);
 }
 
-.nav a[aria-current="true"] {
+.nav a[aria-current="true"],
+.nav a[aria-current="page"] {
   background: var(--kyu-lime);
   border-color: var(--kyu-lime);
   color: var(--kyu-navy);

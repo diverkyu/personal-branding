@@ -1,0 +1,54 @@
+.card {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  padding: 28px;
+  border: 1px solid var(--kyu-line);
+  background: var(--kyu-paper);
+  color: var(--kyu-navy);
+}
+
+.region {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--kyu-sea-mid);
+}
+
+.title {
+  margin-top: 14px;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.8px;
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+
+.summary {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--kyu-ink-sub);
+}
+
+.meta {
+  margin-top: 18px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--kyu-ink-sub);
+}
+
+.stale {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8a4b00;
+}
+
+/* 링크 영역을 카드 전체로 넓힌다 */
+.link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}

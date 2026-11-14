@@ -5,6 +5,10 @@ import { FilmDetailView } from "@/components/site/FilmDetailView";
 import { contactConfig } from "@/config/site";
 import { collectMediaIds, isBodyEmpty, sanitizeBody } from "@/content/body";
 import { readVideoFields } from "@/content/videoFields";
+import { readTravelFields } from "@/content/travelFields";
+import { travelConfig } from "@/config/travel";
+import { TravelDetailView } from "@/components/site/TravelDetailView";
+import { isStaleCheck } from "@/data/travelQueries";
 import { kstDate } from "@/data/storyQueries";
 import { getSiteSettings } from "@/settings/read";
 import { ContentBody } from "@/content/ContentBody";
@@ -65,6 +69,47 @@ export default async function ContentPreviewPage({ params }: { params: Promise<{
           older={null}
           email={settings["contact.email"] ?? contactConfig.email}
           copy={filmsCopy(settings)}
+        />
+      </>
+    );
+  }
+
+  // 여행 추천은 공개 상세와 같은 모양으로 보여 준다 (수정 중인 내용 기준, 공개되지 않는다)
+  if (row.type === "travel") {
+    const f = readTravelFields(view.fields);
+    const settings = await getSiteSettings();
+    const doc = body.ok && !isBodyEmpty(body.doc) ? body.doc : null;
+    const today = kstDate(new Date());
+    return (
+      <>
+        <p className={styles.alert} style={{ marginBottom: 16 }}>
+          미리보기입니다. 공개되지 않은 화면이며, 수정 중인 내용이 보입니다. 지역·장소가 비어 있으면 발행할 수 없습니다.{" "}
+          <Link href={`/admin/contents/${row.id}`} className={styles.linkButton}>
+            편집으로 돌아가기
+          </Link>
+        </p>
+        <TravelDetailView
+          item={{
+            slug: row.slug,
+            title: view.title,
+            summary: view.summary,
+            region: f.region,
+            place: f.place,
+            season: f.season,
+            level: f.level,
+            budget: f.budget,
+            checkedAt: f.checkedAt,
+            publishedAt: today,
+            publishedAtIso: new Date().toISOString(),
+            doc,
+            media,
+            seoTitle: view.seoTitle,
+            seoDescription: view.seoDescription,
+          }}
+          stale={isStaleCheck(f.checkedAt, today, travelConfig.staleMonths)}
+          newer={null}
+          older={null}
+          email={settings["contact.email"] ?? contactConfig.email}
         />
       </>
     );

@@ -49,3 +49,14 @@
   justify-content: center;
   margin-top: 40px;
 }
+
+.reset {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}

@@ -6,6 +6,7 @@ import { FilteredList } from "@/components/site/FilteredList";
 import { ReviewCard } from "@/components/site/ReviewCard";
 import { TourArchiveCard } from "@/components/site/TourArchiveCard";
 import { TourCard } from "@/components/site/TourCard";
+import { TravelCard } from "@/components/site/TravelCard";
 import { AFFILIATE_NOTICE, equipmentCard, reviewCard, tourArchiveCard, tourCard } from "@/components/site/mappers";
 import { PageIntro } from "@/components/layout/PageIntro";
 import { Section } from "@/components/ui/Section";
@@ -14,6 +15,10 @@ import { TextLink } from "@/components/ui/TextLink";
 import { listEquipment, listEquipmentCategories } from "@/data/equipment";
 import { listFeaturedReviews, reviewTourOptions } from "@/data/reviews";
 import { listPastTours, listUpcomingTours } from "@/data/tours";
+import { listTravel } from "@/data/travel";
+import { isStaleCheck } from "@/data/travelQueries";
+import { kstDate } from "@/data/storyQueries";
+import { travelConfig } from "@/config/travel";
 import pages from "../pages.module.css";
 
 export const metadata: Metadata = { title: "Freediving" };
@@ -24,6 +29,7 @@ export const revalidate = 300;
 const UPCOMING_LIMIT = 4;
 const PAST_LIMIT = 6;
 const EQUIPMENT_LIMIT = 8;
+const TRAVEL_LIMIT = 3;
 
 /** FD 허브 (SCREEN-SPEC §5.5). 영역 이동 칩은 같은 페이지의 구역으로 이동한다. */
 export default async function FreedivingPage() {
@@ -33,6 +39,9 @@ export default async function FreedivingPage() {
   const equipmentCategories = await listEquipmentCategories();
   const reviews = await listFeaturedReviews(3);
   const tourOptions = await reviewTourOptions();
+  // 공개된 여행 추천이 있을 때만 구역·칩이 보인다 (결정 T-2)
+  const travel = (await listTravel()).slice(0, TRAVEL_LIMIT);
+  const today = kstDate(new Date());
 
   return (
     <>
@@ -52,6 +61,7 @@ export default async function FreedivingPage() {
             { id: "tours", label: "투어" },
             { id: "equipment", label: "장비 추천" },
             { id: "reviews", label: "수강 후기" },
+            ...(travel.length > 0 ? [{ id: "travel", label: "여행 추천" }] : []),
           ]}
         />
       </PageIntro>
@@ -129,6 +139,36 @@ export default async function FreedivingPage() {
             {reviews.map((r) => (
               <li key={r.id}>
                 <ReviewCard {...reviewCard(r, tourOptions)} />
+              </li>
+            ))}
+          </ul>
+        </Section>
+      ) : null}
+
+      {travel.length > 0 ? (
+        <Section tone="dark" id="travel" labelledBy="fd-travel">
+          <SectionHeader
+            titleId="fd-travel"
+            title="바다를 만나러 가는 길."
+            action={
+              <TextLink href="/freediving/travel" surface="dark">
+                여행 추천 전체 보기
+              </TextLink>
+            }
+          />
+          <ul className={pages.grid3} style={{ listStyle: "none", padding: 0 }}>
+            {travel.map((t) => (
+              <li key={t.slug}>
+                <TravelCard
+                  href={`/freediving/travel/${t.slug}`}
+                  title={t.title}
+                  summary={t.summary || undefined}
+                  region={t.region}
+                  season={t.season}
+                  level={t.level}
+                  checkedAt={t.checkedAt}
+                  stale={isStaleCheck(t.checkedAt, today, travelConfig.staleMonths) === true}
+                />
               </li>
             ))}
           </ul>

@@ -13,6 +13,10 @@ import { ReviewCard } from "./ReviewCard";
 import { StoryCard } from "./StoryCard";
 import { TourArchiveCard } from "./TourArchiveCard";
 import { TourCard } from "./TourCard";
+import { TravelCard } from "./TravelCard";
+import { TravelDetailView } from "./TravelDetailView";
+import { travelCopy, travelMailto } from "@/config/travel";
+import type { TravelDetail } from "@/data/travelQueries";
 
 const html = (node: React.ReactElement) => renderToStaticMarkup(node);
 
@@ -210,5 +214,69 @@ describe("홈 Films 구역·Contact 특강 링크 (7c)", () => {
     expect(on).toContain("05 / LET");
     expect(on).toContain("AI 영상 특강 소식 요청하기");
     expect(on).toContain("mailto:a@b.co?subject=");
+  });
+});
+
+describe("여행 추천", () => {
+  const detail: TravelDetail = {
+    slug: "a", title: "여행 제목", summary: "한 줄 소개", region: "제주", place: "문섬 인근", season: "5~10월", level: "beginner", budget: "참고 예산", checkedAt: "2026-10-01",
+    publishedAt: "2026-11-01", publishedAtIso: "2026-11-01T00:00:00Z", doc: null, media: [], seoTitle: "", seoDescription: "",
+  };
+  const view = (over: Partial<TravelDetail> = {}, stale: boolean | null = false, extra: Partial<Parameters<typeof TravelDetailView>[0]> = {}) =>
+    html(<TravelDetailView item={{ ...detail, ...over }} stale={stale} newer={null} older={null} email="a@b.co" {...extra} />).replace(/<!-- -->/g, "");
+
+  it("카드: 제목이 링크이고 지역·시기·난이도·확인일을 보여 주며 이미지는 없다", () => {
+    const out = html(<TravelCard href="/freediving/travel/a" title="제목" summary="소개" region="제주" season="5~10월" level="beginner" checkedAt="2026-10-01" stale={false} />);
+    expect(out).toMatch(/<a [^>]*href="\/freediving\/travel\/a"[^>]*>제목<\/a>/);
+    expect(out).toContain("제주");
+    expect(out).toContain("추천 시기 5~10월");
+    expect(out).toContain("난이도 입문");
+    expect(out).not.toContain("<img");
+    expect(out).not.toContain("오래되었습니다");
+  });
+
+  it("카드: 값이 없는 항목은 그 줄에서 빠지고, 오래된 정보는 글자로 알린다", () => {
+    const out = html(<TravelCard href="/x" title="t" region="제주" season="" level="" checkedAt="" stale />);
+    expect(out).not.toContain("추천 시기");
+    expect(out).not.toContain("난이도");
+    expect(out).not.toContain("확인 ");
+    expect(out).toContain("정보 확인일이 오래되었습니다");
+  });
+
+  it("상세: 정보 표는 값이 있는 줄만, 지역·장소는 항상 보인다", () => {
+    const full = view();
+    for (const t of ["지역", "장소", "추천 시기", "난이도", "예산(참고)", "정보 확인일"]) expect(full).toContain(t);
+    const sparse = view({ season: "", level: "", budget: "", checkedAt: "" }, null);
+    expect(sparse).toContain("지역");
+    expect(sparse).toContain("장소");
+    for (const t of ["추천 시기", "난이도", "예산(참고)"]) expect(sparse).not.toContain(t);
+  });
+
+  it("상세: 참고 정보 문구는 항상, 경고는 오래됐거나 확인일이 없을 때만 보인다", () => {
+    expect(view()).toContain("참고 정보이며 달라질 수 있습니다");
+    expect(view({}, false)).not.toContain("role=\"note\"");
+    expect(view({}, true)).toContain("정보가 오래되었을 수 있습니다");
+    expect(view({ checkedAt: "" }, null)).toContain("정보 확인일이 적혀 있지 않습니다");
+  });
+
+  it("상세: 한 줄 소개가 비면 숨기고, 이전·다음은 있는 쪽만 보인다", () => {
+    expect(view({ summary: "" })).not.toMatch(/class="[^"]*summary/);
+    const out = view({}, false, { newer: { ...detail, slug: "n", title: "새 글" }, older: null });
+    expect(out).toContain("다음 글 · 새 글");
+    expect(out).not.toContain("이전 글");
+  });
+
+  it("상세: 여행 문의는 제목만 채운 메일 창이다(글 제목·서버 저장 없음)", () => {
+    const out = view();
+    expect(out).toContain("mailto:a@b.co?subject=");
+    expect(travelMailto("a@b.co")).toContain(encodeURIComponent("[KYU] 여행 문의"));
+    expect(decodeURIComponent(travelMailto("a@b.co"))).not.toContain("여행 제목");
+  });
+
+  it("사이트 설정 문구가 기본값을 대신하고, 비면 기본값이다", () => {
+    expect(travelCopy({ "travel.subtitle": "새 부제" }).subtitle).toBe("새 부제");
+    expect(travelCopy({ "travel.subtitle": "  " }).subtitle).toContain("프리다이빙하기 좋은 곳");
+    expect(travelCopy({ "travel.title": "한 줄\n두 줄" }).titleLines).toEqual(["한 줄", "두 줄"]);
+    expect(travelCopy({}).empty).toContain("첫 여행 추천");
   });
 });

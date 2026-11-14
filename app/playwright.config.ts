@@ -6,7 +6,7 @@ import { defineConfig } from "@playwright/test";
  * - 화면 크기 3종(390 / 768 / 1440)에서 같은 시나리오를 돌린다.
  * - 브라우저는 설치된 Chrome 을 쓴다(내려받기 없음). 번들 Chromium 을 쓰려면 PW_CHANNEL= 로 비운다.
  */
-const PORT = 3100;
+const PORT = Number(process.env.E2E_PORT ?? 3100);
 const channel = process.env.PW_CHANNEL === undefined ? "chrome" : process.env.PW_CHANNEL || undefined;
 
 export default defineConfig({
