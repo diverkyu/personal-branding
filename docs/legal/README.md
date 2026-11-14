@@ -7,6 +7,8 @@
 | 파일 | 내용 | 어디에 쓰나 |
 | --- | --- | --- |
 | [PRIVACY-POLICY-DRAFT.md](PRIVACY-POLICY-DRAFT.md) | 개인정보 처리방침 초안 (이 사이트의 실제 수집 항목·위탁처 기준) | 어드민 > 동의·방침 > "개인정보 처리방침" 새 버전 |
+| [LEGAL-REVIEW-REQUEST.md](LEGAL-REVIEW-REQUEST.md) | **법무 검토 의뢰서** — 사이트 목적·개인정보 처리 현황·사업 사실·검토 요청 사항(우선순위)·첨부·알려진 한계 | 전문가에게 보낼 때 |
+| [LEGAL-SCOPE-CHECK.md](LEGAL-SCOPE-CHECK.md) | **법무 검토 범위 점검표** — 법적 검토가 필요할 수 있는 영역과 준비 상태(초안 있음/없음) | 의뢰서의 번호와 같음 |
 | [CONSENT-AND-TERMS-DRAFT.md](CONSENT-AND-TERMS-DRAFT.md) | 예약 문의·소식 받기 **동의 문구**(한 줄, 200자 이내), 투어 참가·취소·환불 **안내 초안**, 광고성 정보 수신 관련 메모 | 어드민 > 동의·방침 > 동의 문구, 투어 본문 |
 
 ## 왜 지금 필요한가
