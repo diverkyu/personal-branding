@@ -209,7 +209,7 @@ describe("상세·상태·메모·삭제와 활동 기록", () => {
 });
 
 describe("호출 규칙: 어드민 데이터 함수는 확인된 관리자를 받아야 한다", () => {
-  for (const file of ["inquiries.ts", "audit.ts", "settings.ts", "media.ts", "contents.ts", "reviews.ts", "trash.ts", "about.ts", "taxonomy.ts"]) {
+  for (const file of ["inquiries.ts", "audit.ts", "settings.ts", "media.ts", "contents.ts", "reviews.ts", "trash.ts", "about.ts", "taxonomy.ts", "readiness.ts"]) {
     it(`${file} 의 내보낸 함수는 모두 admin: AdminSession 인자를 가진다`, () => {
       const source = readFileSync(path.join(__dirname, file), "utf8");
       const functions = [...source.matchAll(/export async function (\w+)\(([\s\S]*?)\)\s*:/g)];

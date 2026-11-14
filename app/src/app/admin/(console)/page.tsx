@@ -2,9 +2,11 @@ import Link from "next/link";
 import { adminDb } from "@/data/admin/dbServer";
 import { contentDashboard, listTourOptions } from "@/data/admin/contents";
 import { inquiryDashboard } from "@/data/admin/inquiries";
+import { loadReadiness } from "@/data/admin/readiness";
 import { KIND_LABELS, STATUS_LABELS } from "@/data/admin/inquiryQuery";
 import { requireAdmin } from "@/lib/auth/session";
 import { formatDateTimeKst } from "@/lib/format";
+import { ReadinessCard } from "./ReadinessCard";
 import styles from "../admin.module.css";
 
 export const metadata = { title: "대시보드 · KYU 어드민" };
@@ -15,6 +17,7 @@ export default async function DashboardPage() {
   const db = adminDb();
   const { newCount, notifyFailed, recent } = await inquiryDashboard(db, admin);
   const content = await contentDashboard(db, admin);
+  const readiness = await loadReadiness(db, admin, process.env);
   const tourTitles = new Map((await listTourOptions(db, admin)).map((t) => [t.slug, t.title]));
   return (
     <>
@@ -30,6 +33,7 @@ export default async function DashboardPage() {
           에서 확인하고, 메일 서비스 연결을 점검해 주세요.
         </p>
       ) : null}
+      <ReadinessCard items={readiness} />
       <div className={styles.cards}>
         <Link href="/admin/inquiries?status=new" className={styles.statCard}>
           <span className={styles.statLabel}>새 투어 신청·문의</span>
