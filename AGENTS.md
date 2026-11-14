@@ -20,6 +20,8 @@
 | --- | --- | --- |
 | `app/` | 새 사이트(Next.js)와 어드민 코드 | 모든 새 코드는 여기에. 자체 `package.json`, 사용법은 [app/README.md](app/README.md) |
 | `docs/phase1/` | 기획·설계 문서 (버전 관리: [CHANGELOG.md](docs/phase1/CHANGELOG.md)) | 코드가 명세를 바꾸면 같은 PR에서 문서와 버전 표를 고친다 |
+| `docs/operations/` | 운영·인수인계 기록 (날짜별) | 사실만 적는다. 비밀번호·연결 주소·키는 쓰지 않는다 |
+| `docs/legal/` | 개인정보 처리방침·동의 문구 등 **법무 초안** | 초안이며 법률 자문이 아니다. 게시 전 전문가 확인 |
 | `dist/`, `scripts/`, 루트 `package.json`·`CHANGELOG.md`, `.openai/` | 규강의 기존 정적 시안 | **건드리지 않는다.** 충돌의 원인이다 |
 | 루트 `README.md` | 저장소 소개 | 현재 상태가 바뀌면 같은 PR에서 고친다 (2026-11-09 개정, 규강과 협의함) |
 
@@ -36,7 +38,7 @@ Next.js 16.4(App Router) + React 19 + TypeScript strict + CSS 변수·CSS Module
 | 어드민 인증 | Better Auth + TOTP 2차 인증 | 가입 화면 없음, 계정은 스크립트로 생성 |
 | 편집기 | Tiptap | 허용 목록 밖의 서식은 서버가 거른다 |
 | 이미지 | Vercel Blob | 업로드는 서버가 WebP로 다시 만들며 메타데이터를 버린다 |
-| 접수 알림 메일 | Resend | 결정됨, 아직 구현하지 않음 |
+| 접수 알림 메일 | Resend | 구현됨(0.39.0). 실제 발송은 키·발신 도메인 연결 후(규강) |
 
 호스팅 전용 기능에 직접 기대는 코드를 넣지 않는다 — 데이터 접근은 `data/` 어댑터 뒤에 둔다. 의존성은 **상업적 사용이 명확한 라이선스만** 추가하고 [THIRD-PARTY-NOTICES](app/THIRD-PARTY-NOTICES.md)에 적는다. 버전을 올릴 때는 [DEVELOPMENT §10](docs/phase1/DEVELOPMENT.md) 규칙(안정판, 한 번에 하나, `chore:` 커밋)을 따른다.
 

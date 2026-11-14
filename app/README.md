@@ -26,9 +26,11 @@ npm run dev                  # http://localhost:3000
 | `npm run check` | 위 네 가지를 차례로 |
 | `npm run db:generate` | 스키마(`src/db/schema.ts`) 변경으로 마이그레이션 SQL 생성 (DB 접속 불필요) |
 | `npm run db:migrate` | `DATABASE_URL`의 DB에 마이그레이션 적용 |
+| `npm run db:status` | 코드와 DB의 마이그레이션 차이를 **읽기만** 해서 보여 줌 (배포 전 dev·운영 모두 확인) |
+| `npm run admin:create` | 어드민 계정 생성 (`admin:reset-password`, `admin:reset-2fa`도 있음). 비밀번호는 터미널에서 직접 입력 |
 | `npm run test:remote` | 배포된 주소 스모크 시험 (`REMOTE_URL=… npm run test:remote`, 절차는 INFRASTRUCTURE §10) |
 | `npm run db:cleanup-smoke` | 원격 스모크 시험이 남긴 가짜 문의 삭제 |
-| `npm run test:e2e` | 운영 빌드를 3100 포트로 띄워 Chrome에서 390 / 768 / 1440 폭으로 시험. 캡처는 `artifacts/`에 저장 |
+| `npm run test:e2e` | 운영 빌드를 3100 포트(`E2E_PORT`로 변경 가능)로 띄워 Chrome에서 390 / 768 / 1440 폭으로 시험. 캡처는 `artifacts/`에 저장 |
 
 E2E는 설치된 Chrome을 쓴다. 번들 Chromium을 쓰려면 `PW_CHANNEL= npx playwright install chromium` 후 `PW_CHANNEL= npm run test:e2e`.
 
@@ -46,10 +48,10 @@ src/
 tests/e2e/        # Playwright 시나리오
 ```
 
-`data/`는 콘텐츠를 읽는 유일한 입구이고 지금은 가상 데이터(`fixtures.ts`)를 돌려준다. `types/`는 콘텐츠 스키마다. DB·스토리지가 정해지면 `data/index.ts`의 구현만 바꾼다.
+`data/`는 콘텐츠를 읽는 유일한 입구다. `DATABASE_URL`이 있으면 Neon DB의 공개 콘텐츠(태그 캐시 최대 5분)를, 없으면 로컬 개발·시험 전용 가상 데이터(`fixtures.ts`)를 돌려준다(배포 환경에서는 가상 데이터를 쓰지 않는다). 어드민 코드는 `data/admin/`, 콘텐츠 유형·본문 검사기는 `content/`, 사이트 설정·동의는 `settings/`, 알림 메일은 `mail/`, 어드민 화면은 `app/admin/`에 있다. `types/`는 콘텐츠 스키마다.
 
 ## 환경변수
 
-[.env.example](.env.example) 참고. 문의·소식 신청 저장소(`INQUIRY_STORE`)는 저장소가 정해지기 전에는 비워 두며, 비어 있으면 폼은 저장하지 않고 실패 안내를 보여 준다. 핵심은 `SITE_URL`(사이트 주소 단일 출처)과 `SITE_INDEXING`(공개 전에는 색인 금지, 기본 꺼짐).
+[.env.example](.env.example) 참고. 문의·소식 신청 저장소(`INQUIRY_STORE`)는 운영·프리뷰에서 `postgres`로 둔다(비어 있으면 폼은 저장하지 않고 실패 안내를 보여 준다). 핵심은 `SITE_URL`(사이트 주소 단일 출처)과 `SITE_INDEXING`(공개 전에는 색인 금지, 기본 꺼짐).
 
 **주의**: 정적 페이지에는 `SITE_URL`, `SITE_INDEXING`, `ENABLE_COMPONENT_SHOWCASE`가 **빌드 때** 반영된다. 값을 바꾸면 다시 빌드해야 한다 (도메인이 바뀔 때도 마찬가지).
