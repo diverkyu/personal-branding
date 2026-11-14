@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.42.0** | 2026-11-10 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
+| **0.43.0** | 2026-11-14 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [PRD.md §12](PRD.md) · [SECURITY.md §16](SECURITY.md) · [DEVELOPMENT.md](DEVELOPMENT.md)
 
@@ -233,3 +233,12 @@ npm run db:cleanup-smoke   # 시험이 남긴 가짜 문의(smoke-*@example.com)
 - [ ] Production의 `DATABASE_URL`을 `production` 브랜치 문자열로 교체하고 Preview는 `dev` 유지
 - [ ] `SITE_INDEXING=on`(공개 시점에만), 실제 도메인으로 `SITE_URL`
 - [ ] Hobby → Pro, Neon 이전 (§9.3)
+
+### 10.5 배포 전 마이그레이션 점검 (0.43.0)
+
+배경: 새 코드가 새 DB 칸을 쓰는데 그 DB 에 마이그레이션이 안 들어가 있으면 어드민·접수가 오류를 낸다. 코드 배포와 DB 변경은 **서로 다른 일**이라 따로 챙긴다. 환경마다 DB 가 다르다(운영 = `production` 브랜치, 프리뷰·로컬 = `dev` 브랜치).
+
+1. 새 마이그레이션(`app/drizzle/`)이 든 PR 은 본문에 "마이그레이션 NNNN 있음"을 적는다.
+2. **병합 전에** 두 DB 에 적용한다: dev 먼저, 그다음 운영(운영은 무엇이 바뀌는지 설명하고 확인 후 — AGENTS §8).
+3. 각 DB 에서 `npm run db:status` 를 실행해 `OK: 빠진 마이그레이션이 없습니다.` 가 나오는지 본다. 빠진 게 있으면 이름이 나온다. 읽기 전용이라 안전하다.
+4. 프리뷰 배포가 `column … does not exist`(Postgres `42703`) 로 실패하면 먼저 개발 DB 의 `db:status` 를 본다.
