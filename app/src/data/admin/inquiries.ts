@@ -6,6 +6,7 @@
  */
 import { and, count, desc, eq, gte, ilike, lt, or, type SQL } from "drizzle-orm";
 import { inquiries, type InquiryRow } from "@/db/schema";
+import { queryLiveTours } from "@/data/tourQueries";
 import { AppError } from "@/lib/errors";
 import type { AdminSession } from "@/lib/auth/types";
 import { recordAudit } from "./audit";
@@ -77,6 +78,20 @@ export async function listInquiries(
     .limit(INQUIRY_PAGE_SIZE)
     .offset((query.page - 1) * INQUIRY_PAGE_SIZE)) as InquirySummary[];
   return { items, total: totalRow?.value ?? 0, page: query.page, pageSize: INQUIRY_PAGE_SIZE, newCount: newRow?.value ?? 0 };
+}
+
+/**
+ * 신청·문의 기능을 쓰고 있는가. 신청 폼이 열린 공개 투어(모집 예정·모집 중)가 있거나, 이미 받은 신청이 있으면 쓰는 중이다.
+ * 둘 다 아니면(모든 투어를 마감으로 발행한 "폼 없이 시작" 상태) 어드민은 메뉴·카드를 숨기고, 공개 준비 점검은 방침·동의 문구를 필수로 보지 않는다.
+ * 건수만 읽고 개인정보는 읽지 않는다.
+ */
+export async function inquiryUsage(db: AdminDb, admin: AdminSession): Promise<{ formOpenTours: number; received: number; inUse: boolean }> {
+  void admin;
+  const [row] = await db.select({ value: count() }).from(inquiries);
+  const tours = await queryLiveTours(db);
+  const formOpenTours = tours.filter((t) => t.status === "upcoming" || t.status === "recruiting").length;
+  const received = row?.value ?? 0;
+  return { formOpenTours, received, inUse: formOpenTours > 0 || received > 0 };
 }
 
 /** 대시보드용: 새 신청 수, 알림 메일 실패 수(DASH-04), 최근 5건 */

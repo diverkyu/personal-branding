@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { adminDb } from "@/data/admin/dbServer";
 import { contentDashboard, listTourOptions } from "@/data/admin/contents";
-import { inquiryDashboard } from "@/data/admin/inquiries";
+import { inquiryDashboard, inquiryUsage } from "@/data/admin/inquiries";
 import { loadReadiness } from "@/data/admin/readiness";
 import { KIND_LABELS, STATUS_LABELS } from "@/data/admin/inquiryQuery";
 import { requireAdmin } from "@/lib/auth/session";
@@ -17,6 +17,7 @@ export default async function DashboardPage() {
   const db = adminDb();
   const { newCount, notifyFailed, recent } = await inquiryDashboard(db, admin);
   const content = await contentDashboard(db, admin);
+  const usage = await inquiryUsage(db, admin);
   const readiness = await loadReadiness(db, admin, process.env);
   const tourTitles = new Map((await listTourOptions(db, admin)).map((t) => [t.slug, t.title]));
   return (
@@ -35,10 +36,12 @@ export default async function DashboardPage() {
       ) : null}
       <ReadinessCard items={readiness} />
       <div className={styles.cards}>
-        <Link href="/admin/inquiries?status=new" className={styles.statCard}>
-          <span className={styles.statLabel}>새 투어 신청·문의</span>
-          <span className={styles.statValue}>{newCount}</span>
-        </Link>
+        {usage.inUse ? (
+          <Link href="/admin/inquiries?status=new" className={styles.statCard}>
+            <span className={styles.statLabel}>새 투어 신청·문의</span>
+            <span className={styles.statValue}>{newCount}</span>
+          </Link>
+        ) : null}
         <Link href="/admin/contents?status=draft" className={styles.statCard}>
           <span className={styles.statLabel}>임시저장 글</span>
           <span className={styles.statValue}>{content.draft}</span>
@@ -53,50 +56,56 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      <h2 className={styles.h2}>최근 신청·문의</h2>
-      {recent.length === 0 ? (
-        <div className={styles.panel}>
-          <p className={styles.note} style={{ margin: 0 }}>
-            아직 접수된 신청이 없습니다.
+      {usage.inUse ? (
+        <>
+          <h2 className={styles.h2}>최근 신청·문의</h2>
+          {recent.length === 0 ? (
+            <div className={styles.panel}>
+              <p className={styles.note} style={{ margin: 0 }}>
+                아직 접수된 신청이 없습니다.
+              </p>
+            </div>
+          ) : (
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th scope="col">접수일시</th>
+                  <th scope="col">유형</th>
+                  <th scope="col">투어</th>
+                  <th scope="col">이름</th>
+                  <th scope="col">상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recent.map((item) => (
+                  <tr key={item.id}>
+                    <td data-label="접수일시">{formatDateTimeKst(item.receivedAt)}</td>
+                    <td data-label="유형">{KIND_LABELS[item.kind]}</td>
+                    <td data-label="투어">{tourTitles.get(item.tourSlug) ?? item.tourSlug}</td>
+                    <td data-label="이름">
+                      <Link href={`/admin/inquiries/${item.id}`} className={styles.rowLink}>
+                        {item.name}
+                      </Link>
+                    </td>
+                    <td data-label="상태">
+                      <span className={styles.statusTag} data-status={item.status}>
+                        {STATUS_LABELS[item.status]}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          <p style={{ marginTop: 12 }}>
+            <Link href="/admin/inquiries" className={styles.linkButton}>
+              신청·문의 전체 보기
+            </Link>
           </p>
-        </div>
+        </>
       ) : (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th scope="col">접수일시</th>
-              <th scope="col">유형</th>
-              <th scope="col">투어</th>
-              <th scope="col">이름</th>
-              <th scope="col">상태</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recent.map((item) => (
-              <tr key={item.id}>
-                <td data-label="접수일시">{formatDateTimeKst(item.receivedAt)}</td>
-                <td data-label="유형">{KIND_LABELS[item.kind]}</td>
-                <td data-label="투어">{tourTitles.get(item.tourSlug) ?? item.tourSlug}</td>
-                <td data-label="이름">
-                  <Link href={`/admin/inquiries/${item.id}`} className={styles.rowLink}>
-                    {item.name}
-                  </Link>
-                </td>
-                <td data-label="상태">
-                  <span className={styles.statusTag} data-status={item.status}>
-                    {STATUS_LABELS[item.status]}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <p className={styles.note}>신청 폼이 열린 투어가 없어 신청·문의 화면은 숨겨져 있습니다. 모집 예정·모집 중 투어를 발행하면 다시 나타납니다.</p>
       )}
-      <p style={{ marginTop: 12 }}>
-        <Link href="/admin/inquiries" className={styles.linkButton}>
-          신청·문의 전체 보기
-        </Link>
-      </p>
     </>
   );
 }

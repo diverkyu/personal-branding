@@ -48,14 +48,17 @@ const GROUPS = [
   },
 ] as const;
 
-export function AdminNav() {
+/** showInquiries: 신청 폼이 열려 있거나 받은 신청이 있을 때만 "신청·문의" 메뉴를 보인다 (ADMIN-DESIGN §36) */
+export function AdminNav({ showInquiries = true }: { showInquiries?: boolean }) {
   const pathname = usePathname();
   return (
     <>
       {GROUPS.map((group) => (
         <div key={group.title}>
           <p className={styles.navGroup}>{group.title}</p>
-          {group.items.map((item) => (
+          {group.items
+            .filter((item) => showInquiries || item.href !== "/admin/inquiries")
+            .map((item) => (
             <Link key={item.href} href={item.href} className={styles.navLink} aria-current={item.href === "/admin" ? (pathname === "/admin" ? "page" : undefined) : pathname === item.href || pathname.startsWith(item.href + "/") ? "page" : undefined}>
               {item.label}
             </Link>
