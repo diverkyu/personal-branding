@@ -6,11 +6,20 @@ const READY: ReadinessInput = {
   env: { RESEND_API_KEY: "re_secret_value_1234", MAIL_FROM: "KYU <noreply@diverkyu.com>", MEDIA_STORE: "blob", BLOB_READ_WRITE_TOKEN: "vercel_blob_secret_token", CRON_SECRET: "x".repeat(24), SITE_URL: "https://www.diverkyu.com", SITE_INDEXING: "on" },
   settings: { "contact.email": "hello@diverkyu.com", "notify.email": "owner@diverkyu.com" },
   privacyPublished: true,
+  formsOpen: true,
   consentVersions: { reservation: "reservation:2", notice: "notice:1" },
 };
 const get = (input: ReadinessInput, id: string) => readinessChecks(input).find((i) => i.id === id)!;
 
 describe("공개 준비 점검", () => {
+  it("신청 폼이 열려 있지 않으면 방침·동의 문구는 필수(해야 할 일)가 아니라 참고다", () => {
+    const closed = { env: {}, settings: {}, privacyPublished: false, formsOpen: false, consentVersions: { reservation: BUILTIN_VERSION, notice: BUILTIN_VERSION } };
+    expect(get(closed, "privacy").status).toBe("info");
+    expect(get(closed, "consent").status).toBe("info");
+    expect(get({ ...closed, formsOpen: true }, "privacy").status).toBe("todo");
+    expect(get({ ...closed, formsOpen: true }, "consent").status).toBe("todo");
+  });
+
   it("모두 갖춰지면 해야 할 일이 없다", () => {
     const items = readinessChecks(READY);
     expect(todoCount(items)).toBe(0);
@@ -18,9 +27,9 @@ describe("공개 준비 점검", () => {
   });
 
   it("처음 상태(기본값)에서는 해야 할 일이 모두 보인다", () => {
-    const items = readinessChecks({ env: {}, settings: {}, privacyPublished: false, consentVersions: { reservation: BUILTIN_VERSION, notice: BUILTIN_VERSION } });
+    const items = readinessChecks({ env: {}, settings: {}, privacyPublished: false, formsOpen: true, consentVersions: { reservation: BUILTIN_VERSION, notice: BUILTIN_VERSION } });
     expect(items.filter((i) => i.status === "todo").map((i) => i.id)).toEqual(["contact", "privacy", "consent", "mail", "media", "cron"]);
-    expect(get({ env: {}, settings: {}, privacyPublished: false, consentVersions: READY.consentVersions }, "domain").status).toBe("info");
+    expect(get({ env: {}, settings: {}, privacyPublished: false, formsOpen: true, consentVersions: READY.consentVersions }, "domain").status).toBe("info");
   });
 
   it("연락 이메일이 예시 주소면 해야 할 일이다(기본값·example 도메인·빈 값·형식 오류)", () => {
@@ -72,7 +81,7 @@ describe("공개 준비 점검", () => {
   it("어떤 환경변수 값도 화면 글에 나오지 않는다 (이름만)", () => {
     const text = JSON.stringify(readinessChecks({ ...READY, env: { ...READY.env, RESEND_API_KEY: "SECRET-KEY-VALUE-1", MAIL_FROM: "SECRET-FROM", BLOB_READ_WRITE_TOKEN: "SECRET-BLOB-2", CRON_SECRET: "SECRET-CRON-3-xxxxxxxxxxxx", SITE_URL: "https://www.diverkyu.com" } }));
     for (const secret of ["SECRET-KEY-VALUE-1", "SECRET-FROM", "SECRET-BLOB-2", "SECRET-CRON-3"]) expect(text).not.toContain(secret);
-    const missing = JSON.stringify(readinessChecks({ env: {}, settings: {}, privacyPublished: false, consentVersions: { reservation: BUILTIN_VERSION, notice: BUILTIN_VERSION } }));
+    const missing = JSON.stringify(readinessChecks({ env: {}, settings: {}, privacyPublished: false, formsOpen: true, consentVersions: { reservation: BUILTIN_VERSION, notice: BUILTIN_VERSION } }));
     expect(missing).toContain("RESEND_API_KEY"); // 이름은 나온다
   });
 });

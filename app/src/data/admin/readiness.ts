@@ -6,9 +6,10 @@ import { readinessChecks, type ReadinessItem } from "@/lib/readiness";
 import type { AdminSession } from "@/lib/auth/types";
 import { loadCurrentConsent, loadCurrentPrivacy, loadSettings } from "@/settings/store";
 import type { AdminDb } from "./db";
+import { inquiryUsage } from "./inquiries";
 
 export async function loadReadiness(db: AdminDb, admin: AdminSession, env: Record<string, string | undefined>): Promise<ReadinessItem[]> {
   void admin;
-  const [settings, privacy, reservation, notice] = await Promise.all([loadSettings(db), loadCurrentPrivacy(db), loadCurrentConsent(db, "reservation"), loadCurrentConsent(db, "notice")]);
-  return readinessChecks({ env, settings, privacyPublished: privacy !== null, consentVersions: { reservation: reservation.version, notice: notice.version } });
+  const [settings, privacy, reservation, notice, usage] = await Promise.all([loadSettings(db), loadCurrentPrivacy(db), loadCurrentConsent(db, "reservation"), loadCurrentConsent(db, "notice"), inquiryUsage(db, admin)]);
+  return readinessChecks({ env, settings, privacyPublished: privacy !== null, formsOpen: usage.inUse, consentVersions: { reservation: reservation.version, notice: notice.version } });
 }

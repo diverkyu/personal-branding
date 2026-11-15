@@ -25,6 +25,8 @@ export interface ReadinessInput {
   /** 사이트 설정에서 해석한 값 */
   settings: Record<string, string>;
   privacyPublished: boolean;
+  /** 신청 폼이 열려 있는가(모집 예정·모집 중 공개 투어가 있거나 받은 신청이 있음). 닫혀 있으면 동의 문구는 필수가 아니다 */
+  formsOpen: boolean;
   /** 현재 예약 문의·소식 받기 동의 문구의 버전 표기 (BUILTIN_VERSION 이면 어드민에서 게시한 적이 없다) */
   consentVersions: { reservation: string; notice: string };
 }
@@ -45,7 +47,7 @@ function isPlaceholderEmail(email: string): boolean {
   return !domain || domain === "example.com" || domain.endsWith(".example") || domain === "example.org";
 }
 
-export function readinessChecks({ env, settings, privacyPublished, consentVersions }: ReadinessInput): ReadinessItem[] {
+export function readinessChecks({ env, settings, privacyPublished, formsOpen, consentVersions }: ReadinessInput): ReadinessItem[] {
   const items: ReadinessItem[] = [];
   const contact = (settings["contact.email"] ?? contactConfig.email).trim();
   items.push(
@@ -57,12 +59,16 @@ export function readinessChecks({ env, settings, privacyPublished, consentVersio
   items.push(
     privacyPublished
       ? { id: "privacy", label: "개인정보 처리방침", status: "ok", detail: "게시되어 있습니다.", href: "/admin/legal", where: "admin" }
-      : { id: "privacy", label: "개인정보 처리방침", status: "todo", detail: "아직 \"준비 중\" 화면입니다. 신청 폼이 열린 투어(모집 예정·모집 중)를 공개하기 전에 동의·방침에서 게시해 주세요.", href: "/admin/legal", where: "admin" },
+      : formsOpen
+        ? { id: "privacy", label: "개인정보 처리방침", status: "todo", detail: "아직 \"준비 중\" 화면입니다. 신청 폼이 열린 투어가 공개되어 있으니 동의·방침에서 게시해 주세요.", href: "/admin/legal", where: "admin" }
+        : { id: "privacy", label: "개인정보 처리방침", status: "info", detail: "아직 \"준비 중\" 화면입니다. 신청 폼이 없어도 이메일 문의·후기를 다루므로 간이본(docs/legal/PRIVACY-POLICY-LITE.md)을 게시하는 것을 권합니다. 폼을 열기 전에는 정식본이 필요합니다.", href: "/admin/legal", where: "admin" },
   );
 
   const unpublished = (["reservation", "notice"] as const).filter((k) => consentVersions[k] === BUILTIN_VERSION);
   items.push(
-    unpublished.length === 0
+    !formsOpen
+      ? { id: "consent", label: "동의 문구", status: "info", detail: "신청 폼이 열려 있지 않아 지금은 필요하지 않습니다. 모집 예정·모집 중 투어를 발행하기 전에 문구를 게시해 주세요.", href: "/admin/legal", where: "admin" }
+      : unpublished.length === 0
       ? { id: "consent", label: "동의 문구", status: "ok", detail: "예약 문의·소식 받기 문구가 모두 게시되어 있습니다.", href: "/admin/legal", where: "admin" }
       : {
           id: "consent",
