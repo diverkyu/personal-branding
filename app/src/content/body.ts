@@ -1,7 +1,8 @@
 /**
  * 콘텐츠 본문 형식 (ADMIN-DESIGN §6). 편집기(Tiptap)가 만드는 JSON 문서를 **허용 목록으로 다시 만들어** 저장한다.
  * 편집기의 제한은 보안 경계가 아니다 — 서버가 이 함수로 모든 본문을 검사하고, 허용되지 않은 것은 거부하거나 버린다.
- * - 허용 노드: 문단, 제목(2·3), 목록(순서/비순서), 인용, 구분선, 줄바꿈, 이미지(미디어 id), 영상(허용 도메인).
+ * - 허용 노드: 문단, 제목(2·3), 목록(순서/비순서), 인용, 구분선, 줄바꿈, 이미지(미디어 id), 영상(허용 도메인),
+ *   복사 상자(글자만, 프롬프트처럼 그대로 복사해 쓰는 글), 표(병합 없는 격자, 칸 안은 문단만).
  * - 허용 서식: 굵게, 기울임, 링크(https 만).
  * - 모르는 노드 종류는 **거부**하고, 모르는 속성은 **버린다**. 크기·깊이·글자 수에 상한이 있다.
  * 공개 화면은 이 문서를 React 요소로 직접 렌더링한다(HTML 문자열을 넣지 않는다).
@@ -23,7 +24,17 @@ export type BlockNode =
   | { type: "blockquote"; content: BlockNode[] }
   | { type: "horizontalRule" }
   | { type: "image"; attrs: { mediaId: string } }
-  | { type: "video"; attrs: { url: string } };
+  | { type: "video"; attrs: { url: string } }
+  | { type: "codeBlock"; content?: { type: "text"; text: string }[] }
+  | { type: "table"; content: TableRow[] };
+export interface TableCell {
+  type: "tableHeader" | "tableCell";
+  content: { type: "paragraph"; content?: InlineNode[] }[];
+}
+export interface TableRow {
+  type: "tableRow";
+  content: TableCell[];
+}
 export interface ListItem {
   type: "listItem";
   content: BlockNode[];
@@ -33,7 +44,7 @@ export interface BodyDoc {
   content: BlockNode[];
 }
 
-export const BODY_LIMITS = { maxNodes: 4000, maxDepth: 6, maxText: 100_000, maxLinkLength: 500 } as const;
+export const BODY_LIMITS = { maxNodes: 4000, maxDepth: 6, maxText: 100_000, maxLinkLength: 500, maxCodeBlock: 6000, maxTableRows: 40, maxTableCols: 6 } as const;
 
 export const EMPTY_BODY: BodyDoc = { type: "doc", content: [] };
 
@@ -120,6 +131,52 @@ function listItems(raw: unknown, depth: number, budget: Budget): ListItem[] {
   return items;
 }
 
+/** 복사 상자: 글자만 담는다(서식·링크 없음). 줄바꿈은 그대로 둔다 */
+function codeText(raw: unknown, budget: Budget): { type: "text"; text: string }[] {
+  let text = "";
+  for (const item of list(raw)) {
+    const n = obj(item);
+    if (++budget.nodes > BODY_LIMITS.maxNodes) throw new Reject("본문이 너무 깁니다.");
+    if (n.type === "text" && typeof n.text === "string") text += n.text;
+    else if (n.type === "hardBreak") text += "\n";
+    else throw new Reject("복사 상자 안에는 글자만 넣을 수 있습니다.");
+  }
+  text = text.replace(/\r\n?/g, "\n");
+  if (text.length > BODY_LIMITS.maxCodeBlock) throw new Reject(`복사 상자는 ${BODY_LIMITS.maxCodeBlock}자까지 쓸 수 있습니다.`);
+  budget.text += text.length;
+  if (budget.text > BODY_LIMITS.maxText) throw new Reject("본문이 너무 깁니다.");
+  return text === "" ? [] : [{ type: "text", text }];
+}
+
+/** 표: 병합 없는 격자. 모든 줄의 칸 수가 같아야 하고, 칸 안에는 문단만 둔다. 줄·칸 수에 상한이 있다 */
+function tableRows(raw: unknown, budget: Budget): TableRow[] {
+  const rows = list(raw).map((rowItem) => {
+    const row = obj(rowItem);
+    if (row.type !== "tableRow") throw new Reject("표 형식이 올바르지 않습니다.");
+    if (++budget.nodes > BODY_LIMITS.maxNodes) throw new Reject("본문이 너무 깁니다.");
+    const cells = list(row.content).map((cellItem) => {
+      const cell = obj(cellItem);
+      if (cell.type !== "tableCell" && cell.type !== "tableHeader") throw new Reject("표 형식이 올바르지 않습니다.");
+      if (++budget.nodes > BODY_LIMITS.maxNodes) throw new Reject("본문이 너무 깁니다.");
+      const paragraphs = list(cell.content).map((pItem) => {
+        const p = obj(pItem);
+        if (p.type !== "paragraph") throw new Reject("표의 칸에는 글자만 넣을 수 있습니다.");
+        if (++budget.nodes > BODY_LIMITS.maxNodes) throw new Reject("본문이 너무 깁니다.");
+        return { type: "paragraph" as const, content: inline(p.content, budget) };
+      });
+      return { type: cell.type, content: paragraphs } as TableCell;
+    });
+    if (cells.length === 0) throw new Reject("빈 표 줄은 쓸 수 없습니다.");
+    if (cells.length > BODY_LIMITS.maxTableCols) throw new Reject(`표는 ${BODY_LIMITS.maxTableCols}칸(열)까지 쓸 수 있습니다.`);
+    return { type: "tableRow" as const, content: cells };
+  });
+  if (rows.length === 0) throw new Reject("빈 표는 쓸 수 없습니다.");
+  if (rows.length > BODY_LIMITS.maxTableRows) throw new Reject(`표는 ${BODY_LIMITS.maxTableRows}줄까지 쓸 수 있습니다.`);
+  const width = rows[0]?.content.length ?? 0;
+  if (rows.some((r) => r.content.length !== width)) throw new Reject("표의 모든 줄은 칸 수가 같아야 합니다(칸 합치기는 지원하지 않습니다).");
+  return rows;
+}
+
 function blocks(raw: unknown, depth: number, budget: Budget): BlockNode[] {
   if (depth > BODY_LIMITS.maxDepth) throw new Reject("본문의 중첩이 너무 깊습니다.");
   const out: BlockNode[] = [];
@@ -154,6 +211,12 @@ function blocks(raw: unknown, depth: number, budget: Budget): BlockNode[] {
         out.push({ type: "image", attrs: { mediaId: mediaId.toLowerCase() } });
         break;
       }
+      case "codeBlock":
+        out.push({ type: "codeBlock", content: codeText(n.content, budget) });
+        break;
+      case "table":
+        out.push({ type: "table", content: tableRows(n.content, budget) });
+        break;
       case "video": {
         const url = obj(n.attrs ?? {}).url;
         if (typeof url !== "string" || !parseVideoUrl(url)) throw new Reject("영상은 YouTube·Vimeo·Instagram 주소만 넣을 수 있습니다.");
@@ -204,7 +267,7 @@ export function plainTextFromBody(doc: BodyDoc): string {
 }
 
 export function isBodyEmpty(doc: BodyDoc): boolean {
-  return doc.content.every((b) => b.type === "paragraph" && inlineText(b.content).trim() === "") && !doc.content.some((b) => ["image", "video", "horizontalRule"].includes(b.type));
+  return doc.content.every((b) => b.type === "paragraph" && inlineText(b.content).trim() === "") && !doc.content.some((b) => ["image", "video", "horizontalRule", "codeBlock", "table"].includes(b.type));
 }
 
 /** 편집기가 붙기 전의 간단한 입력(빈 줄로 문단 나눔, 줄바꿈은 줄바꿈)을 본문 문서로 바꾼다 */

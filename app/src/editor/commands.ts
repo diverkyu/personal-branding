@@ -12,3 +12,13 @@ export function insertBlockAfterSelection(editor: Editor, node: Record<string, u
     .insertContentAt(editor.state.selection.to, [node, { type: "paragraph" }])
     .run();
 }
+
+/** 커서가 표 안에 있으면 그 표의 줄·칸 수를, 아니면 null (표 도구 막대와 상한 안내에 쓴다) */
+export function tableShape(editor: Editor): { rows: number; cols: number } | null {
+  const { $from } = editor.state.selection;
+  for (let depth = $from.depth; depth > 0; depth -= 1) {
+    const node = $from.node(depth);
+    if (node.type.name === "table") return { rows: node.childCount, cols: node.firstChild?.childCount ?? 0 };
+  }
+  return null;
+}
