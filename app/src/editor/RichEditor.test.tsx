@@ -123,3 +123,51 @@ describe("본문 편집기: 이미지 바로 올리기", () => {
     expect(h.textContent).toContain("대체 텍스트가 비어 있어");
   });
 });
+
+describe("본문 편집기: 복사 상자와 표 도구", () => {
+  it("도구 막대에 복사 상자와 표 버튼이 있고, 표를 넣으면 표 편집 도구 막대가 나타난다", async () => {
+    const h = await mount();
+    expect(button(h, "복사 상자 (프롬프트처럼 그대로 복사해 쓰는 글)")).toBeDefined();
+    expect(h.querySelector('[aria-label="표 편집"]')).toBeNull();
+    await act(async () => {
+      button(h, "표 넣기 (3줄 × 3칸, 첫 줄은 제목 줄)")?.click();
+    });
+    const types = JSON.stringify(JSON.parse(bodyJson(h)));
+    expect(types).toContain('"type":"table"');
+    expect(types).toContain('"type":"tableHeader"');
+    const bar = h.querySelector('[aria-label="표 편집"]');
+    expect(bar?.textContent).toContain("표 3줄 × 3칸");
+    expect(bar?.textContent).toContain("최대 40줄 × 6칸");
+  });
+
+  it("표의 칸·줄 추가는 상한에서 막히고, 표 지우기는 표를 없앤다", async () => {
+    const h = await mount();
+    await act(async () => {
+      button(h, "표 넣기 (3줄 × 3칸, 첫 줄은 제목 줄)")?.click();
+    });
+    for (let i = 0; i < 3; i += 1) {
+      await act(async () => {
+        button(h, "칸 추가 (오른쪽)")?.click();
+      });
+    }
+    expect(h.querySelector('[aria-label="표 편집"]')?.textContent).toContain("표 3줄 × 6칸");
+    expect(button(h, "칸 추가 (오른쪽)")?.disabled).toBe(true);
+    await act(async () => {
+      button(h, "표 지우기")?.click();
+    });
+    expect(bodyJson(h)).not.toContain('"table"');
+    expect(h.querySelector('[aria-label="표 편집"]')).toBeNull();
+  });
+
+  it("복사 상자 버튼은 문단을 복사 상자로 바꾸고 다시 누르면 문단으로 돌린다", async () => {
+    const h = await mount();
+    await act(async () => {
+      button(h, "복사 상자 (프롬프트처럼 그대로 복사해 쓰는 글)")?.click();
+    });
+    expect(bodyJson(h)).toContain('"codeBlock"');
+    await act(async () => {
+      button(h, "복사 상자 (프롬프트처럼 그대로 복사해 쓰는 글)")?.click();
+    });
+    expect(bodyJson(h)).not.toContain('"codeBlock"');
+  });
+});

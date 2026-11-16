@@ -296,3 +296,27 @@ test.describe("여행 추천 공개 화면", () => {
     expect(xml).toContain("/freediving/travel<");
   });
 });
+
+test.describe("본문의 복사 상자와 표 (Films 소개글, 가상 데이터)", () => {
+  test("표는 키보드로 닿는 구역 안에 있고 가로로 넘치지 않으며, 머리 칸은 col 범위다", async ({ page }) => {
+    await page.goto("/films/sample-film");
+    const region = page.getByRole("region", { name: "표" });
+    await expect(region).toBeVisible();
+    await expect(region.locator("th[scope='col']")).toHaveCount(2);
+    await region.focus();
+    await expect(region).toBeFocused();
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+
+  test("복사 상자의 복사 버튼은 글을 클립보드에 넣고 결과를 글자로 알린다", async ({ page, context, browserName }) => {
+    test.skip(browserName !== "chromium", "클립보드 권한은 Chromium 에서 확인한다");
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.goto("/films/sample-film");
+    const text = "복사해서 쓰는 글이 이 자리에 보입니다. (자리표시)\n둘째 줄입니다.";
+    await expect(page.getByLabel("복사할 글")).toHaveText(text);
+    await page.getByRole("button", { name: "복사", exact: true }).click();
+    await expect(page.getByRole("status").filter({ hasText: "복사했습니다" })).toBeVisible();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(text);
+  });
+});

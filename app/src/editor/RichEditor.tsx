@@ -3,11 +3,11 @@
 import { EditorContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, useEditorState, type NodeViewProps } from "@tiptap/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { uploadEditorImageAction } from "@/app/admin/mediaActions";
-import { safeHttpsUrl } from "@/content/body";
+import { BODY_LIMITS, safeHttpsUrl } from "@/content/body";
 import { downscaleIfLarge } from "@/media/clientDownscale";
 import { parseVideoUrl } from "@/lib/video";
 import styles from "./RichEditor.module.css";
-import { insertBlockAfterSelection } from "./commands";
+import { insertBlockAfterSelection, tableShape } from "./commands";
 import { MediaImage, VideoEmbed, buildExtensions } from "./extensions";
 
 export interface PickerMedia {
@@ -112,6 +112,8 @@ export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirt
       bullet: e?.isActive("bulletList") ?? false,
       ordered: e?.isActive("orderedList") ?? false,
       quote: e?.isActive("blockquote") ?? false,
+      codeBlock: e?.isActive("codeBlock") ?? false,
+      table: e ? tableShape(e) : null,
       link: e?.isActive("link") ?? false,
       canUndo: e?.can().undo() ?? false,
       canRedo: e?.can().redo() ?? false,
@@ -129,7 +131,7 @@ export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirt
 
   if (!editor) return <div className={styles.loading}>편집기를 불러오는 중입니다…</div>;
   // 편집기가 준비되기 전에는 위에서 이미 돌아갔으므로 여기서는 값이 있다
-  const state = toolState ?? { bold: false, italic: false, h2: false, h3: false, bullet: false, ordered: false, quote: false, link: false, canUndo: false, canRedo: false };
+  const state = toolState ?? { bold: false, italic: false, h2: false, h3: false, bullet: false, ordered: false, quote: false, codeBlock: false, table: null, link: false, canUndo: false, canRedo: false };
 
   const btn = (label: string, active: boolean, onClick: () => void, extra?: { disabled?: boolean; text?: string }) => (
     <button type="button" className={styles.tool} aria-pressed={active} aria-label={label} title={label} onClick={onClick} disabled={extra?.disabled}>
@@ -206,12 +208,28 @@ export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirt
         {btn("목록", state.bullet, () => editor.chain().focus().toggleBulletList().run(), { text: "목록" })}
         {btn("번호 목록", state.ordered, () => editor.chain().focus().toggleOrderedList().run(), { text: "번호" })}
         {btn("인용", state.quote, () => editor.chain().focus().toggleBlockquote().run(), { text: "인용" })}
+        {btn("복사 상자 (프롬프트처럼 그대로 복사해 쓰는 글)", state.codeBlock, () => editor.chain().focus().toggleCodeBlock().run(), { text: "복사 상자" })}
+        {btn("표 넣기 (3줄 × 3칸, 첫 줄은 제목 줄)", state.table !== null, () => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(), { disabled: state.table !== null, text: "표" })}
         {btn("구분선", false, () => editor.chain().focus().setHorizontalRule().run(), { text: "구분선" })}
         {btn("이미지 넣기", panel === "image", () => togglePanel("image"), { text: "이미지" })}
         {btn("영상 넣기", panel === "video", () => togglePanel("video"), { text: "영상" })}
         {btn("되돌리기", false, () => editor.chain().focus().undo().run(), { disabled: !state.canUndo, text: "↶" })}
         {btn("다시 하기", false, () => editor.chain().focus().redo().run(), { disabled: !state.canRedo, text: "↷" })}
       </div>
+
+      {state.table ? (
+        <div className={`${styles.toolbar} ${styles.toolbarSub}`} role="toolbar" aria-label="표 편집">
+          <span className={styles.hint}>
+            표 {state.table.rows}줄 × {state.table.cols}칸 (최대 {BODY_LIMITS.maxTableRows}줄 × {BODY_LIMITS.maxTableCols}칸)
+          </span>
+          {btn("줄 추가 (아래)", false, () => editor.chain().focus().addRowAfter().run(), { disabled: state.table.rows >= BODY_LIMITS.maxTableRows, text: "줄 추가" })}
+          {btn("칸 추가 (오른쪽)", false, () => editor.chain().focus().addColumnAfter().run(), { disabled: state.table.cols >= BODY_LIMITS.maxTableCols, text: "칸 추가" })}
+          {btn("줄 삭제", false, () => editor.chain().focus().deleteRow().run(), { disabled: state.table.rows <= 1, text: "줄 삭제" })}
+          {btn("칸 삭제", false, () => editor.chain().focus().deleteColumn().run(), { disabled: state.table.cols <= 1, text: "칸 삭제" })}
+          {btn("제목 줄 켜기·끄기", false, () => editor.chain().focus().toggleHeaderRow().run(), { text: "제목 줄" })}
+          {btn("표 지우기", false, () => editor.chain().focus().deleteTable().run(), { text: "표 지우기" })}
+        </div>
+      ) : null}
 
       {panel === "link" ? (
         <div className={styles.panel} role="group" aria-label="링크">

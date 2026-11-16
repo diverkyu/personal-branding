@@ -32,7 +32,7 @@ describe("본문 검사기 (허용 목록)", () => {
     for (const bad of [
       doc({ type: "script", content: [] }),
       doc({ type: "html", attrs: { html: "<b>x</b>" } }),
-      doc({ type: "codeBlock", content: [text("x")] }),
+      doc({ type: "codeBlock", content: [para(text("x"))] }), // 복사 상자 안에는 글자만
       doc(para(text("x", [{ type: "underline" }]))),
       doc(para({ type: "image", attrs: { mediaId: UUID } })),
       { type: "paragraph", content: [] },
@@ -178,5 +178,50 @@ describe("유형·주소 이름", () => {
     expect(isContentType("video")).toBe(true);
     expect(isContentType("travel")).toBe(true);
     expect(isContentType("film")).toBe(false);
+  });
+});
+
+describe("복사 상자와 표 (가이드 글용)", () => {
+  const cell = (t: string, type = "tableCell") => ({ type, content: [para(text(t))] });
+  const row = (...cells: unknown[]) => ({ type: "tableRow", content: cells });
+
+  it("복사 상자는 글자만 담고 줄바꿈을 지키며, 속성(언어)은 버린다", () => {
+    const result = sanitizeBody(doc({ type: "codeBlock", attrs: { language: "js", onclick: "x()" }, content: [text("첫 줄\r\n둘째 줄")] }));
+    expect(result).toEqual({ ok: true, doc: { type: "doc", content: [{ type: "codeBlock", content: [{ type: "text", text: "첫 줄\n둘째 줄" }] }] } });
+    expect(sanitizeBody(doc({ type: "codeBlock" })).ok).toBe(true); // 빈 상자도 형식은 맞다
+  });
+
+  it("복사 상자 안의 서식·링크·이미지는 거부하고, 길이 상한을 둔다", () => {
+    expect(sanitizeBody(doc({ type: "codeBlock", content: [text("x", [{ type: "bold" }])] })).ok).toBe(true); // 서식은 버리고 글자만 남긴다
+    expect(sanitizeBody(doc({ type: "codeBlock", content: [{ type: "image", attrs: { mediaId: UUID } }] })).ok).toBe(false);
+    expect(sanitizeBody(doc({ type: "codeBlock", content: [text("가".repeat(BODY_LIMITS.maxCodeBlock + 1))] })).ok).toBe(false);
+    expect(sanitizeBody(doc({ type: "codeBlock", content: [text("가".repeat(BODY_LIMITS.maxCodeBlock))] })).ok).toBe(true);
+  });
+
+  it("표는 병합 없는 격자만 받고, 속성(colspan 등)은 버린다", () => {
+    const table = { type: "table", content: [row(cell("시간", "tableHeader"), cell("행동", "tableHeader")), row({ type: "tableCell", attrs: { colspan: 1, rowspan: 1, colwidth: null }, content: [para(text("0–3.8초"))] }, cell("셀카"))] };
+    const result = sanitizeBody(doc(table));
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      const t = result.doc.content[0];
+      expect(JSON.stringify(t)).not.toMatch(/colspan|rowspan|colwidth|attrs/);
+      expect(t).toMatchObject({ type: "table" });
+    }
+  });
+
+  it("표의 줄마다 칸 수가 다르거나, 비었거나, 상한을 넘거나, 칸 안에 문단 아닌 것이 있으면 거부한다", () => {
+    expect(sanitizeBody(doc({ type: "table", content: [row(cell("a"), cell("b")), row(cell("c"))] })).ok).toBe(false);
+    expect(sanitizeBody(doc({ type: "table", content: [] })).ok).toBe(false);
+    expect(sanitizeBody(doc({ type: "table", content: [row()] })).ok).toBe(false);
+    expect(sanitizeBody(doc({ type: "table", content: [row(...Array.from({ length: BODY_LIMITS.maxTableCols + 1 }, () => cell("x")))] })).ok).toBe(false);
+    expect(sanitizeBody(doc({ type: "table", content: Array.from({ length: BODY_LIMITS.maxTableRows + 1 }, () => row(cell("x"))) })).ok).toBe(false);
+    expect(sanitizeBody(doc({ type: "table", content: [row({ type: "tableCell", content: [{ type: "image", attrs: { mediaId: UUID } }] })] })).ok).toBe(false);
+    expect(sanitizeBody(doc({ type: "table", content: [{ type: "paragraph", content: [] }] })).ok).toBe(false);
+    expect(sanitizeBody(doc({ type: "table", content: [row(cell("x"))] })).ok).toBe(true);
+  });
+
+  it("복사 상자나 표만 있는 본문은 빈 본문이 아니다", () => {
+    expect(isBodyEmpty({ type: "doc", content: [{ type: "codeBlock", content: [{ type: "text", text: "x" }] }] })).toBe(false);
+    expect(isBodyEmpty({ type: "doc", content: [{ type: "table", content: [{ type: "tableRow", content: [{ type: "tableCell", content: [{ type: "paragraph" }] }] }] }] })).toBe(false);
   });
 });

@@ -49,3 +49,35 @@
   max-width: 100%;
   height: auto;
 }
+.tableWrap {
+  margin: 0 0 1.4em;
+  overflow-x: auto;
+}
+.tableWrap:focus-visible {
+  outline: 3px solid var(--kyu-focus);
+  outline-offset: 2px;
+}
+.tableWrap table {
+  width: 100%;
+  min-width: 480px;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.tableWrap th,
+.tableWrap td {
+  padding: 10px 12px;
+  border: 1px solid var(--kyu-line);
+  text-align: left;
+  vertical-align: top;
+}
+.tableWrap th {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  font-weight: 700;
+}
+.tableWrap p {
+  margin: 0;
+}
+.tableWrap p + p {
+  margin-top: 0.4em;
+}

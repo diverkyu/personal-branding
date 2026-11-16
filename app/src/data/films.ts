@@ -6,7 +6,6 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
 import { STORIES_MAX_AGE_SECONDS, VIDEOS_TAG } from "@/content/cacheTags";
-import { bodyFromPlainText } from "@/content/body";
 import { getDb } from "@/db/client";
 import type { AdminDb } from "@/data/admin/db";
 import { logger } from "@/lib/logger";
@@ -40,7 +39,21 @@ const FIXTURE: FilmDetail = {
   videoUrl: "https://www.youtube.com/watch?v=AAAAAAAAAAA",
   poster: { src: "", alt: "샘플 포스터", width: 1280, height: 720 },
   notes: { sceneIntent: "장면 의도가 이 자리에 보입니다. (자리표시)", promptNotes: "", editNotes: "편집 판단이 이 자리에 보입니다. (자리표시)" },
-  doc: bodyFromPlainText("영상 소개가 이 자리에 보입니다. (자리표시)"),
+  // 가상 소개글: 문단 + 복사 상자 + 표 (공개 화면 확인·시험용 자리표시)
+  doc: {
+    type: "doc",
+    content: [
+      { type: "paragraph", content: [{ type: "text", text: "영상 소개가 이 자리에 보입니다. (자리표시)" }] },
+      { type: "codeBlock", content: [{ type: "text", text: "복사해서 쓰는 글이 이 자리에 보입니다. (자리표시)\n둘째 줄입니다." }] },
+      {
+        type: "table",
+        content: [
+          { type: "tableRow", content: [{ type: "tableHeader", content: [{ type: "paragraph", content: [{ type: "text", text: "시간" }] }] }, { type: "tableHeader", content: [{ type: "paragraph", content: [{ type: "text", text: "행동" }] }] }] },
+          { type: "tableRow", content: [{ type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text: "0–3초" }] }] }, { type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text: "자리표시 행동" }] }] }] },
+        ],
+      },
+    ],
+  },
   media: [],
   seoTitle: "",
   seoDescription: "",

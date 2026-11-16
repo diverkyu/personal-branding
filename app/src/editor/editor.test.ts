@@ -7,7 +7,7 @@ import { buildExtensions } from "./extensions";
 
 /**
  * 편집기 확장이 서버 본문 검사기와 맞는지 확인한다. 편집기가 만든 문서는 검사기를 그대로 통과해야 하고,
- * 허용 밖의 HTML(스크립트·iframe·외부 이미지·코드·밑줄·위험한 링크)은 편집기 단계에서 이미 걸러져야 한다.
+ * 허용 밖의 HTML(스크립트·iframe·외부 이미지·글자 코드·밑줄·위험한 링크)은 편집기 단계에서 이미 걸러져야 한다.
  */
 const UUID = "123e4567-e89b-42d3-a456-426614174000";
 let editor: Editor | undefined;
@@ -65,13 +65,13 @@ describe("편집기가 만드는 문서는 서버 검사기를 통과한다", ()
 });
 
 describe("허용 밖의 내용은 편집기에서 이미 걸러진다 (붙여넣기·불러오기)", () => {
-  it("스크립트·iframe·외부 이미지·코드·밑줄·취소선·1단계 제목이 남지 않는다", () => {
+  it("스크립트·iframe·외부 이미지·글자 코드·밑줄·취소선·1단계 제목이 남지 않는다", () => {
     const html =
       "<h1>큰 제목</h1><p>안녕 <u>밑줄</u> <s>취소선</s> <code>코드</code></p><script>alert(1)</script><iframe src=\"https://evil.example\"></iframe>" +
       "<img src=\"http://evil.example/x.png\" onerror=\"alert(1)\"><pre><code>소스</code></pre><p style=\"color:red\" onclick=\"x()\">스타일</p>";
     const json = make(html).getJSON();
     const types = names(json);
-    for (const bad of ["script", "iframe", "codeBlock", "mark:underline", "mark:strike", "mark:code", "img"]) expect(types.has(bad), bad).toBe(false);
+    for (const bad of ["script", "iframe", "mark:underline", "mark:strike", "mark:code", "img"]) expect(types.has(bad), bad).toBe(false);
     const result = sanitizeBody(json);
     expect(result.ok, JSON.stringify(result)).toBe(true);
     expect(JSON.stringify(json)).not.toMatch(/alert|evil|onclick|color:red/);
@@ -144,5 +144,38 @@ describe("이미지·영상 넣기는 선택한 것을 덮어쓰지 않는다", 
     insertBlockAfterSelection(e, image);
     const types = top(e);
     expect(types[types.length - 1]).toBe("paragraph");
+  });
+});
+
+describe("복사 상자와 표 (가이드 글용)", () => {
+  it("복사 상자와 표를 만들면 서버 검사기를 통과하고, 왕복해도 같다", () => {
+    const e = make("<p>본문</p>");
+    e.commands.insertContentAt(e.state.doc.content.size, { type: "codeBlock", content: [{ type: "text", text: "첫 줄\n둘째 줄" }] });
+    e.commands.insertContentAt(e.state.doc.content.size, { type: "paragraph" });
+    e.commands.insertTable({ rows: 3, cols: 3, withHeaderRow: true });
+    const json = e.getJSON();
+    const types = names(json);
+    for (const t of ["codeBlock", "table", "tableRow", "tableHeader", "tableCell"]) expect(types.has(t), t).toBe(true);
+    const clean = sanitizeBody(json);
+    expect(clean.ok, JSON.stringify(clean)).toBe(true);
+    if (!clean.ok) return;
+    editor?.destroy();
+    expect(sanitizeBody(make(clean.doc).getJSON())).toEqual(clean);
+  });
+
+  it("복사 상자는 붙여넣은 서식을 글자만 남기고, 줄 추가·삭제 명령이 격자를 지킨다", () => {
+    const e = make('<pre><code>프롬프트\n둘째 줄</code></pre>');
+    const clean = sanitizeBody(e.getJSON());
+    expect(clean.ok).toBe(true);
+    expect(JSON.stringify(e.getJSON())).toContain("프롬프트");
+    editor?.destroy();
+    const t = make("<p>x</p>");
+    t.commands.insertTable({ rows: 2, cols: 2, withHeaderRow: false });
+    t.commands.addRowAfter();
+    t.commands.addColumnAfter();
+    expect(sanitizeBody(t.getJSON()).ok).toBe(true);
+    t.commands.deleteColumn();
+    t.commands.deleteRow();
+    expect(sanitizeBody(t.getJSON()).ok).toBe(true);
   });
 });

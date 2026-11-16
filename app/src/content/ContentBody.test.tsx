@@ -68,3 +68,27 @@ describe("본문 렌더링", () => {
     expect(html(doc())).toMatch(/^<div class="[^"]*"><\/div>$/);
   });
 });
+
+describe("복사 상자와 표 렌더링", () => {
+  it("복사 상자는 글자를 그대로(이스케이프) 보여 주고 복사 버튼이 있다", () => {
+    const out = renderToStaticMarkup(
+      <ContentBody doc={{ type: "doc", content: [{ type: "codeBlock", content: [{ type: "text", text: "<script>alert(1)</script>\n둘째 줄" }] }] }} media={new Map()} />,
+    );
+    expect(out).not.toContain("<script>");
+    expect(out).toContain("&lt;script&gt;");
+    expect(out).toContain("둘째 줄");
+    expect(out).toContain(">복사<");
+  });
+
+  it("표는 머리 줄에 scope=col, 표 구역은 키보드로 닿고, 칸의 서식을 살린다", () => {
+    const cell = (t: string, type: "tableCell" | "tableHeader") => ({ type, content: [{ type: "paragraph" as const, content: [{ type: "text" as const, text: t, marks: [{ type: "bold" as const }] }] }] });
+    const out = renderToStaticMarkup(
+      <ContentBody doc={{ type: "doc", content: [{ type: "table", content: [{ type: "tableRow", content: [cell("시간", "tableHeader"), cell("행동", "tableHeader")] }, { type: "tableRow", content: [cell("0–3.8초", "tableCell"), cell("셀카", "tableCell")] }] }] }} media={new Map()} />,
+    );
+    expect(out).toContain('scope="col"');
+    expect(out).toContain('role="region"');
+    expect(out).toContain('tabindex="0"');
+    expect(out).toContain("<strong>0–3.8초</strong>");
+    expect(out).toContain("<td");
+  });
+});

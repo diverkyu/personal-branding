@@ -1,10 +1,11 @@
 /**
  * 편집기(Tiptap) 확장 목록. 서버의 본문 검사기(content/body.ts)가 허용하는 것과 **같은 범위만** 켠다:
- * 문단·제목(2·3)·굵게·기울임·https 링크·목록·인용·구분선·줄바꿈·이미지(미디어 id)·영상(허용 도메인).
- * 코드·취소선·밑줄·제목 1단계 등은 끈다. 편집기의 제한은 편의일 뿐이고 보안 경계는 서버 검사기다.
+ * 문단·제목(2·3)·굵게·기울임·https 링크·목록·인용·구분선·줄바꿈·이미지(미디어 id)·영상(허용 도메인)·복사 상자(codeBlock, 글자만)·표.
+ * 글자 코드·취소선·밑줄·제목 1단계 등은 끈다. 편집기의 제한은 편의일 뿐이고 보안 경계는 서버 검사기다.
  */
 import { Node, mergeAttributes } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
+import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
 import { safeHttpsUrl } from "@/content/body";
 import { parseVideoUrl } from "@/lib/video";
 
@@ -67,7 +68,7 @@ export function buildExtensions() {
     StarterKit.configure({
       heading: { levels: [2, 3] },
       code: false,
-      codeBlock: false,
+      // 복사 상자로 쓴다(프롬프트처럼 그대로 복사해 쓰는 글). 언어 지정·서식은 서버가 버린다
       strike: false,
       underline: false,
       link: {
@@ -81,6 +82,11 @@ export function buildExtensions() {
         HTMLAttributes: { rel: "noopener noreferrer nofollow", target: "_blank" },
       },
     }),
+    // 표: 칸 합치기·너비 조절은 쓰지 않는다(서버는 병합 없는 격자만 받는다)
+    Table.configure({ resizable: false }),
+    TableRow,
+    TableHeader,
+    TableCell,
     MediaImage,
     VideoEmbed,
   ];

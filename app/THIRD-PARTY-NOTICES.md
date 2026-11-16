@@ -32,7 +32,7 @@ OFL에 따라 글꼴 자체를 단독으로 판매하지 않으며, 수정본을
 
 ## 본문 편집기
 
-`@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit`(Tiptap, MIT)과 그 하위 확장·ProseMirror(MIT)를 어드민 본문 편집기에 쓴다. 시험용으로 `jsdom`(MIT)을 쓴다. 각 패키지의 `license` 필드로 2026-11-08에 확인했다. Tiptap의 유료 확장(클라우드·AI·협업 등)은 쓰지 않는다.
+`@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit`, `@tiptap/extension-table`(Tiptap, MIT)과 그 하위 확장·ProseMirror(MIT)를 어드민 본문 편집기에 쓴다. 시험용으로 `jsdom`(MIT)을 쓴다. 각 패키지의 `license` 필드로 2026-11-08에 확인했다(`@tiptap/extension-table`은 2026-11-16에 `npm view`로 MIT 확인). Tiptap의 유료 확장(클라우드·AI·협업 등)은 쓰지 않는다.
 
 ## 확인 방법
 

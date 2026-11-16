@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { CopyBlock } from "@/components/site/CopyBlock";
 import { VideoPlayer } from "@/components/site/VideoPlayer";
 import type { BlockNode, BodyDoc, InlineNode, ListItem, Mark } from "./body";
 import styles from "./ContentBody.module.css";
@@ -103,6 +104,38 @@ function Blocks({ blocks, media }: { blocks: BlockNode[]; media: Map<string, Bod
               </figure>
             );
           }
+          case "codeBlock":
+            return <CopyBlock key={i} text={(b.content ?? []).map((t) => t.text).join("")} />;
+          case "table":
+            return (
+              <div key={i} className={styles.tableWrap} role="region" aria-label="표" tabIndex={0}>
+                <table>
+                  <tbody>
+                    {b.content.map((row, r) => {
+                      const headerRow = row.content.every((c) => c.type === "tableHeader");
+                      return (
+                        <tr key={r}>
+                          {row.content.map((cell, c) => {
+                            const inner = cell.content.map((p, k) => (
+                              <p key={k}>
+                                <Inline nodes={p.content} />
+                              </p>
+                            ));
+                            return cell.type === "tableHeader" ? (
+                              <th key={c} scope={headerRow ? "col" : "row"}>
+                                {inner}
+                              </th>
+                            ) : (
+                              <td key={c}>{inner}</td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            );
           case "video":
             return (
               <figure key={i} className={styles.figure}>
