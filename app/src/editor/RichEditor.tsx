@@ -2,7 +2,9 @@
 
 import { EditorContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, useEditorState, type NodeViewProps } from "@tiptap/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { uploadEditorImageAction } from "@/app/admin/mediaActions";
 import { safeHttpsUrl } from "@/content/body";
+import { downscaleIfLarge } from "@/media/clientDownscale";
 import { parseVideoUrl } from "@/lib/video";
 import styles from "./RichEditor.module.css";
 import { insertBlockAfterSelection } from "./commands";
@@ -17,9 +19,9 @@ export interface PickerMedia {
 }
 
 /** 편집기 안에서 이미지·영상 자리에 실제 모습을 보여 준다 (저장되는 값은 id·주소뿐) */
-function makeViews(mediaById: Map<string, PickerMedia>) {
+function makeViews(lookup: (id: string) => PickerMedia | undefined) {
   function ImageView({ node, selected }: NodeViewProps) {
-    const media = mediaById.get(String(node.attrs.mediaId));
+    const media = lookup(String(node.attrs.mediaId));
     return (
       <NodeViewWrapper className={styles.embed} data-selected={selected ? "true" : undefined} contentEditable={false}>
         {media ? (
@@ -53,16 +55,23 @@ type Panel = null | "link" | "image" | "video";
  */
 export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirty }: { initial: unknown; media: PickerMedia[]; name?: string; /** 값이 바뀌면(저장 성공 뒤 새 version) 변경 표시를 지운다 */ resetKey?: number; onDirty?: (dirty: boolean) => void }) {
   const mediaById = useMemo(() => new Map(media.map((m) => [m.id, m])), [media]);
+  // 편집기 안에서 바로 올린 이미지: 편집기를 다시 만들지 않고도 그림이 보이도록 바뀌지 않는 Map 에 담아 둔다
+  const [uploadedById] = useState(() => new Map<string, PickerMedia>());
+  const [uploaded, setUploaded] = useState<PickerMedia[]>([]);
   const extensions = useMemo(() => {
     const base = buildExtensions().filter((e) => e.name !== "image" && e.name !== "video");
-    const views = makeViews(mediaById);
+    const views = makeViews((id) => mediaById.get(id) ?? uploadedById.get(id));
     return [...base, views.image, views.video];
-  }, [mediaById]);
+  }, [mediaById, uploadedById]);
   const [json, setJson] = useState(() => JSON.stringify(initial));
   const [panel, setPanel] = useState<Panel>(null);
   const [linkValue, setLinkValue] = useState("");
   const [videoValue, setVideoValue] = useState("");
   const [message, setMessage] = useState("");
+  const [notice, setNotice] = useState("");
+  const [uploadAlt, setUploadAlt] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
   const dirty = useRef(false);
 
   const editor = useEditor({
@@ -139,6 +148,41 @@ export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirt
     setMessage("");
   };
 
+  /** 고른 파일을 서버에 올리고(큰 사진은 브라우저에서 먼저 줄인다) 그 자리에서 본문에 넣는다 */
+  const uploadAndInsert = async () => {
+    const file = fileInput.current?.files?.[0];
+    if (!file) {
+      setMessage("올릴 이미지를 먼저 골라 주세요.");
+      return;
+    }
+    setUploading(true);
+    setMessage("");
+    setNotice("");
+    try {
+      const form = new FormData();
+      form.set("file", await downscaleIfLarge(file));
+      form.set("alt", uploadAlt.trim());
+      const result = await uploadEditorImageAction(form);
+      if (!result.ok || !result.media) {
+        setMessage(result.error ?? "올리지 못했습니다. 잠시 뒤에 다시 시도해 주세요.");
+        return;
+      }
+      uploadedById.set(result.media.id, result.media);
+      setUploaded((prev) => [result.media as PickerMedia, ...prev]);
+      insertBlockAfterSelection(editor, { type: "image", attrs: { mediaId: result.media.id } });
+      if (fileInput.current) fileInput.current.value = "";
+      setUploadAlt("");
+      setPanel(null);
+      setNotice(result.media.alt ? "이미지를 올리고 본문에 넣었습니다." : "이미지를 올리고 본문에 넣었습니다. 대체 텍스트가 비어 있어 발행 전에 어드민 > 미디어에서 입력해 주세요.");
+    } catch {
+      setMessage("올리지 못했습니다. 잠시 뒤에 다시 시도해 주세요.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const allMedia = [...uploaded, ...media];
+
   const applyVideo = () => {
     const source = parseVideoUrl(videoValue.trim());
     if (!source) {
@@ -208,12 +252,40 @@ export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirt
       ) : null}
 
       {panel === "image" ? (
-        <div className={styles.panel} role="group" aria-label="이미지 고르기">
-          {media.length === 0 ? (
-            <p className={styles.hint}>미디어 라이브러리에 이미지가 없습니다. 어드민 &gt; 미디어에서 먼저 올려 주세요.</p>
+        <div className={styles.panel} role="group" aria-label="이미지 넣기">
+          <p className={styles.panelLabel}>새 이미지 올리기 (JPEG, PNG, WebP, AVIF · 4MB 이하, 큰 사진은 자동으로 줄입니다)</p>
+          <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp,image/avif" aria-label="올릴 이미지 파일" className={styles.input} disabled={uploading} />
+          <label htmlFor="editor-image-alt" className={styles.panelLabel}>
+            대체 텍스트 (그림을 보지 못하는 사람에게 읽어 주는 설명 · 비워 두면 나중에 입력할 수 있지만 발행 전에 필요합니다)
+          </label>
+          <input
+            id="editor-image-alt"
+            type="text"
+            value={uploadAlt}
+            maxLength={200}
+            onChange={(e) => setUploadAlt(e.target.value)}
+            onKeyDown={(e) => {
+              // 이 입력칸에서 Enter 는 글 저장이 아니라 올리기다
+              if (e.key === "Enter") {
+                e.preventDefault();
+                void uploadAndInsert();
+              }
+            }}
+            className={styles.input}
+            placeholder="예: 수면 아래에서 올려다본 햇빛"
+            disabled={uploading}
+          />
+          <div className={styles.panelRow}>
+            <button type="button" className={styles.apply} onClick={() => void uploadAndInsert()} disabled={uploading}>
+              {uploading ? "올리는 중…" : "올리고 넣기"}
+            </button>
+          </div>
+          <p className={styles.panelLabel}>또는 이미 올린 이미지에서 고르기</p>
+          {allMedia.length === 0 ? (
+            <p className={styles.hint}>아직 올린 이미지가 없습니다.</p>
           ) : (
             <ul className={styles.pickGrid}>
-              {media.map((m) => (
+              {allMedia.map((m) => (
                 <li key={m.id}>
                   <button
                     type="button"
@@ -238,6 +310,11 @@ export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirt
       {message ? (
         <p role="alert" className={styles.error}>
           {message}
+        </p>
+      ) : null}
+      {notice ? (
+        <p role="status" className={styles.hint}>
+          {notice}
         </p>
       ) : null}
 

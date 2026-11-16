@@ -10,6 +10,7 @@ import { auditLog, media } from "@/db/schema";
 import { listAudit } from "@/data/admin/audit";
 import type { AdminDb } from "@/data/admin/db";
 import { createMedia, deleteMedia, listMedia, updateMediaAlt, validateAlt } from "@/data/admin/media";
+import { storeUploadedImage } from "@/data/admin/mediaUpload";
 import type { AdminSession } from "@/lib/auth/types";
 import { createLocalStorage } from "./localStorage";
 import { MEDIA_LIMITS, detectImageFormat, processImage } from "./process";
@@ -168,6 +169,54 @@ describe("미디어 데이터 (PGlite)", () => {
     expect((await listMedia(db, admin, 1)).missingAlt).toBe(0);
     await updateMediaAlt(db, admin, a.id, "   ");
     expect((await listMedia(db, admin, 1)).missingAlt).toBe(1);
+  });
+
+  describe("올린 이미지 저장 (미디어 화면·본문 편집기 공용)", () => {
+    const fakeStorage = () => {
+      const removed: string[] = [];
+      const puts: string[] = [];
+      return {
+        removed,
+        puts,
+        storage: {
+          kind: "local" as const,
+          async put(key: string) {
+            puts.push(key);
+            return { url: `/media-dev/${key}` };
+          },
+          async remove(key: string) {
+            removed.push(key);
+          },
+        },
+      };
+    };
+    const asFile = (buf: Buffer) => ({ size: buf.length, arrayBuffer: async () => buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer });
+
+    it("이미지를 WebP 로 다시 만들어 저장하고 기록을 돌려준다 (대체 텍스트 포함)", async () => {
+      const { storage, puts } = fakeStorage();
+      const row = await storeUploadedImage(db, admin, storage, asFile(await image("png", 80, 60)), "  수면 위  ");
+      expect(row).toMatchObject({ width: 80, height: 60, alt: "수면 위", mime: "image/webp" });
+      expect(puts).toHaveLength(1);
+      expect(row.url).toBe(`/media-dev/${puts[0]}`);
+      expect((await listMedia(db, admin, 1)).total).toBe(1);
+    });
+
+    it("빈 파일·너무 큰 파일·이미지가 아닌 파일은 거부하고, 아무것도 저장하지 않는다", async () => {
+      const { storage, puts } = fakeStorage();
+      await expect(storeUploadedImage(db, admin, storage, { size: 0, arrayBuffer: async () => new ArrayBuffer(0) }, "")).rejects.toThrow("선택");
+      await expect(storeUploadedImage(db, admin, storage, { size: MEDIA_LIMITS.maxInputBytes + 1, arrayBuffer: async () => new ArrayBuffer(0) }, "")).rejects.toThrow("MB");
+      await expect(storeUploadedImage(db, admin, storage, asFile(Buffer.from("<svg xmlns='http://www.w3.org/2000/svg'></svg>")), "")).rejects.toThrow();
+      expect(puts).toHaveLength(0);
+      expect((await listMedia(db, admin, 1)).total).toBe(0);
+    });
+
+    it("기록하지 못하면(대체 텍스트 길이 초과) 올린 파일도 지운다", async () => {
+      const { storage, puts, removed } = fakeStorage();
+      await expect(storeUploadedImage(db, admin, storage, asFile(await image("jpeg")), "가".repeat(201))).rejects.toThrow("200자");
+      expect(puts).toHaveLength(1);
+      expect(removed).toEqual(puts);
+      expect((await listMedia(db, admin, 1)).total).toBe(0);
+    });
   });
 
   it("대체 텍스트는 길이를 제한하고, 없는 id·형식이 틀린 id 는 거부한다", async () => {

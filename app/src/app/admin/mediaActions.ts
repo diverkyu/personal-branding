@@ -2,12 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { adminDb } from "@/data/admin/dbServer";
-import { createMedia, deleteMedia, updateMediaAlt } from "@/data/admin/media";
+import { deleteMedia, updateMediaAlt } from "@/data/admin/media";
+import { storeUploadedImage } from "@/data/admin/mediaUpload";
 import { AppError, errorKindOf } from "@/lib/errors";
 import { requireAdmin } from "@/lib/auth/session";
 import { logger } from "@/lib/logger";
-import { MEDIA_LIMITS, processImage } from "@/media/process";
-import { getMediaStorage, newStorageKey } from "@/media/storage";
+import { getMediaStorage } from "@/media/storage";
 
 /**
  * 미디어 서버 액션. 호출할 때마다 requireAdmin() 을 다시 거친다.
@@ -40,27 +40,39 @@ export async function uploadMediaAction(_: MediaState, formData: FormData): Prom
   if (!storage) return { error: NOT_CONFIGURED, alt };
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) return { error: "올릴 이미지를 선택해 주세요.", alt };
-  // 읽기 전에 크기부터 확인한다 (큰 파일을 메모리에 올리지 않는다)
-  if (file.size > MEDIA_LIMITS.maxInputBytes) return { error: `파일은 ${Math.round(MEDIA_LIMITS.maxInputBytes / 1024 / 1024)}MB 이하여야 합니다.`, alt };
-
-  let key: string | undefined;
   try {
-    const processed = await processImage(Buffer.from(await file.arrayBuffer()));
-    key = newStorageKey();
-    const { url } = await storage.put(key, processed.data, processed.mime);
-    try {
-      await createMedia(adminDb(), admin, { storage: storage.kind, storageKey: key, url, bytes: processed.data.length, width: processed.width, height: processed.height, alt });
-    } catch (error) {
-      // 기록하지 못했으면 올린 파일도 지운다 (고아 파일을 남기지 않는다)
-      await storage.remove(key).catch(() => logger.warn("admin.media.cleanup_failed", { outcome: "failed" }));
-      throw error;
-    }
-    logger.info("admin.media.upload", { outcome: "success", bytes: processed.data.length, width: processed.width, height: processed.height });
+    const row = await storeUploadedImage(adminDb(), admin, storage, file, alt);
+    logger.info("admin.media.upload", { outcome: "success", bytes: row.bytes, width: row.width, height: row.height });
     revalidatePath("/admin/media");
     return { ok: true };
   } catch (error) {
-    logger.warn("admin.media.upload", { outcome: "failed", errorKind: errorKindOf(error), stored: Boolean(key) });
+    logger.warn("admin.media.upload", { outcome: "failed", errorKind: errorKindOf(error) });
     return { error: messageOf(error), alt };
+  }
+}
+
+/** 본문 편집기의 이미지 칸에서 바로 올린다. 올린 이미지의 id·주소를 돌려줘 그 자리에서 본문에 넣는다 */
+export interface EditorUploadResult {
+  ok: boolean;
+  error?: string;
+  media?: { id: string; url: string; alt: string; width: number; height: number };
+}
+
+export async function uploadEditorImageAction(formData: FormData): Promise<EditorUploadResult> {
+  const admin = await requireAdmin();
+  const alt = text(formData, "alt", 400);
+  const storage = await getMediaStorage();
+  if (!storage) return { ok: false, error: NOT_CONFIGURED };
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) return { ok: false, error: "올릴 이미지를 선택해 주세요." };
+  try {
+    const row = await storeUploadedImage(adminDb(), admin, storage, file, alt);
+    logger.info("admin.media.upload", { outcome: "success", from: "editor", bytes: row.bytes, width: row.width, height: row.height });
+    revalidatePath("/admin/media");
+    return { ok: true, media: { id: row.id, url: row.url, alt: row.alt ?? "", width: row.width, height: row.height } };
+  } catch (error) {
+    logger.warn("admin.media.upload", { outcome: "failed", from: "editor", errorKind: errorKindOf(error) });
+    return { ok: false, error: messageOf(error) };
   }
 }
 

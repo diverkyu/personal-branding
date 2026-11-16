@@ -16,6 +16,10 @@
   padding: 8px;
   border-bottom: 1px solid var(--kyu-line);
   background: var(--kyu-paper);
+  /* 글이 길어져도 서식 버튼은 화면에 남는다 (규강 님 요청, 2026-11-16) */
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 .tool {
   min-height: var(--kyu-touch);
@@ -136,6 +140,9 @@
 }
 .content {
   min-height: 320px;
+  /* 글이 길어지면 이 칸 안에서만 스크롤한다. 도구 막대와 안내는 칸 밖이라 움직이지 않는다 */
+  max-height: min(70vh, 720px);
+  overflow-y: auto;
   padding: 16px;
   font-size: 16px;
   line-height: 1.8;
