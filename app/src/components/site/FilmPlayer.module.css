@@ -87,3 +87,10 @@
     height: 64px;
   }
 }
+
+/* 세로 영상(Shorts·Instagram 포스터): 9:16, 최대 400px, 가운데 */
+.tall {
+  aspect-ratio: 9 / 16;
+  max-width: 400px;
+  margin-inline: auto;
+}

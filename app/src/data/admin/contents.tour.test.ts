@@ -89,7 +89,7 @@ describe("투어 만들기·저장", () => {
     const save = (fields: Record<string, unknown>) => saveContent(db, admin, row.id, row.version, edit(row.slug, { fields }));
     await expect(save(tourFields({ startDate: "2026-12-09" }))).rejects.toThrow("같거나 그 뒤");
     await expect(save(tourFields({ recruit: "ended" }))).rejects.toThrow("모집 상태");
-    await expect(save(tourFields({ videos: ["https://evil.example/x"] }))).rejects.toThrow("YouTube 또는 Vimeo");
+    await expect(save(tourFields({ videos: ["https://evil.example/x"] }))).rejects.toThrow("YouTube");
     await expect(save(tourFields({ gallery: [{ mediaId: "22222222-2222-4222-8222-222222222222", caption: "" }] }))).rejects.toThrow("삭제되었거나 없는 이미지");
     expect((await getContent(db, admin, row.id))?.version).toBe(row.version);
   });

@@ -60,7 +60,7 @@ describe("cleanTourFields", () => {
     const same = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
     expect(cleanTourFields({ ...good, videos: [yt, same, "", "  "] }).videos).toEqual(["https://www.youtube.com/watch?v=dQw4w9WgXcQ"]);
     for (const bad of ["http://youtu.be/dQw4w9WgXcQ", "https://evil.example/video", "javascript:alert(1)", "https://youtube.com.evil.example/watch?v=dQw4w9WgXcQ"]) {
-      expect(() => cleanTourFields({ ...good, videos: [bad] })).toThrow("YouTube 또는 Vimeo");
+      expect(() => cleanTourFields({ ...good, videos: [bad] })).toThrow("YouTube");
     }
     const six = Array.from({ length: 6 }, (_, i) => `https://vimeo.com/${100000 + i}`);
     expect(() => cleanTourFields({ ...good, videos: six })).toThrow("5개");

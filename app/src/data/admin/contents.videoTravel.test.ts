@@ -55,7 +55,7 @@ describe("영상", () => {
 
   it("영상 주소를 넣으면 발행되고, 허용 밖 주소는 저장되지 않는다", async () => {
     const row = await createContent(db, admin, { type: "video", title: "바다 영상" });
-    await expect(saveContent(db, admin, row.id, row.version, edit(row.slug, { fields: { videoUrl: "https://example.com/v" } }))).rejects.toThrow("YouTube 또는 Vimeo");
+    await expect(saveContent(db, admin, row.id, row.version, edit(row.slug, { fields: { videoUrl: "https://example.com/v" } }))).rejects.toThrow("YouTube");
     const poster = await photo("a".repeat(32), "바다 장면");
     const saved = await saveContent(db, admin, row.id, row.version, edit(row.slug, { fields: { videoUrl: YT, duration: "3:25", hasCaptions: "on", posterMediaId: poster.id } }));
     await transitionContent(db, admin, row.id, "published", { version: saved.version });
@@ -111,7 +111,7 @@ describe("영상 7a: 포스터·제작 노트", () => {
 
   it("너무 긴 노트·제어 문자는 저장되지 않는다", async () => {
     const row = await createContent(db, admin, { type: "video", title: "검증" });
-    await expect(saveContent(db, admin, row.id, row.version, edit(row.slug, { fields: { sceneIntent: "가".repeat(1501) } }))).rejects.toThrow("1500자");
+    await expect(saveContent(db, admin, row.id, row.version, edit(row.slug, { fields: { sceneIntent: "가".repeat(5001) } }))).rejects.toThrow("5000자");
     await expect(saveContent(db, admin, row.id, row.version, edit(row.slug, { fields: { editNotes: "a\u0000b" } }))).rejects.toThrow("쓸 수 없는 문자");
     expect((await getContent(db, admin, row.id))?.version).toBe(row.version);
   });

@@ -1,10 +1,11 @@
+import { CopyBlock } from "@/components/site/CopyBlock";
 import { Icon } from "@/components/ui/Icon";
 import { NOTE_KEYS, NOTE_PUBLIC_HINTS, NOTE_LABELS, type NoteKey } from "@/content/videoFields";
 import styles from "./MakingOf.module.css";
 
 /**
  * 제작 노트 (FILMD-09, INT-17). 비운 칸은 숨기고, 세 칸이 모두 비면 영역 전체를 그리지 않는다. 첫 칸은 처음부터 펼쳐 둔다.
- * 글은 가공하지 않고 **글자로만** 그린다(줄바꿈·띄어쓰기 유지, HTML 해석 없음). 프롬프트 칸은 고정폭 글꼴이다.
+ * 글은 가공하지 않고 **글자로만** 그린다(줄바꿈·띄어쓰기 유지, HTML 해석 없음). 프롬프트 칸은 "복사" 버튼이 있는 복사 상자로 보여 준다(긴 프롬프트를 그대로 가져가 쓸 수 있게).
  * `<details>` 라 스크립트 없이도 키보드(Enter·Space)로 접고 펼 수 있다.
  */
 export function MakingOf({ notes }: { notes: Record<NoteKey, string> }) {
@@ -28,7 +29,7 @@ export function MakingOf({ notes }: { notes: Record<NoteKey, string> }) {
               <Icon name="arrow-down" size={20} />
             </span>
           </summary>
-          {key === "promptNotes" ? <pre className={styles.mono}>{notes[key]}</pre> : <p className={styles.text}>{notes[key]}</p>}
+          {key === "promptNotes" ? <CopyBlock text={notes[key]} /> : <p className={styles.text}>{notes[key]}</p>}
         </details>
       ))}
     </section>

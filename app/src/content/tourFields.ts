@@ -94,7 +94,7 @@ export function cleanTourFields(input: unknown): TourFields {
     const url = str(v);
     if (!url) continue;
     const parsed = parseVideoUrl(url);
-    if (!parsed) throw new AppError("validation", "영상은 YouTube 또는 Vimeo 주소(https)만 넣을 수 있습니다.");
+    if (!parsed) throw new AppError("validation", "영상은 YouTube·Vimeo·Instagram 주소(https)만 넣을 수 있습니다.");
     if (!videos.includes(parsed.watchUrl)) videos.push(parsed.watchUrl);
   }
   if (videos.length > TOUR_LIMITS.videos) throw new AppError("validation", `스케치 영상은 ${TOUR_LIMITS.videos}개까지 넣을 수 있습니다.`);

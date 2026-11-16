@@ -1,6 +1,6 @@
 /**
  * 영상 유형의 항목 (ADMIN-DESIGN §5.0 `fields`, §27). 영상은 `contents`의 한 유형이다.
- * 영상은 직접 업로드하지 않고 YouTube·Vimeo 링크로 둔다(PRD A-5). 제목·설명(요약)·본문(선택)은 공통 항목이다.
+ * 영상은 직접 업로드하지 않고 YouTube(Shorts 포함)·Vimeo·Instagram(릴스·게시물) 링크로 둔다(PRD A-5). 제목·설명(요약)·본문(선택)은 공통 항목이다.
  * Films 공개 화면(7b)을 위한 항목을 더했다(7a, ADMIN-DESIGN §28): 포스터(대표 이미지), 표시 문구, 대표 작품, 제작 노트 3칸.
  * **공개 화면이 아직 없다** — 발행해도 사이트에는 나타나지 않는다(7b 에서 만든다).
  * 순수 함수만 둔다. 임시저장은 일부가 비어도 되고, 비어 있으면 안 되는 항목은 발행 점검(videoProblems)에서 막는다.
@@ -8,7 +8,7 @@
 import { parseVideoUrl } from "@/lib/video";
 import { AppError } from "@/lib/errors";
 
-export const VIDEO_LIMITS = { url: 300, duration: 8, cutLabel: 20, note: 1500 } as const;
+export const VIDEO_LIMITS = { url: 300, duration: 8, cutLabel: 20, note: 5000 } as const;
 
 /** 제작 노트 3칸 (SCREEN-SPEC FILMD-09): 장면 의도 / 프롬프트·스킬 / 편집 판단 */
 export const NOTE_KEYS = ["sceneIntent", "promptNotes", "editNotes"] as const;
@@ -28,7 +28,7 @@ export const NOTE_HINTS: Record<NoteKey, string> = {
 };
 
 export interface VideoFields {
-  /** 정규화한 시청 주소(YouTube·Vimeo https). 발행하려면 필요하다 */
+  /** 정규화한 시청 주소(YouTube·Vimeo·Instagram https, 추적 값 제거). 발행하려면 필요하다 */
   videoUrl: string;
   /** 길이. "3:25" 또는 "1:02:30" 모양, 선택 */
   duration: string;
@@ -71,7 +71,7 @@ export function cleanVideoFields(input: unknown): VideoFields {
   if (urlRaw) {
     if (urlRaw.length > VIDEO_LIMITS.url) throw new AppError("validation", `영상 주소는 ${VIDEO_LIMITS.url}자까지 쓸 수 있습니다.`);
     const parsed = parseVideoUrl(urlRaw);
-    if (!parsed) throw new AppError("validation", "영상 주소는 YouTube 또는 Vimeo 의 https 주소만 쓸 수 있습니다.");
+    if (!parsed) throw new AppError("validation", "영상 주소는 YouTube(Shorts 포함)·Vimeo·Instagram(릴스·게시물)의 https 주소만 쓸 수 있습니다.");
     videoUrl = parsed.watchUrl;
   }
 
@@ -115,7 +115,7 @@ export function readVideoFields(stored: unknown): VideoFields {
 /** 발행·예약 전에 채워져 있어야 하는 항목 */
 export function videoProblems(f: VideoFields): string[] {
   const problems: string[] = [];
-  if (!f.videoUrl) problems.push("영상 주소(YouTube 또는 Vimeo)를 입력해 주세요.");
+  if (!f.videoUrl) problems.push("영상 주소(YouTube·Vimeo·Instagram)를 입력해 주세요.");
   if (!f.posterMediaId) problems.push("포스터 이미지를 골라 주세요.");
   return problems;
 }

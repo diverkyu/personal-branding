@@ -1,0 +1,44 @@
+/* 복사 상자 (본문 안). 토큰만 쓰고, 바탕은 글자색을 옅게 섞어 밝은·어두운 구역 모두에서 읽힌다. */
+.box {
+  margin: 0 0 1.4em;
+  border: 1px solid var(--kyu-line);
+  border-radius: 8px;
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--kyu-line);
+}
+.button {
+  min-height: var(--kyu-touch);
+  padding: 0 16px;
+  border: 1px solid currentColor;
+  border-radius: var(--kyu-radius-btn);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.button:focus-visible,
+.text:focus-visible {
+  outline: 3px solid var(--kyu-focus);
+  outline-offset: 2px;
+}
+.status {
+  font-size: 14px;
+}
+.text {
+  margin: 0;
+  padding: 14px 16px;
+  max-height: 420px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--kyu-font-sans);
+}
