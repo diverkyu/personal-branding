@@ -39,10 +39,10 @@ export function VideoFieldsSection({ values, media, keySuffix }: { values: Video
         <h2 className={styles.h2} style={{ margin: 0 }}>
           영상 정보
         </h2>
-        <TextField key={`vu-${keySuffix}`} id="f-video-url" name="f_videoUrl" label="영상 주소 (발행하려면 필요합니다)" defaultValue={values.videoUrl} maxLength={VIDEO_LIMITS.url + 5} surface="light" hint="YouTube 또는 Vimeo 의 https 주소만 쓸 수 있습니다. 직접 올리지 않습니다." />
+        <TextField key={`vu-${keySuffix}`} id="f-video-url" name="f_videoUrl" label="영상 주소 (발행하려면 필요합니다)" defaultValue={values.videoUrl} maxLength={VIDEO_LIMITS.url + 5} surface="light" hint="YouTube(Shorts 포함)·Vimeo·Instagram(릴스·게시물)의 https 주소만 쓸 수 있습니다. 인스타 주소는 복사한 링크 그대로 붙여 넣으면 됩니다(뒤의 추적 값은 자동으로 뗍니다). 직접 올리지 않습니다." />
         <ThumbPicker key={`vp-${keySuffix}`} initial={values.posterMediaId} media={media} name="f_poster" legend="포스터 이미지 (발행하려면 필요합니다)" pickLabel="포스터 이미지 고르기" removeLabel="포스터 빼기" requiredNote="공개할 수 없습니다" />
         <p className={styles.note} style={{ margin: 0 }}>
-          포스터는 어드민 &gt; 미디어에 올린 이미지만 쓸 수 있습니다. YouTube·Vimeo 의 썸네일은 불러오지 않습니다(방문자 정보가 밖으로 나가지 않게).
+          포스터는 어드민 &gt; 미디어에 올린 이미지만 쓸 수 있습니다. YouTube·Vimeo·Instagram 의 썸네일은 불러오지 않습니다(방문자 정보가 밖으로 나가지 않게).
         </p>
         <div className={styles.row}>
           <div style={{ flex: "1 1 200px" }}>

@@ -70,15 +70,3 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
-
-.mono {
-  margin: 0 0 28px;
-  padding: 20px;
-  background: var(--kyu-navy);
-  color: var(--kyu-lime);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 13px;
-  line-height: 1.8;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}

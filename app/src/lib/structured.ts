@@ -68,7 +68,7 @@ export function safeJson(data: Json): string {
 
 /**
  * 영상 작품(Films)은 화면에 있는 내용만 담는다: 제목·설명·포스터·공개일·길이·재생 주소. 제작 노트는 담지 않는다.
- * 재생 주소(embedUrl)는 허용 도메인(YouTube nocookie·Vimeo)의 임베드 주소다.
+ * 재생 주소(embedUrl)는 허용 도메인(YouTube nocookie·Vimeo·Instagram)의 임베드 주소다.
  */
 export function videoLd(
   origin: string,

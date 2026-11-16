@@ -156,7 +156,7 @@ function blocks(raw: unknown, depth: number, budget: Budget): BlockNode[] {
       }
       case "video": {
         const url = obj(n.attrs ?? {}).url;
-        if (typeof url !== "string" || !parseVideoUrl(url)) throw new Reject("영상은 YouTube·Vimeo 주소만 넣을 수 있습니다.");
+        if (typeof url !== "string" || !parseVideoUrl(url)) throw new Reject("영상은 YouTube·Vimeo·Instagram 주소만 넣을 수 있습니다.");
         out.push({ type: "video", attrs: { url: url.trim() } });
         break;
       }

@@ -179,7 +179,7 @@ export function TourFieldsSection({ values, gallery, media, recruitLocked, keySu
       )}
       <TextField key={`cp-${keySuffix}`} id="f-capacity" name="f_capacity" type="number" min={1} max={TOUR_LIMITS.capacityMax} label="정원 (선택, 명)" defaultValue={values.capacity} surface="light" />
       <Textarea key={`fe-${keySuffix}`} id="f-fee" name="f_feeNote" label="참가비·포함 사항 안내 (선택)" rows={3} defaultValue={values.feeNote} surface="light" hint="결제 기능은 없고 안내 문구만 보여 줍니다" />
-      <Textarea key={`vd-${keySuffix}`} id="f-videos" name="f_videos" label={`스케치 영상 주소 (한 줄에 하나, ${TOUR_LIMITS.videos}개까지)`} rows={2} defaultValue={values.videos} surface="light" hint="YouTube 또는 Vimeo 주소(https)만 가능합니다" />
+      <Textarea key={`vd-${keySuffix}`} id="f-videos" name="f_videos" label={`스케치 영상 주소 (한 줄에 하나, ${TOUR_LIMITS.videos}개까지)`} rows={2} defaultValue={values.videos} surface="light" hint="YouTube·Vimeo·Instagram 주소(https)만 가능합니다" />
       <GalleryField initial={gallery} media={media} />
     </section>
   );

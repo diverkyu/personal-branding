@@ -39,7 +39,7 @@ export interface Tour {
   feeNote?: string;
   /** 갤러리 사진 (TOUR-D08). 지금은 자리표시이며 실제 사진은 src 를 채운다 */
   gallery?: GalleryImage[];
-  /** 스케치 영상 주소 (TOUR-D09). 허용 도메인(YouTube, Vimeo)만 재생한다 */
+  /** 스케치 영상 주소 (TOUR-D09). 허용 도메인(YouTube, Vimeo, Instagram)만 재생한다 */
   videos?: string[];
   /** 종료 투어의 부가 자료 표시 */
   extras?: string[];

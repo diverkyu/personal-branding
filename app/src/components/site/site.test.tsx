@@ -150,6 +150,7 @@ describe("Films", () => {
     expect(out).not.toMatch(/<b>crab/);
     expect(out).not.toMatch(/<script>alert/);
     expect(out).toContain("<pre");
+    expect(out).toContain(">복사<"); // 프롬프트 칸은 복사 버튼이 있는 상자
   });
 
   it("재생기는 누르기 전에는 iframe 도 외부 주소도 없다 (포스터와 재생 버튼, 원본 링크만)", () => {
@@ -163,7 +164,20 @@ describe("Films", () => {
     expect(out).toContain("원본 링크(YouTube)에서 보기");
   });
 
+  it("세로 영상(Shorts·Instagram)도 누르기 전에는 외부 주소가 없고, 원본 링크는 정규화된 주소다", () => {
+    const ig = html(<FilmPlayer videoUrl="https://www.instagram.com/reel/DfyQydRMWBw/?utm_source=ig_web_copy_link&rpxt=abc&srtk=def" title="작품" poster={{ src: "/media/p.webp", alt: "포스터" }} />);
+    expect(ig).not.toContain("<iframe");
+    expect(ig).not.toContain("instagram.com/reel/DfyQydRMWBw/embed");
+    expect(ig).toContain('href="https://www.instagram.com/reel/DfyQydRMWBw/"');
+    expect(ig).not.toContain("utm_source");
+    expect(ig).toContain("원본 링크(Instagram)에서 보기");
+    const shorts = html(<FilmPlayer videoUrl="https://www.youtube.com/shorts/aqz-KE-bpKQ" title="작품" />);
+    expect(shorts).not.toContain("<iframe");
+    expect(shorts).toContain('href="https://www.youtube.com/watch?v=aqz-KE-bpKQ"');
+  });
+
   it("허용 도메인이 아닌 영상 주소는 재생기를 그리지 않는다", () => {
+    expect(html(<FilmPlayer videoUrl="https://www.instagram.com/kyureative/" title="작품" />)).toBe("");
     expect(html(<FilmPlayer videoUrl="https://example.com/v.mp4" title="작품" />)).toBe("");
     expect(html(<FilmPlayer videoUrl="javascript:alert(1)" title="작품" />)).toBe("");
   });

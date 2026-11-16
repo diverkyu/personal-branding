@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.48.0** | 2026-11-15 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.49.0** | 2026-11-16 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [DEVELOPMENT.md](DEVELOPMENT.md) · [PRD.md](PRD.md) · [SCREEN-SPEC.md](SCREEN-SPEC.md)
 
@@ -95,7 +95,7 @@ NexusPM의 보안 설계(로컬 전용 바인딩, 관리자 로그인, 시크릿
 | 리치 텍스트 (스토리 본문) | **허용 목록 방식**으로 정제(sanitize)한다. 허용 태그·속성만 남기고 스크립트, 이벤트 속성, `javascript:` 링크를 제거한다. 저장할 때와 출력할 때 모두 신뢰하지 않는 값으로 다룬다 |
 | 일반 텍스트 출력 | 기본이 이스케이프인 방식으로만 렌더링한다. 위험한 HTML 삽입 API는 정제를 거친 값에만 쓴다 |
 | 링크·URL | 허용 스킴(`https`, `mailto`, `tel`)만. `javascript:`·`data:` 거부. 외부 링크는 `rel="noopener noreferrer"` |
-| 영상 임베드 | **허용 도메인 목록**(예: YouTube, Vimeo)만. 임의의 iframe·스크립트 삽입 금지 |
+| 영상 임베드 | **허용 도메인 목록**(YouTube, Vimeo, Instagram)만. Instagram 은 개인정보 보호 옵션이 없고 팝업을 허용한 sandbox 를 쓴다(ADMIN-DESIGN §37). 임의의 iframe·스크립트 삽입 금지 |
 | 리다이렉트 | 사용자 입력으로 목적지를 정하지 않는다 (열린 리다이렉트 방지). 로그인 후 이동 경로는 고정 |
 | 경로·파일명 | 사용자 입력을 경로에 직접 쓰지 않는다 |
 | 이메일 알림 | 사용자 입력이 헤더(수신자, 제목)에 들어가지 않게 하고, 본문은 이스케이프한다 (헤더 삽입 방지) |
@@ -181,7 +181,7 @@ NexusPM의 보안 설계(로컬 전용 바인딩, 관리자 로그인, 시크릿
 | 항목 | 지침 |
 | --- | --- |
 | HTTPS | 전체 HTTPS. HTTP는 HTTPS로 리다이렉트. HSTS 적용 (도메인이 확정된 뒤 기간을 늘린다) |
-| CSP | 허용 출처 목록 방식. 이미지·글꼴·영상 임베드(YouTube/Vimeo)·분석 출처만 허용. 인라인 스크립트는 nonce 또는 해시. 처음에는 report-only로 시험한 뒤 적용 |
+| CSP | 허용 출처 목록 방식. 이미지·글꼴·영상 임베드(YouTube nocookie·Vimeo·`www.instagram.com`)·분석 출처만 허용(CSP 를 넣을 때 frame-src 에 포함). 인라인 스크립트는 nonce 또는 해시. 처음에는 report-only로 시험한 뒤 적용 |
 | 기타 헤더 | `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `frame-ancestors`(클릭재킹 방지), `Permissions-Policy`로 불필요한 기능 차단 |
 | 쿠키 | `Secure`, `HttpOnly`, `SameSite` |
 | 캐시 | 어드민과 개인정보가 담긴 응답은 `no-store` |

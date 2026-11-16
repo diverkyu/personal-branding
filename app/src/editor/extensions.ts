@@ -32,7 +32,7 @@ export const MediaImage = Node.create({
   },
 });
 
-/** 본문에 넣은 영상 링크(YouTube·Vimeo). 누르기 전에는 외부에 아무것도 요청하지 않는다(공개 화면) */
+/** 본문에 넣은 영상 링크(YouTube·Vimeo·Instagram). 누르기 전에는 외부에 아무것도 요청하지 않는다(공개 화면) */
 export const VideoEmbed = Node.create({
   name: "video",
   group: "block",

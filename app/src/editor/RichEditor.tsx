@@ -142,7 +142,7 @@ export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirt
   const applyVideo = () => {
     const source = parseVideoUrl(videoValue.trim());
     if (!source) {
-      setMessage("영상은 YouTube·Vimeo 주소만 넣을 수 있습니다.");
+      setMessage("영상은 YouTube·Vimeo·Instagram 주소만 넣을 수 있습니다.");
       return;
     }
     insertBlockAfterSelection(editor, { type: "video", attrs: { url: videoValue.trim() } });
@@ -198,7 +198,7 @@ export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirt
       {panel === "video" ? (
         <div className={styles.panel} role="group" aria-label="영상">
           <label htmlFor="editor-video" className={styles.panelLabel}>
-            영상 주소 (YouTube 또는 Vimeo)
+            영상 주소 (YouTube·Vimeo·Instagram)
           </label>
           <input id="editor-video" type="url" value={videoValue} onChange={(e) => setVideoValue(e.target.value)} className={styles.input} placeholder="https://www.youtube.com/watch?v=..." />
           <button type="button" className={styles.apply} onClick={applyVideo}>

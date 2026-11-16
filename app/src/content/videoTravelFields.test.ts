@@ -7,7 +7,16 @@ describe("영상 항목", () => {
     expect(cleanVideoFields({ videoUrl: "https://youtu.be/dQw4w9WgXcQ" }).videoUrl).toBe("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     expect(cleanVideoFields({ videoUrl: "https://vimeo.com/123456789" }).videoUrl).toBe("https://vimeo.com/123456789");
     for (const bad of ["http://youtu.be/dQw4w9WgXcQ", "https://example.com/v.mp4", "javascript:alert(1)", "not a url"]) {
-      expect(() => cleanVideoFields({ videoUrl: bad })).toThrow("YouTube 또는 Vimeo");
+      expect(() => cleanVideoFields({ videoUrl: bad })).toThrow("YouTube");
+    }
+  });
+
+  it("Instagram 릴스 링크는 추적 값을 떼고 저장하며, YouTube Shorts 는 시청 주소로 정규화한다", () => {
+    const shared = "https://www.instagram.com/reel/DfyQydRMWBw/?utm_source=ig_web_copy_link&rpxt=abc&srtk=def";
+    expect(cleanVideoFields({ videoUrl: shared }).videoUrl).toBe("https://www.instagram.com/reel/DfyQydRMWBw/");
+    expect(cleanVideoFields({ videoUrl: "https://www.youtube.com/shorts/aqz-KE-bpKQ" }).videoUrl).toBe("https://www.youtube.com/watch?v=aqz-KE-bpKQ");
+    for (const bad of ["https://www.instagram.com/kyureative/", "https://www.instagram.com/explore/", "http://www.instagram.com/reel/DfyQydRMWBw/"]) {
+      expect(() => cleanVideoFields({ videoUrl: bad })).toThrow("Instagram");
     }
   });
 
@@ -19,7 +28,7 @@ describe("영상 항목", () => {
   it("자막 표시와 빈 입력, 발행 점검", () => {
     expect(cleanVideoFields({ hasCaptions: "on" }).hasCaptions).toBe(true);
     expect(cleanVideoFields(undefined)).toEqual(EMPTY_VIDEO_FIELDS);
-    expect(videoProblems(cleanVideoFields({}))).toEqual(["영상 주소(YouTube 또는 Vimeo)를 입력해 주세요.", "포스터 이미지를 골라 주세요."]);
+    expect(videoProblems(cleanVideoFields({}))).toEqual(["영상 주소(YouTube·Vimeo·Instagram)를 입력해 주세요.", "포스터 이미지를 골라 주세요."]);
     expect(videoProblems(cleanVideoFields({ videoUrl: "https://youtu.be/dQw4w9WgXcQ" }))).toEqual(["포스터 이미지를 골라 주세요."]);
     expect(videoProblems(cleanVideoFields({ videoUrl: "https://youtu.be/dQw4w9WgXcQ", posterMediaId: POSTER }))).toEqual([]);
     expect(readVideoFields({ videoUrl: "javascript:x" })).toEqual(EMPTY_VIDEO_FIELDS);
@@ -55,7 +64,7 @@ describe("영상 항목: 포스터·표시 문구·대표 작품·제작 노트 
     expect(f.editNotes).toBe("");
   });
 
-  it("제작 노트는 1,500자까지이고 제어 문자는 거부한다", () => {
+  it("제작 노트는 5,000자까지이고 제어 문자는 거부한다", () => {
     expect(cleanVideoFields({ sceneIntent: "가".repeat(VIDEO_LIMITS.note) }).sceneIntent).toHaveLength(VIDEO_LIMITS.note);
     expect(() => cleanVideoFields({ sceneIntent: "가".repeat(VIDEO_LIMITS.note + 1) })).toThrow("장면 의도");
     expect(() => cleanVideoFields({ promptNotes: "a\u0000b" })).toThrow("프롬프트");
