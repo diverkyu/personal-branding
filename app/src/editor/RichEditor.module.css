@@ -21,6 +21,10 @@
   top: 0;
   z-index: 2;
 }
+/* 표를 편집하는 동안 나타나는 두 번째 도구 막대: 위 막대와 겹치지 않게 고정하지 않는다 */
+.toolbarSub {
+  position: static;
+}
 .tool {
   min-height: var(--kyu-touch);
   min-width: var(--kyu-touch);
@@ -180,6 +184,50 @@
 .content :global(a) {
   color: var(--kyu-navy);
   text-decoration: underline;
+}
+.content :global(pre) {
+  margin: 0 0 1em;
+  padding: 12px 14px;
+  border: 1px solid var(--kyu-line);
+  border-left: 4px solid var(--kyu-navy);
+  background: var(--kyu-paper);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.content :global(pre code) {
+  font: inherit;
+}
+.content :global(table) {
+  width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.content :global(th),
+.content :global(td) {
+  position: relative;
+  padding: 6px 8px;
+  border: 1px solid var(--kyu-line);
+  vertical-align: top;
+  text-align: left;
+}
+.content :global(th) {
+  background: var(--kyu-paper);
+  font-weight: 700;
+}
+.content :global(td p),
+.content :global(th p) {
+  margin: 0;
+}
+.content :global(.selectedCell)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--kyu-focus) 22%, transparent);
+  pointer-events: none;
 }
 .content :global(.ProseMirror-selectednode) {
   outline: 2px solid var(--kyu-focus);

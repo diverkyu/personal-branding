@@ -218,7 +218,7 @@ export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirt
       </div>
 
       {state.table ? (
-        <div className={styles.toolbar} role="toolbar" aria-label="표 편집">
+        <div className={`${styles.toolbar} ${styles.toolbarSub}`} role="toolbar" aria-label="표 편집">
           <span className={styles.hint}>
             표 {state.table.rows}줄 × {state.table.cols}칸 (최대 {BODY_LIMITS.maxTableRows}줄 × {BODY_LIMITS.maxTableCols}칸)
           </span>
