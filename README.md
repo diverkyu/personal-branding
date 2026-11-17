@@ -108,6 +108,10 @@ npm run admin:reset-2fa        # 2차 인증 초기화
 - 예약 발행은 `/api/cron/publish`를 Vercel Cron이 부르며, 환경변수 `CRON_SECRET`이 있어야 동작합니다. 무료(Hobby) 플랜의 Cron은 하루 한 번이지만, 예약 시각이 지난 글은 공개 화면에 5분 안에 나타납니다.
 - 시크릿은 Vercel 환경변수에만 두고, 환경(로컬·프리뷰·운영)마다 다른 값을 씁니다.
 
+## 최근 운영 작업
+
+- [2026-11-17 이미지 저장소·Story/Films 발행·문의 이메일 인수인계](docs/operations/2026-11-17-content-publishing-handoff.md) — 완료 항목, 확인 범위, 남은 작업.
+
 ## 문서
 
 작업 전에 [AGENTS.md](AGENTS.md)를 먼저 읽고, 아래 순서로 봅니다.
@@ -140,7 +144,7 @@ npm run dev        # 저장소 루트에서 시안 실행 (http://127.0.0.1:5173
 ## 연락처
 
 - 이름 / 활동명: 이동규 / KYU
-- 이메일: [energizer629@naver.com](mailto:energizer629@naver.com)
+- 이메일: [energizer629@gmail.com](mailto:energizer629@gmail.com)
 - Instagram: [@hiitskyu](https://www.instagram.com/hiitskyu/), [@kyureative](https://www.instagram.com/kyureative/)
 
 ## 이용 및 권리
