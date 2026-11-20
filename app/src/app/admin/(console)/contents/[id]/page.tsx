@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { readStoryFields } from "@/content/storyFields";
 import { notFound } from "next/navigation";
 import { EMPTY_BODY, sanitizeBody } from "@/content/body";
 import { STATUS_LABELS, allowedTransitions, suggestPublishAt, type ContentStatus } from "@/content/publish";
@@ -72,6 +73,7 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
             initial={{
               id: row.id,
               type: row.type,
+              storyThumb: row.type === "story" ? readStoryFields(view.fields).thumbMediaId ?? "" : undefined,
               tourFields: tour
                 ? { startDate: tour.startDate, endDate: tour.endDate, place: tour.place, recruit: tour.recruit, capacity: tour.capacity === null ? "" : String(tour.capacity), feeNote: tour.feeNote, videos: tour.videos.join("\n") }
                 : undefined,

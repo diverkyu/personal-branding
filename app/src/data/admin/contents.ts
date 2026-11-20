@@ -41,7 +41,7 @@ export interface ContentEdit {
   seoDescription: string;
   origin: ContentOrigin;
   originNote: string;
-  /** 유형별 항목(투어의 일정·장소 등). 유형 정의가 검사한다. 스토리는 비어 있다 */
+  /** 유형별 항목(투어의 일정·장소 등). 유형 정의가 검사한다. 스토리는 선택 대표 이미지를 담는다 */
   fields?: unknown;
 }
 

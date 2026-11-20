@@ -110,6 +110,8 @@ npm run admin:reset-2fa        # 2차 인증 초기화
 
 ## 최근 운영 작업
 
+- [2026-11-20 Story 썸네일 연결](docs/operations/2026-11-20-story-thumbnail.md) — 기능 변경 및 배포 후 이미지 지정 절차.
+
 - [2026-11-17 이미지 저장소·Story/Films 발행·문의 이메일 인수인계](docs/operations/2026-11-17-content-publishing-handoff.md) — 완료 항목, 확인 범위, 남은 작업.
 
 ## 문서

@@ -162,3 +162,15 @@ describe("보조 함수", () => {
     expect(["sea-a", "sea-b", "sea-c", "sea-d"]).toContain(thumbVariantFor("anything"));
   });
 });
+
+
+describe("스토리 대표 이미지", () => {
+  it("발행된 선택만 카드에 보내고 수정 초안과 삭제 이미지는 노출하지 않는다", async () => {
+    const a = await createMedia(db, admin, { storage: "local", storageKey: "media/2026/11/a.webp", url: "/media-dev/a.webp", bytes: 100, width: 100, height: 200, alt: "공개 표지" });
+    const b = await createMedia(db, admin, { storage: "local", storageKey: "media/2026/11/b.webp", url: "/media-dev/b.webp", bytes: 100, width: 100, height: 200, alt: "수정 표지" });
+    await put("cover", { fields: { thumbMediaId: a.id }, draft: { fields: { thumbMediaId: b.id } } });
+    expect((await queryLiveStories(db, NOW))[0]?.cover).toEqual({ src: a.url, alt: "공개 표지" });
+    await db.update(media).set({ deletedAt: new Date() }).where(eq(media.id, a.id));
+    expect((await queryLiveStories(db, NOW))[0]?.cover).toBeUndefined();
+  });
+});

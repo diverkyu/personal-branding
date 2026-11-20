@@ -144,6 +144,6 @@ describe("발행된 장비 수정·이미지 사용·카테고리", () => {
   it("스토리에 장비 항목을 보내도 저장되지 않는다", async () => {
     const story = await createContent(db, admin, { type: "story", title: "Plain Story" });
     await saveContent(db, admin, story.id, story.version, { ...edit(story.slug, { title: "Plain Story", fields: eqFields({ category: "마스크" }) }), summary: "요약" });
-    expect((await getContent(db, admin, story.id))?.fields).toEqual({});
+    expect((await getContent(db, admin, story.id))?.fields).toEqual({ thumbMediaId: null });
   });
 });

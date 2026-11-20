@@ -18,7 +18,7 @@ import {
 } from "../../contentActions";
 import styles from "../../admin.module.css";
 import { CONTENT_TYPES } from "@/content/types";
-import { EquipmentFieldsSection, type EquipmentFieldsValues } from "./EquipmentFieldsSection";
+import { ThumbPicker, EquipmentFieldsSection, type EquipmentFieldsValues } from "./EquipmentFieldsSection";
 import { TourFieldsSection, type GalleryEntry, type TourFieldsValues } from "./TourFieldsSection";
 import { TravelFieldsSection, VideoFieldsSection, type TravelFieldsValues, type VideoFieldsValues } from "./VideoTravelSections";
 
@@ -55,6 +55,7 @@ export function NewContentForm({ type = "story", noun = "스토리", nameLabel =
 }
 
 export interface EditInitial {
+  storyThumb?: string;
   id: string;
   /** 콘텐츠 유형. 투어이면 투어 정보 입력이 더해진다 */
   type: string;
@@ -161,6 +162,7 @@ export function EditForm({ initial, media }: { initial: EditInitial; media: Pick
         surface="light"
       />
       {initial.slugLocked ? <input type="hidden" name="slug" value={initial.slug} /> : null}
+      {initial.type === "story" ? <ThumbPicker key={`story-thumb-${k}`} initial={v?.f_thumb ?? initial.storyThumb ?? ""} media={media} legend="스토리 대표 이미지 (선택)" pickLabel="스토리 대표 이미지 고르기" /> : null}
       <Textarea
         key={`su-${k}`}
         id="c-summary"

@@ -1,3 +1,4 @@
+import { cleanStoryFields, readStoryFields } from "./storyFields";
 import { EMPTY_EQUIPMENT_FIELDS, EQUIPMENT_LIMITS, cleanEquipmentFields, equipmentMediaIds, equipmentProblems, readEquipmentFields } from "./equipmentFields";
 import { EMPTY_TRAVEL_FIELDS, cleanTravelFields, readTravelFields, travelProblems } from "./travelFields";
 import { EMPTY_VIDEO_FIELDS, cleanVideoFields, readVideoFields, videoMediaIds, videoProblems } from "./videoFields";
@@ -43,8 +44,16 @@ export interface ContentTypeDef {
   bodyLabel?: string;
 }
 
+
+
 export const CONTENT_TYPES: Record<string, ContentTypeDef> = {
-  story: { key: "story", label: "스토리", publicPath: (slug) => `/story/${slug}` },
+  story: { key: "story", label: "스토리", publicPath: (slug) => `/story/${slug}`, fields: {
+    empty: () => ({ thumbMediaId: null }),
+    clean: cleanStoryFields,
+    problems: () => [],
+    mediaIds: (stored) => { const id = readStoryFields(stored).thumbMediaId; return id ? [id] : []; },
+    mediaLabel: "스토리 대표 이미지",
+  } },
   tour: {
     key: "tour",
     label: "투어",

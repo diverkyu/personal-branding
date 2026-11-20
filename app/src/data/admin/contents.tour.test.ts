@@ -97,7 +97,7 @@ describe("투어 만들기·저장", () => {
   it("스토리에 투어 항목을 보내도 저장되지 않는다", async () => {
     const story = await createContent(db, admin, { type: "story", title: "A Story" });
     await saveContent(db, admin, story.id, story.version, edit(story.slug, { title: "A Story", fields: tourFields() }));
-    expect((await getContent(db, admin, story.id))?.fields).toEqual({});
+    expect((await getContent(db, admin, story.id))?.fields).toEqual({ thumbMediaId: null });
   });
 });
 

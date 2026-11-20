@@ -97,7 +97,7 @@ function jsonList(formData: FormData, key: string, what: string): unknown[] {
 
 /**
  * 유형별 입력(f_ 로 시작하는 칸)을 항목으로 묶는다. 투어·장비 입력을 모두 담고, 서버가 글의 유형에 따라
- * 필요한 것만 검사해 쓰고 나머지는 버린다 (스토리는 모두 버린다).
+ * 필요한 것만 검사해 쓰고 나머지는 버린다.
  */
 function fieldsFromForm(formData: FormData): Record<string, unknown> {
   const gallery = jsonList(formData, "galleryJson", "갤러리");
