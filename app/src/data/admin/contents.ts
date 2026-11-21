@@ -22,6 +22,7 @@ import {
 import { cleanStoryFields, withCoverInBody } from "@/content/storyFields";
 import { CONTENT_TYPES, isContentType, slugFromTitle, validateSlug } from "@/content/types";
 import { recordAudit } from "./audit";
+import { listRegisteredTerms } from "./taxonomyRegistry";
 import type { AdminDb } from "./db";
 import { isUuid } from "./inquiryQuery";
 
@@ -526,11 +527,11 @@ export async function listTourOptions(db: AdminDb, admin: AdminSession): Promise
     .map(({ slug, title }) => ({ slug, title }));
 }
 
-/** 장비 입력에서 고를 수 있는 카테고리: 삭제되지 않은 장비가 쓰고 있는 것 (가나다순) */
+/** 장비 입력에서 고를 수 있는 카테고리: 삭제되지 않은 장비가 쓰고 있는 것 + 미리 등록해 둔 것 (가나다순) */
 export async function listEquipmentCategoryNames(db: AdminDb, admin: AdminSession): Promise<string[]> {
-  void admin;
   const rows = await db.select({ fields: contents.fields }).from(contents).where(and(eq(contents.type, "equipment"), isNull(contents.deletedAt)));
-  return [...new Set(rows.map((r) => String((r.fields as Record<string, unknown>)?.category ?? "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, "ko"));
+  const used = rows.map((r) => String((r.fields as Record<string, unknown>)?.category ?? "").trim()).filter(Boolean);
+  return [...new Set([...used, ...(await listRegisteredTerms(db, admin, "category"))])].sort((a, b) => a.localeCompare(b, "ko"));
 }
 
 export function summaryOf(row: ContentRow): string {

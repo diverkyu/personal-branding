@@ -8,7 +8,7 @@ import type { AdminSession } from "@/lib/auth/types";
 import { logger } from "@/lib/logger";
 import type { AdminDb } from "./db";
 
-export type AuditAction = "inquiry.view" | "inquiry.status_change" | "inquiry.memo_update" | "inquiry.delete" | "inquiry.export" | "settings.update" | "consent.publish" | "media.upload" | "media.alt_update" | "media.delete" | "content.create" | "content.save" | "content.transition" | "content.discard_draft" | "content.publish_draft" | "content.recruit_status" | "review.create" | "review.save" | "review.status" | "review.withdraw" | "review.delete" | "content.delete" | "content.retry_job" | "content.publish_scheduled" | "trash.restore" | "trash.purge" | "about.save" | "about.publish" | "about.discard" | "about.unpublish" | "taxonomy.rename" | "taxonomy.remove";
+export type AuditAction = "inquiry.view" | "inquiry.status_change" | "inquiry.memo_update" | "inquiry.delete" | "inquiry.export" | "settings.update" | "consent.publish" | "media.upload" | "media.alt_update" | "media.delete" | "content.create" | "content.save" | "content.transition" | "content.discard_draft" | "content.publish_draft" | "content.recruit_status" | "review.create" | "review.save" | "review.status" | "review.withdraw" | "review.delete" | "content.delete" | "content.retry_job" | "content.publish_scheduled" | "trash.restore" | "trash.purge" | "about.save" | "about.publish" | "about.discard" | "about.unpublish" | "taxonomy.rename" | "taxonomy.remove" | "taxonomy.add" | "taxonomy.unregister";
 
 export const AUDIT_LABELS: Record<AuditAction, string> = {
   "inquiry.view": "신청·문의 열람",
@@ -43,6 +43,8 @@ export const AUDIT_LABELS: Record<AuditAction, string> = {
   "about.unpublish": "About 공개 중단",
   "taxonomy.rename": "태그·카테고리 이름 바꾸기·합치기",
   "taxonomy.remove": "태그 지우기",
+  "taxonomy.add": "태그·카테고리 미리 등록",
+  "taxonomy.unregister": "태그·카테고리 등록 목록에서 지우기",
 };
 
 export interface AuditEntry {

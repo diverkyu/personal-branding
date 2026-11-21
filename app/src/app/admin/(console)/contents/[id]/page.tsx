@@ -6,6 +6,7 @@ import { CONTENT_TYPES } from "@/content/types";
 import { editableView, getContent, listEquipmentCategoryNames, publishProblems } from "@/data/admin/contents";
 import { adminDb } from "@/data/admin/dbServer";
 import { listMediaForPicker } from "@/data/admin/media";
+import { listTags } from "@/data/admin/taxonomy";
 import { requireAdmin } from "@/lib/auth/session";
 import { formatDateTimeKst } from "@/lib/format";
 import styles from "../../../admin.module.css";
@@ -45,6 +46,7 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
   const story = row.type === "story" ? readStoryFields(view.fields) : null;
   const travel = row.type === "travel" ? readTravelFields(view.fields) : null;
   const categories = equipment ? await listEquipmentCategoryNames(db, admin) : [];
+  const tagSuggestions = (await listTags(db, admin)).map((t) => t.name);
 
   return (
     <>
@@ -98,6 +100,7 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
               storyCoverId: story?.coverMediaId ?? "",
               equipmentImages: equipment?.images.map((mediaId) => ({ mediaId, caption: "" })),
               categories,
+              tagSuggestions,
               version: row.version,
               title: view.title,
               slug: row.slug,

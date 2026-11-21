@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { adminDb } from "@/data/admin/dbServer";
 import { removeTag, renameCategory, renameTag, type TaxonomyResult } from "@/data/admin/taxonomy";
+import { addRegisteredTerm, removeRegisteredTerm, type TermKind } from "@/data/admin/taxonomyRegistry";
 import { AppError, errorKindOf } from "@/lib/errors";
 import { requireAdmin } from "@/lib/auth/session";
 import { logger } from "@/lib/logger";
@@ -70,3 +71,37 @@ export async function renameCategoryAction(formData: FormData): Promise<void> {
   }
   done("rename", result);
 }
+
+const kindOf = (formData: FormData): TermKind => (text(formData, "kind", 12) === "category" ? "category" : "tag");
+
+/** 새 태그·카테고리를 미리 등록한다 (글에서 아직 쓰지 않아도 된다) */
+export async function addTermAction(formData: FormData): Promise<void> {
+  const admin = await requireAdmin();
+  const kind = kindOf(formData);
+  let added = false;
+  try {
+    added = (await addRegisteredTerm(adminDb(), admin, kind, text(formData, "name", 100))).added;
+  } catch (error) {
+    logger.warn("admin.taxonomy.add", { outcome: "failed", kind, errorKind: errorKindOf(error) });
+    back({ error: messageOf(error) });
+  }
+  revalidatePath("/admin/taxonomy");
+  revalidatePath("/admin/contents");
+  back({ done: "add", kind, added: added ? "1" : "0" });
+}
+
+/** 쓰는 글이 없는 이름을 등록 목록에서 지운다 */
+export async function unregisterTermAction(formData: FormData): Promise<void> {
+  const admin = await requireAdmin();
+  const kind = kindOf(formData);
+  try {
+    await removeRegisteredTerm(adminDb(), admin, kind, text(formData, "name", 100));
+  } catch (error) {
+    logger.warn("admin.taxonomy.unregister", { outcome: "failed", kind, errorKind: errorKindOf(error) });
+    back({ error: messageOf(error) });
+  }
+  revalidatePath("/admin/taxonomy");
+  revalidatePath("/admin/contents");
+  back({ done: "unregister", kind });
+}
+
