@@ -13,6 +13,7 @@ import { readEquipmentFields } from "@/content/equipmentFields";
 import { readTourFields } from "@/content/tourFields";
 import { readTravelFields } from "@/content/travelFields";
 import { readVideoFields } from "@/content/videoFields";
+import { readStoryFields } from "@/content/storyFields";
 import { DeleteContentForm, DraftBanner, EditForm, RecruitForm, TransitionForm } from "../ContentForms";
 
 export const metadata = { title: "콘텐츠 편집 · KYU 어드민" };
@@ -41,6 +42,7 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
   const tour = isTour ? readTourFields(view.fields) : null;
   const equipment = row.type === "equipment" ? readEquipmentFields(view.fields) : null;
   const video = row.type === "video" ? readVideoFields(view.fields) : null;
+  const story = row.type === "story" ? readStoryFields(view.fields) : null;
   const travel = row.type === "travel" ? readTravelFields(view.fields) : null;
   const categories = equipment ? await listEquipmentCategoryNames(db, admin) : [];
 
@@ -93,6 +95,7 @@ export default async function ContentEditPage({ params }: { params: Promise<{ id
                 : undefined,
               videoFields: video ? { videoUrl: video.videoUrl, duration: video.duration, hasCaptions: video.hasCaptions, posterMediaId: video.posterMediaId ?? "", cutLabel: video.cutLabel, featured: video.featured, sceneIntent: video.sceneIntent, promptNotes: video.promptNotes, editNotes: video.editNotes } : undefined,
               travelFields: travel ? { region: travel.region, place: travel.place, season: travel.season, level: travel.level, budget: travel.budget, checkedAt: travel.checkedAt } : undefined,
+              storyCoverId: story?.coverMediaId ?? "",
               equipmentImages: equipment?.images.map((mediaId) => ({ mediaId, caption: "" })),
               categories,
               version: row.version,

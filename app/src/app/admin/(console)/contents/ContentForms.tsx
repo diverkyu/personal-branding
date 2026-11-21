@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Textarea, TextField } from "@/components/ui/Field";
 import { RichEditor, type PickerMedia } from "@/editor/RichEditor";
+import { StoryCoverSection } from "./StoryCoverSection";
 import { RECRUIT_LABELS, RECRUIT_VALUES } from "@/content/tourFields";
 import {
   createContentAction,
@@ -68,6 +69,8 @@ export interface EditInitial {
   videoFields?: VideoFieldsValues;
   /** 여행 추천일 때만 */
   travelFields?: TravelFieldsValues;
+  /** 스토리일 때만: 대표 이미지 id (없으면 빈 문자열) */
+  storyCoverId?: string;
   /** 장비 카테고리 후보 (이미 쓰고 있는 것) */
   categories?: string[];
   version: number;
@@ -94,6 +97,8 @@ const ORIGIN_OPTIONS = [
 export function EditForm({ initial, media }: { initial: EditInitial; media: PickerMedia[] }) {
   const [state, action, pending] = useActionState<ContentState, FormData>(saveContentAction, {});
   const v = state.error ? state.values : undefined;
+  // 본문에 들어 있는 이미지 (스토리의 대표 이미지 후보). 편집기가 알려 준다
+  const [bodyImages, setBodyImages] = useState<PickerMedia[]>([]);
   const pick = (key: keyof EditInitial & string, name: string = key) => (v?.[name] ?? (initial[key] as string));
   const ef = initial.equipmentFields;
   const equipmentValues: EquipmentFieldsValues | undefined = ef && {
@@ -179,8 +184,9 @@ export function EditForm({ initial, media }: { initial: EditInitial; media: Pick
         <p className={styles.fieldLabel} id="body-label">
           {typeDef?.bodyLabel ?? "본문"}
         </p>
-        <RichEditor initial={initial.bodyDoc} media={media} resetKey={initial.version} />
+        <RichEditor initial={initial.bodyDoc} media={media} resetKey={initial.version} onImages={initial.type === "story" ? setBodyImages : undefined} />
       </div>
+      {initial.type === "story" ? <StoryCoverSection key={`cv-${k}`} images={bodyImages} initial={v?.f_cover ?? initial.storyCoverId ?? ""} /> : null}
       <TextField key={`tg-${k}`} id="c-tags" name="tags" label="태그 (쉼표로 구분, 5개까지)" defaultValue={pick("tags")} surface="light" />
       <Textarea key={`a-${k}`} id="c-answers" name="answers" label="이 글이 답하는 질문 (한 줄에 하나, 10개까지)" rows={3} defaultValue={pick("answers")} surface="light" />
       <TextField key={`st-${k}`} id="c-seo-title" name="seoTitle" label="검색 제목 (비우면 제목)" defaultValue={pick("seoTitle")} maxLength={75} surface="light" />

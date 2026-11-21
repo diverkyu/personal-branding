@@ -49,11 +49,35 @@ function makeViews(lookup: (id: string) => PickerMedia | undefined) {
 
 type Panel = null | "link" | "image" | "video";
 
+/** 편집기 문서(JSON)에서 이미지를 문서 순서대로 뽑는다 (중복 제거). 찾을 수 없는 이미지는 뺀다 */
+export function imagesInDoc(json: string, lookup: (id: string) => PickerMedia | undefined): PickerMedia[] {
+  let doc: unknown;
+  try {
+    doc = JSON.parse(json);
+  } catch {
+    return [];
+  }
+  const found: PickerMedia[] = [];
+  const seen = new Set<string>();
+  const walk = (node: unknown) => {
+    if (!node || typeof node !== "object") return;
+    const n = node as { type?: unknown; attrs?: { mediaId?: unknown }; content?: unknown };
+    if (n.type === "image" && typeof n.attrs?.mediaId === "string" && !seen.has(n.attrs.mediaId)) {
+      seen.add(n.attrs.mediaId);
+      const item = lookup(n.attrs.mediaId);
+      if (item) found.push(item);
+    }
+    if (Array.isArray(n.content)) n.content.forEach(walk);
+  };
+  walk(doc);
+  return found;
+}
+
 /**
  * 본문 편집기. 값은 숨은 입력(name="bodyJson")에 JSON 으로 담겨 폼과 함께 서버로 간다 — 서버가 다시 검사한다.
  * 저장하지 않은 변경이 있으면 창을 닫기 전에 확인한다 (ADMIN-DESIGN §7).
  */
-export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirty }: { initial: unknown; media: PickerMedia[]; name?: string; /** 값이 바뀌면(저장 성공 뒤 새 version) 변경 표시를 지운다 */ resetKey?: number; onDirty?: (dirty: boolean) => void }) {
+export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirty, onImages }: { initial: unknown; media: PickerMedia[]; name?: string; /** 값이 바뀌면(저장 성공 뒤 새 version) 변경 표시를 지운다 */ resetKey?: number; onDirty?: (dirty: boolean) => void; /** 본문에 들어 있는 이미지 목록(문서 순서). 스토리의 대표 이미지 선택이 쓴다 */ onImages?: (images: PickerMedia[]) => void }) {
   const mediaById = useMemo(() => new Map(media.map((m) => [m.id, m])), [media]);
   // 편집기 안에서 바로 올린 이미지: 편집기를 다시 만들지 않고도 그림이 보이도록 바뀌지 않는 Map 에 담아 둔다
   const [uploadedById] = useState(() => new Map<string, PickerMedia>());
@@ -87,6 +111,10 @@ export function RichEditor({ initial, media, name = "bodyJson", resetKey, onDirt
       }
     },
   });
+
+  useEffect(() => {
+    onImages?.(imagesInDoc(json, (id) => mediaById.get(id) ?? uploadedById.get(id)));
+  }, [json, uploaded, mediaById, uploadedById, onImages]);
 
   useEffect(() => {
     dirty.current = false;

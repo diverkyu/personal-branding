@@ -19,6 +19,7 @@ import {
   type ContentOrigin,
   type ContentStatus,
 } from "@/content/publish";
+import { cleanStoryFields, withCoverInBody } from "@/content/storyFields";
 import { CONTENT_TYPES, isContentType, slugFromTitle, validateSlug } from "@/content/types";
 import { recordAudit } from "./audit";
 import type { AdminDb } from "./db";
@@ -75,7 +76,9 @@ export function cleanEdit(input: ContentEdit, type: string = "story"): CleanEdit
   const body = sanitizeBody(input.body);
   if (!body.ok) throw new AppError("validation", body.error);
   const def = CONTENT_TYPES[type]?.fields;
-  const fields = def ? def.clean(input.fields ?? def.empty()) : {};
+  let fields = def ? def.clean(input.fields ?? def.empty()) : {};
+  // 스토리의 대표 이미지는 본문에 있는 이미지여야 한다 (본문에서 빼면 대표 지정도 사라진다)
+  if (type === "story") fields = withCoverInBody(cleanStoryFields(fields), collectMediaIds(body.doc)) as unknown as Record<string, unknown>;
   return {
     title,
     slug: input.slug,

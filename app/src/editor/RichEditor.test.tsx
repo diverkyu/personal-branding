@@ -16,7 +16,7 @@ for (const proto of [Element.prototype, Range.prototype] as { getClientRects?: (
 const upload = vi.fn();
 vi.mock("@/app/admin/mediaActions", () => ({ uploadEditorImageAction: (form: FormData) => upload(form) }));
 
-import { RichEditor } from "./RichEditor";
+import { RichEditor, imagesInDoc } from "./RichEditor";
 
 const UUID = "123e4567-e89b-42d3-a456-426614174000";
 let root: Root | undefined;
@@ -169,5 +169,22 @@ describe("본문 편집기: 복사 상자와 표 도구", () => {
       button(h, "복사 상자 (프롬프트처럼 그대로 복사해 쓰는 글)")?.click();
     });
     expect(bodyJson(h)).not.toContain('"codeBlock"');
+  });
+});
+
+describe("본문의 이미지 목록 (대표 이미지 후보)", () => {
+  const A = { id: "a", url: "/a.webp", alt: "가", width: 1, height: 1 };
+  const B = { id: "b", url: "/b.webp", alt: "나", width: 1, height: 1 };
+  const lookup = (id: string) => [A, B].find((m) => m.id === id);
+  const doc = (...ids: string[]) => JSON.stringify({ type: "doc", content: ids.map((id) => ({ type: "image", attrs: { mediaId: id } })) });
+
+  it("문서 순서대로 중복 없이 뽑고, 찾을 수 없는 이미지는 뺀다", () => {
+    expect(imagesInDoc(doc("b", "a", "b", "zzz"), lookup)).toEqual([B, A]);
+  });
+
+  it("인용·목록 안의 이미지도 찾고, 깨진 JSON 은 빈 목록이다", () => {
+    const nested = JSON.stringify({ type: "doc", content: [{ type: "blockquote", content: [{ type: "image", attrs: { mediaId: "a" } }] }] });
+    expect(imagesInDoc(nested, lookup)).toEqual([A]);
+    expect(imagesInDoc("{깨짐", lookup)).toEqual([]);
   });
 });
