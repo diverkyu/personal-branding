@@ -13,12 +13,12 @@ interface FieldBase {
   surface?: Surface;
 }
 
-function describedBy(id: string, hint?: string, error?: string): string | undefined {
+export function describedBy(id: string, hint?: string, error?: string): string | undefined {
   const ids = [hint ? `${id}-hint` : null, error ? `${id}-error` : null].filter(Boolean);
   return ids.length ? ids.join(" ") : undefined;
 }
 
-function Messages({ id, hint, error }: Pick<FieldBase, "id" | "hint" | "error">) {
+export function Messages({ id, hint, error }: Pick<FieldBase, "id" | "hint" | "error">) {
   return (
     <>
       {hint ? (

@@ -135,9 +135,9 @@ test.describe("컴포넌트 쇼케이스", () => {
     await expect(page.getByText(/별점|★/)).toHaveCount(0);
   });
 
-  test("아이콘 20개가 모두 그려진다 (글자 기호 대신 SVG)", async ({ page }) => {
+  test("아이콘 22개가 모두 그려진다 (글자 기호 대신 SVG, 20개 + 어드민용 eye·eye-off)", async ({ page }) => {
     await page.goto(URL);
-    await expect(page.locator("main ul li svg")).toHaveCount(20);
+    await expect(page.locator("main ul li svg")).toHaveCount(22);
     await expect(page.getByText(/[↗⧉☰]/)).toHaveCount(0);
   });
 });

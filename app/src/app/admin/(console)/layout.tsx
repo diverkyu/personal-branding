@@ -4,6 +4,7 @@ import { inquiryUsage } from "@/data/admin/inquiries";
 import { requireAdmin } from "@/lib/auth/session";
 import styles from "../admin.module.css";
 import { AdminNav } from "./AdminNav";
+import { SiteLink } from "./SiteLink";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ export default async function ConsoleLayout({ children }: { children: React.Reac
         </div>
       </nav>
       <main id="main" tabIndex={-1} className={styles.main}>
+        <SiteLink />
         {children}
       </main>
     </div>
