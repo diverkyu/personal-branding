@@ -1,11 +1,13 @@
 import { timingSafeEqual } from "node:crypto";
 import { adminDb } from "@/data/admin/dbServer";
+import { purgeExpiredInquiries } from "@/data/inquiryRetention";
 import { purgeExpired } from "@/data/trashCleanup";
 import { logger } from "@/lib/logger";
 import { getMediaStorage } from "@/media/storage";
 
 /**
- * 휴지통 정리 실행 입구 (Vercel Cron, 하루 한 번). 삭제한 지 30일이 지난 항목을 영구 삭제한다 (ADMIN-DESIGN §8, §25).
+ * 정리 실행 입구 (Vercel Cron, 하루 한 번). ① 삭제한 지 30일이 지난 항목을 영구 삭제한다 (ADMIN-DESIGN §8, §25).
+ * ② 보유 기간이 지난 신청(예약 문의·소식 받기)을 삭제한다 (ADMIN-DESIGN §42). 한쪽이 실패해도 다른 쪽은 실행한다.
  * CRON_SECRET 이 없으면 404 로 닫혀 있고, 있으면 `Authorization: Bearer <CRON_SECRET>` 가 맞을 때만 실행한다.
  * 응답과 로그에는 건수만 담는다.
  */
@@ -24,12 +26,22 @@ const headers = { "Cache-Control": "no-store" };
 export async function GET(request: Request) {
   if (!process.env.CRON_SECRET?.trim()) return new Response(null, { status: 404, headers });
   if (!authorized(request)) return new Response(null, { status: 401, headers });
+  let failed = false;
+  let trash: Awaited<ReturnType<typeof purgeExpired>> | undefined;
+  let inquiries: Awaited<ReturnType<typeof purgeExpiredInquiries>> | undefined;
   try {
-    const summary = await purgeExpired(adminDb(), await getMediaStorage());
-    logger.info("cron.cleanup", { outcome: "success", ...summary });
-    return Response.json(summary, { headers });
+    trash = await purgeExpired(adminDb(), await getMediaStorage());
   } catch (error) {
-    logger.error("cron.cleanup", { outcome: "failed", errorType: error instanceof Error ? error.name : typeof error });
-    return new Response(null, { status: 500, headers });
+    failed = true;
+    logger.error("cron.cleanup", { outcome: "failed", step: "trash", errorType: error instanceof Error ? error.name : typeof error });
   }
+  try {
+    inquiries = await purgeExpiredInquiries(adminDb());
+  } catch (error) {
+    failed = true;
+    logger.error("cron.cleanup", { outcome: "failed", step: "inquiries", errorType: error instanceof Error ? error.name : typeof error });
+  }
+  if (failed) return new Response(null, { status: 500, headers });
+  logger.info("cron.cleanup", { outcome: "success", ...trash, inquiriesReservations: inquiries?.reservations, inquiriesNotices: inquiries?.notices });
+  return Response.json({ ...trash, inquiries }, { headers });
 }
