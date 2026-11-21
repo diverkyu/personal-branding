@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/Field";
+import { PasswordField } from "@/components/ui/PasswordField";
 import { confirmTwoFactorAction, logoutAction, startTwoFactorAction, type FormState, type SetupState } from "../actions";
 import styles from "../admin.module.css";
 
@@ -19,7 +20,7 @@ export function SetupTwoFactor() {
               {started.error}
             </p>
           ) : null}
-          <TextField id="password" name="password" type="password" label="비밀번호 확인" autoComplete="current-password" required surface="light" hint="안전을 위해 비밀번호를 한 번 더 확인합니다." />
+          <PasswordField id="password" name="password" label="비밀번호 확인" autoComplete="current-password" required surface="light" hint="안전을 위해 비밀번호를 한 번 더 확인합니다." />
           <Button type="submit" busy={starting} variant="dark" surface="light">
             {starting ? "준비 중" : "등록 시작"}
           </Button>

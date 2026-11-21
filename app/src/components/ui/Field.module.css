@@ -129,3 +129,42 @@
 .notice[data-surface="light"][data-kind="error"] {
   color: var(--kyu-navy);
 }
+
+/* 비밀번호 칸: 오른쪽 끝에 보기/숨기기 버튼. 글자가 버튼 밑으로 들어가지 않게 오른쪽 여백을 둔다 */
+.inputWrap {
+  position: relative;
+}
+
+.inputWrap .input {
+  padding-right: 52px;
+}
+
+.toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--kyu-touch);
+  height: var(--kyu-touch);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.field[data-surface="dark"] .toggle {
+  color: var(--kyu-muted);
+}
+
+.field[data-surface="light"] .toggle {
+  color: var(--kyu-ink-sub);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--kyu-focus);
+  outline-offset: -2px;
+}
+

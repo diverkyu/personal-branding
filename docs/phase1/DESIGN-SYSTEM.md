@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.55.0** | 2026-11-21 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.56.0** | 2026-11-21 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [CONCEPT.md](CONCEPT.md) · 화면 시안: [mockup/](mockup/README.md) · 시각 보기: 캔버스의 "디자인 시스템" 보드
 
@@ -87,7 +87,7 @@
 
 글자 기호 → 아이콘 대응: `↗` → `arrow-up-right`, `⧉` → `copy`, `☰` → `menu`, `↑` → `arrow-up`, `↓` → `arrow-down`. 기존 v0.1.0의 분야 아이콘 `≈`, `✳`은 `anchor`, `sparkles`로 대체할 것을 제안한다 (미확정).
 
-시안에서 쓴 아이콘: `arrow-up-right`, `arrow-up`, `arrow-down`, `menu`, `x`, `chevron-right`, `external-link`, `copy`, `mail`, `check`, `calendar`, `map-pin`, `play`, `shopping-bag`, `tag`, `search`, `user`, `pencil`, `trash`, `image`. 캔버스 "디자인 시스템" 보드 5번에서 볼 수 있다.
+시안에서 쓴 아이콘: `arrow-up-right`, `arrow-up`, `arrow-down`, `menu`, `x`, `chevron-right`, `external-link`, `copy`, `mail`, `check`, `calendar`, `map-pin`, `play`, `shopping-bag`, `tag`, `search`, `user`, `pencil`, `trash`, `image`. 어드민용으로 `eye`, `eye-off`(비밀번호 보기/숨기기, 0.56.0)를 더했다. 캔버스 "디자인 시스템" 보드 5번에서 볼 수 있다.
 
 ## 3. 컴포넌트
 
