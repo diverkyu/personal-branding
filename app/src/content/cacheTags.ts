@@ -22,5 +22,8 @@ export const TRAVEL_TAG = "contents-travel";
 /** About(규강 소개) 캐시 태그 */
 export const ABOUT_TAG = "about";
 
+/** 홈 히어로 이미지 캐시 태그 (미디어의 대체 텍스트가 바뀔 때도 함께 갱신되도록 콘텐츠 태그에 넣는다) */
+export const HOME_HERO_TAG = "home-hero";
+
 /** 콘텐츠가 바뀌면 갱신해야 하는 공개 캐시 태그 전부 */
-export const PUBLIC_CONTENT_TAGS = [STORIES_TAG, TOURS_TAG, EQUIPMENT_TAG, REVIEWS_TAG, ABOUT_TAG, VIDEOS_TAG, TRAVEL_TAG] as const;
+export const PUBLIC_CONTENT_TAGS = [STORIES_TAG, TOURS_TAG, EQUIPMENT_TAG, REVIEWS_TAG, ABOUT_TAG, VIDEOS_TAG, TRAVEL_TAG, HOME_HERO_TAG] as const;

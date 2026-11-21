@@ -16,10 +16,12 @@
  */
 import { and, eq, inArray, like, ne, sql } from "drizzle-orm";
 import { getDb } from "../src/db/client";
-import { about, auditLog, consentVersions, contents, inquiries, media, publishJobs, reviewRevisions, reviews } from "../src/db/schema";
+import { about, auditLog, consentVersions, contents, inquiries, media, publishJobs, reviewRevisions, reviews, siteSettings } from "../src/db/schema";
 import { BUILTIN_VERSION } from "../src/settings/consent";
 import { createContent, deleteContent, saveContent, transitionContent } from "../src/data/admin/contents";
 import { saveAboutDraft, publishAbout } from "../src/data/admin/about";
+import { publishHero, saveHeroDraft } from "../src/data/admin/homeHero";
+import { HERO_SETTING_KEY, readHeroState } from "../src/home/heroImage";
 import { createReview, deleteReview, setReviewStatus, withdrawReview } from "../src/data/admin/reviews";
 import { publishConsentVersion } from "../src/data/admin/settings";
 import { deleteMedia } from "../src/data/admin/media";
@@ -69,6 +71,13 @@ async function clean(db: AdminDb, storage: MediaStorage | null): Promise<Cleaned
 
   // 이미지: 시험 데이터가 만든 것(만든 사람이 시험 계정)만. 파일도 함께 지운다
   const files = await db.select({ id: media.id, key: media.storageKey }).from(media).where(eq(media.createdBy, ACTOR.userId));
+  // 홈 히어로가 시험 이미지를 쓰고 있으면 기본 일러스트로 되돌린다 (사람이 고른 이미지는 건드리지 않는다)
+  const [hero] = await db.select({ value: siteSettings.value }).from(siteSettings).where(eq(siteSettings.key, HERO_SETTING_KEY)).limit(1);
+  if (hero) {
+    const state = readHeroState(hero.value);
+    const seedIds = new Set(files.map((f) => f.id));
+    if ((state.published && seedIds.has(state.published)) || (state.draft?.mediaId && seedIds.has(state.draft.mediaId))) await db.delete(siteSettings).where(eq(siteSettings.key, HERO_SETTING_KEY));
+  }
   for (const f of files) await storage?.remove(f.key).catch(() => undefined);
   if (files.length > 0) await db.delete(media).where(inArray(media.id, files.map((f) => f.id)));
 
@@ -83,6 +92,7 @@ interface Images {
   poster: string[];
   gear: string[];
   profile: string;
+  hero: string;
   fillerCount: number;
 }
 
@@ -100,10 +110,11 @@ async function makeImages(db: AdminDb, storage: MediaStorage): Promise<Images> {
   const gear: string[] = [];
   for (let i = 0; i < 7; i++) gear.push(await putImage(db, storage, 800, 800, 20 + i, `${MARK} 장비 사진 자리 그림 ${i + 1} (가상 이미지)`));
   const profile = await putImage(db, storage, 800, 1000, 30, `${MARK} 프로필 사진 자리 그림 (가상 이미지, 실제 사람이 아님)`);
+  const hero = await putImage(db, storage, 1280, 1560, 35, `${MARK} 홈 히어로 시험 그림 (가상 이미지)`);
   // 미디어 보관함이 한 쪽(24장)을 넘어 쪽 이동이 보이도록 작은 그림을 더한다
   const fillerCount = 26;
   for (let i = 0; i < fillerCount; i++) await putImage(db, storage, 400, 300, 40 + i, `${MARK} 보관함 확인용 그림 ${i + 1}`);
-  return { cover, poster, gear, profile, fillerCount };
+  return { cover, poster, gear, profile, hero, fillerCount };
 }
 
 // ---------- 콘텐츠 ----------
@@ -388,6 +399,16 @@ async function seedAbout(db: AdminDb, im: Images): Promise<void> {
   await publishAbout(db, ACTOR, saved.version);
 }
 
+/** 홈 히어로를 시험 그림으로 바꿔 둔다. 사람이 이미 정한 히어로가 있으면 건드리지 않는다 */
+async function seedHero(db: AdminDb, im: Images): Promise<boolean> {
+  const [row] = await db.select({ value: siteSettings.value, version: siteSettings.version }).from(siteSettings).where(eq(siteSettings.key, HERO_SETTING_KEY)).limit(1);
+  const state = readHeroState(row?.value);
+  if (state.published || state.draft) return false;
+  const saved = await saveHeroDraft(db, ACTOR, row?.version ?? 0, im.hero);
+  await publishHero(db, ACTOR, saved.version);
+  return true;
+}
+
 async function seedConsent(db: AdminDb): Promise<void> {
   const privacy = [
     `${MARK} 개인정보 처리방침 (개발 DB 시험용 가상 문서)`,
@@ -408,7 +429,7 @@ async function seed(db: AdminDb, storage: MediaStorage) {
   }
   const done: string[] = [];
   const im = await makeImages(db, storage);
-  done.push(`이미지 ${im.cover.length + im.poster.length + im.gear.length + 1 + im.fillerCount}장`);
+  done.push(`이미지 ${im.cover.length + im.poster.length + im.gear.length + 2 + im.fillerCount}장`);
   done.push(`Story ${await seedStories(db, im)}`);
   done.push(`Films ${await seedFilms(db, im)}`);
   done.push(`장비 ${await seedEquipment(db, im)}`);
@@ -418,6 +439,7 @@ async function seed(db: AdminDb, storage: MediaStorage) {
   done.push(`후기 ${await seedReviews(db)}`);
   await seedAbout(db, im);
   done.push("About 1");
+  done.push((await seedHero(db, im)) ? "홈 히어로 이미지 1" : "홈 히어로 이미지(이미 정해져 있어 건드리지 않음)");
   await seedConsent(db);
   done.push("처리방침·동의 문구 3");
   // 삭제된(휴지통) 이미지 하나: 시험 이미지 중 사용하지 않는 것

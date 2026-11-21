@@ -2,13 +2,13 @@ import Link from "next/link";
 import { JsonLd } from "@/components/site/JsonLd";
 import { resolveSiteUrl } from "@/config/env";
 import { websiteLd } from "@/lib/structured";
-import { HeroArt } from "@/components/site/HeroArt";
+import { HomeHeroSection } from "@/components/site/HomeHeroSection";
+import { getPublicHeroImage } from "@/data/homeHero";
 import { ContactSection } from "@/components/site/ContactSection";
 import { StoryCard } from "@/components/site/StoryCard";
 import { TourCard } from "@/components/site/TourCard";
 import { ReviewCard } from "@/components/site/ReviewCard";
 import { reviewCard, storyCard, tourCard } from "@/components/site/mappers";
-import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader, SectionLabel } from "@/components/ui/SectionHeader";
 import { TextLink } from "@/components/ui/TextLink";
@@ -20,7 +20,6 @@ import { HomeFilms } from "@/components/site/HomeFilms";
 import { listOpenTours } from "@/data/tours";
 import { listStories } from "@/data/stories";
 import { getSiteSettings } from "@/settings/read";
-import { splitSlogan } from "@/settings/registry";
 import styles from "./page.module.css";
 import pages from "./pages.module.css";
 
@@ -30,15 +29,7 @@ export const revalidate = 300;
 /** 홈 (SCREEN-SPEC §5.1). 섹션 순서: 히어로 → 구분 띠 → About 요약 → Story → Freediving → Films(작품이 있을 때만) → Contact. Story·투어는 어드민 콘텐츠, 후기는 아직 가상 데이터. */
 export default async function HomePage() {
   const settings = await getSiteSettings();
-  const slogan = splitSlogan(settings["home.slogan"] ?? "");
-  const headline = (settings["home.headline"] ?? "").split("\n");
-  const lead = (settings["home.lead"] ?? "").split("\n");
-  const lines = (items: string[]) => items.map((line, i) => (
-    <span key={i}>
-      {i > 0 ? <br /> : null}
-      {line}
-    </span>
-  ));
+  const heroImage = await getPublicHeroImage();
   const stories = (await listStories()).slice(0, 3);
   const tour = (await listOpenTours())[0];
   const reviews = await listFeaturedReviews(3);
@@ -49,34 +40,7 @@ export default async function HomePage() {
   return (
     <>
       <JsonLd data={websiteLd(resolveSiteUrl(process.env).url.origin)} />
-      <section className={styles.hero} aria-label="소개">
-        <div className={styles.heroInner}>
-          <div className={styles.copy}>
-            <p className={styles.label}>FREEDIVING INSTRUCTOR &amp; AI CREATOR</p>
-            <h1 className={styles.title}>
-              {slogan.line1}
-              {slogan.accent ? (
-                <>
-                  <br />
-                  {slogan.line2Lead} <em className={styles.accent}>{slogan.accent}</em>
-                </>
-              ) : null}
-            </h1>
-            <p className={styles.headline}>{lines(headline)}</p>
-            <p className={styles.lead}>{lines(lead)}</p>
-            <Button href="/story" size="L" icon="arrow-up-right">
-              나의 세계 둘러보기
-            </Button>
-            <p className={styles.explore} aria-hidden="true">
-              <span>LEE DONG KYU · 이동규</span>
-              <span>SCROLL TO EXPLORE</span>
-            </p>
-          </div>
-          <div className={styles.art}>
-            <HeroArt />
-          </div>
-        </div>
-      </section>
+      <HomeHeroSection settings={settings} image={heroImage} />
 
       <div className={styles.band} aria-hidden="true">
         ONE BREATH. ∞ ENDLESS POSSIBILITIES. ∞ ONE IDEA. ∞ NEW WORLDS.
