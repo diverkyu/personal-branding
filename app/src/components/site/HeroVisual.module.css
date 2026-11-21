@@ -12,6 +12,8 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
+  /* 이미지를 못 불러와도 대체 텍스트가 아치 위로 흘러나오지 않게 한다 (읽기 도구에는 그대로 읽힌다) */
+  color: transparent;
 }
 
 /* 글자가 어떤 사진 위에서도 읽히도록 위·아래만 어둡게 깐다 */
