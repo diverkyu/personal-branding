@@ -11,7 +11,9 @@ import { EQUIPMENT_LIMITS } from "@/content/equipmentFields";
 import { contents } from "@/db/schema";
 import type { AdminSession } from "@/lib/auth/types";
 import { AppError } from "@/lib/errors";
+import { logger } from "@/lib/logger";
 import { recordAudit } from "./audit";
+import { listRegisteredTerms, replaceRegisteredTerm, type TermKind } from "./taxonomyRegistry";
 import type { AdminDb } from "./db";
 
 export const TAG_MAX = 20;
@@ -49,22 +51,35 @@ function tally(names: Iterable<string>[]): TaxonomyEntry[] {
   return [...map.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "ko"));
 }
 
+/** 글에서 쓰는 이름(많이 쓰는 순) 뒤에, 미리 등록만 해 둔 이름(쓰는 글 0개, 가나다순)을 붙인다 */
+function withRegistered(used: TaxonomyEntry[], registered: string[]): TaxonomyEntry[] {
+  const seen = new Set(used.map((e) => e.name));
+  return [...used, ...registered.filter((n) => !seen.has(n)).map((name) => ({ name, count: 0 }))];
+}
+
 export async function listTags(db: AdminDb, admin: AdminSession): Promise<TaxonomyEntry[]> {
-  void admin;
   const rows = await db.select({ tags: contents.tags, draft: contents.draft }).from(contents).where(isNull(contents.deletedAt));
-  return tally(rows.map((r) => [...r.tags, ...strings(draftOf(r.draft)?.tags)]));
+  return withRegistered(tally(rows.map((r) => [...r.tags, ...strings(draftOf(r.draft)?.tags)])), await listRegisteredTerms(db, admin, "tag"));
 }
 
 export async function listCategories(db: AdminDb, admin: AdminSession): Promise<TaxonomyEntry[]> {
-  void admin;
   const rows = await db.select({ fields: contents.fields, draft: contents.draft }).from(contents).where(and(isNull(contents.deletedAt), eq(contents.type, "equipment")));
-  return tally(
+  return withRegistered(tally(
     rows.map((r) => {
       const live = fieldsOf(r.fields).category;
       const pending = fieldsOf(draftOf(r.draft)?.fields).category;
       return [typeof live === "string" ? norm(live) : "", typeof pending === "string" ? norm(pending) : ""];
     }),
-  );
+  ), await listRegisteredTerms(db, admin, "category"));
+}
+
+/** 글의 이름을 바꾸거나 지운 뒤 등록 목록도 맞춘다. 등록 목록 저장이 실패해도 이미 끝난 글 변경을 되돌리지 않는다 */
+async function syncRegistry(db: AdminDb, admin: AdminSession, kind: TermKind, from: string, to: string | null): Promise<void> {
+  try {
+    await replaceRegisteredTerm(db, admin, kind, from, to);
+  } catch (error) {
+    logger.warn("admin.taxonomy.registry_sync", { outcome: "failed", kind, errorType: error instanceof Error ? error.name : typeof error });
+  }
 }
 
 /** 태그 목록에서 from 을 to 로 바꾼다(to 가 이미 있으면 합쳐진다). to 가 null 이면 from 만 뺀다 */
@@ -123,6 +138,7 @@ export async function renameTag(db: AdminDb, admin: AdminSession, fromRaw: strin
   if (from === to) throw new AppError("validation", "이름이 그대로입니다.");
   const result = await changeTags(db, admin, from, to);
   if (result.changed + result.skipped === 0) throw new AppError("not_found", "그 태그를 쓰는 글이 없습니다.");
+  await syncRegistry(db, admin, "tag", from, to);
   await recordAudit(db, admin, { action: "taxonomy.rename", targetType: "tag", meta: { changed: result.changed, skipped: result.skipped } });
   return result;
 }
@@ -133,6 +149,7 @@ export async function removeTag(db: AdminDb, admin: AdminSession, fromRaw: strin
   if (!from) throw new AppError("not_found", "대상을 찾을 수 없습니다.");
   const result = await changeTags(db, admin, from, null);
   if (result.changed + result.skipped === 0) throw new AppError("not_found", "그 태그를 쓰는 글이 없습니다.");
+  await syncRegistry(db, admin, "tag", from, null);
   await recordAudit(db, admin, { action: "taxonomy.remove", targetType: "tag", meta: { changed: result.changed, skipped: result.skipped } });
   return result;
 }
@@ -168,6 +185,7 @@ export async function renameCategory(db: AdminDb, admin: AdminSession, fromRaw: 
     else result.skipped += 1;
   }
   if (result.changed + result.skipped === 0) throw new AppError("not_found", "그 카테고리를 쓰는 장비가 없습니다.");
+  await syncRegistry(db, admin, "category", from, to);
   await recordAudit(db, admin, { action: "taxonomy.rename", targetType: "category", meta: { changed: result.changed, skipped: result.skipped } });
   return result;
 }
