@@ -40,7 +40,7 @@ test.describe("예약 문의 폼", () => {
   test("정원을 넘는 인원은 서버가 거부한다 (정원 8명)", async ({ page }, testInfo) => {
     await page.goto("/freediving/tours/sample-recruiting");
     await fillReservation(page, email(testInfo, "cap"), { people: "9" });
-    await page.getByLabel(/^개인정보/).check();
+    await page.getByRole("checkbox", { name: /^개인정보/ }).check();
     await page.getByRole("button", { name: "예약 문의하기" }).click();
     await expect(page.getByRole("alert").filter({ hasText: "인원을 1~8명" })).toBeVisible();
   });
@@ -50,7 +50,7 @@ test.describe("예약 문의 폼", () => {
     await fillReservation(page, email(testInfo, "ok"));
     await page.getByLabel("문의 내용").fill("예시 문의입니다.");
     await expect(page.getByText("9 / 1000자")).toBeVisible();
-    await page.getByLabel(/^개인정보/).check();
+    await page.getByRole("checkbox", { name: /^개인정보/ }).check();
     await page.getByRole("button", { name: "예약 문의하기" }).click();
     await expect(page.getByRole("status").filter({ hasText: "문의가 접수되었습니다." })).toBeVisible();
     await expect(page.getByRole("form", { name: "예약 문의" })).toHaveCount(0);
@@ -59,7 +59,7 @@ test.describe("예약 문의 폼", () => {
   test("허니팟이 채워지면 접수되지 않고 일반 실패 안내만 보인다 (차단 사유 노출 없음)", async ({ page }, testInfo) => {
     await page.goto("/freediving/tours/sample-recruiting");
     await fillReservation(page, email(testInfo, "bot"));
-    await page.getByLabel(/^개인정보/).check();
+    await page.getByRole("checkbox", { name: /^개인정보/ }).check();
     await page.locator('input[name="website"]').evaluate((el: HTMLInputElement) => (el.value = "http://spam.example"));
     await page.getByRole("button", { name: "예약 문의하기" }).click();
     await expect(page.getByRole("alert").filter({ hasText: "전송하지 못했습니다." })).toBeVisible();
@@ -90,6 +90,26 @@ test.describe("소식 받기 폼", () => {
     await page.getByRole("button", { name: "소식 받기" }).click();
     await expect(page.getByRole("status").filter({ hasText: "소식 신청이 접수되었습니다." })).toBeVisible();
   });
+});
+
+test.describe("동의 문구 옆 처리방침 링크", () => {
+  for (const [name, path] of [
+    ["예약 문의", "/freediving/tours/sample-recruiting"],
+    ["소식 받기", "/freediving/tours/sample-upcoming"],
+  ] as const) {
+    test(`${name}: 처리방침 전문 링크가 새 탭 주소로 열리고, 누르면 폼 입력이 남아 있다`, async ({ page, context }) => {
+      await page.goto(path);
+      const link = page.getByRole("link", { name: /개인정보 처리방침 전문 보기/ });
+      await expect(link).toHaveAttribute("href", "/privacy");
+      await expect(link).toHaveAttribute("target", "_blank");
+      await page.getByLabel(/^이름/).fill("홍길동");
+      const [popup] = await Promise.all([context.waitForEvent("page"), link.click()]);
+      await popup.waitForLoadState();
+      expect(new URL(popup.url()).pathname).toBe("/privacy");
+      await popup.close();
+      await expect(page.getByLabel(/^이름/)).toHaveValue("홍길동");
+    });
+  }
 });
 
 test.describe("서버 액션 직접 호출 방어", () => {

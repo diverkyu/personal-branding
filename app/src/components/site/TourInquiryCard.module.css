@@ -47,3 +47,12 @@
   height: 1px;
   overflow: hidden;
 }
+
+/* 동의 문구 뒤의 처리방침 링크: 색에만 기대지 않도록 밑줄을 둔다 */
+.policyLink {
+  color: var(--kyu-lime);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+

@@ -3,6 +3,7 @@ import { listTourOptions } from "@/data/admin/contents";
 import { adminDb } from "@/data/admin/dbServer";
 import { listInquiries } from "@/data/admin/inquiries";
 import { ALL_STATUSES, KIND_LABELS, STATUS_LABELS, inquiryQueryString, parseInquiryQuery } from "@/data/admin/inquiryQuery";
+import { privacyConfig } from "@/config/privacy";
 import { requireAdmin } from "@/lib/auth/session";
 import { formatDateTimeKst } from "@/lib/format";
 import styles from "../../admin.module.css";
@@ -32,6 +33,9 @@ export default async function InquiriesPage({ searchParams }: { searchParams: Se
       ) : null}
       <p className={styles.note}>
         개인정보가 포함된 화면입니다. 화면 공유나 캡처에 주의해 주세요. 새 신청 <strong>{newCount}</strong>건.
+      </p>
+      <p className={styles.note}>
+        접수한 지 {privacyConfig.inquiryRetentionDays}일이 지난 신청은 매일 자동으로 삭제됩니다(상태가 &ldquo;확정&rdquo;인 예약 문의는 제외). 오래 두어야 하는 내용은 삭제되기 전에 따로 옮겨 두세요.
       </p>
 
       <form method="get" className={styles.filters} role="search" aria-label="신청·문의 검색">
