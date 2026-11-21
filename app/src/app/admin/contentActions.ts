@@ -97,7 +97,7 @@ function jsonList(formData: FormData, key: string, what: string): unknown[] {
 
 /**
  * 유형별 입력(f_ 로 시작하는 칸)을 항목으로 묶는다. 투어·장비 입력을 모두 담고, 서버가 글의 유형에 따라
- * 필요한 것만 검사해 쓰고 나머지는 버린다.
+ * 필요한 것만 검사해 쓰고 나머지는 버린다 (스토리는 모두 버린다).
  */
 function fieldsFromForm(formData: FormData): Record<string, unknown> {
   const gallery = jsonList(formData, "galleryJson", "갤러리");
@@ -116,6 +116,8 @@ function fieldsFromForm(formData: FormData): Record<string, unknown> {
     buttonLabel: text(formData, "f_buttonLabel", 100),
     affiliate: text(formData, "f_affiliate", 10) === "on",
     sortOrder: text(formData, "f_sortOrder", 10),
+    // 스토리
+    coverMediaId: text(formData, "f_cover", 64),
     // 영상
     videoUrl: text(formData, "f_videoUrl", 400),
     duration: text(formData, "f_duration", 20),
@@ -146,7 +148,7 @@ function fieldsFromForm(formData: FormData): Record<string, unknown> {
 export async function saveContentAction(_: ContentState, formData: FormData): Promise<ContentState> {
   const admin = await requireAdmin();
   const id = text(formData, "id", 64);
-  const values = Object.fromEntries(["title", "slug", "summary", "tags", "answers", "seoTitle", "seoDescription", "origin", "originNote", "f_startDate", "f_endDate", "f_place", "f_recruit", "f_capacity", "f_feeNote", "f_videos", "f_category", "f_thumb", "f_brand", "f_features", "f_priceNote", "f_checkedAt", "f_action", "f_externalUrl", "f_buttonLabel", "f_affiliate", "f_sortOrder", "f_videoUrl", "f_duration", "f_captions", "f_poster", "f_cutLabel", "f_featured", "f_sceneIntent", "f_promptNotes", "f_editNotes", "f_region", "f_season", "f_level", "f_budget"].map((k) => [k, text(formData, k, 5000)]));
+  const values = Object.fromEntries(["title", "slug", "summary", "tags", "answers", "seoTitle", "seoDescription", "origin", "originNote", "f_startDate", "f_endDate", "f_place", "f_recruit", "f_capacity", "f_feeNote", "f_videos", "f_category", "f_thumb", "f_cover", "f_brand", "f_features", "f_priceNote", "f_checkedAt", "f_action", "f_externalUrl", "f_buttonLabel", "f_affiliate", "f_sortOrder", "f_videoUrl", "f_duration", "f_captions", "f_poster", "f_cutLabel", "f_featured", "f_sceneIntent", "f_promptNotes", "f_editNotes", "f_region", "f_season", "f_level", "f_budget"].map((k) => [k, text(formData, k, 5000)]));
   try {
     const db = adminDb();
     const saved = await saveContent(db, admin, id, versionOf(formData), editFromForm(formData));

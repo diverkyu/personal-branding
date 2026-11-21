@@ -142,6 +142,28 @@ describe("목록·상세 내용", () => {
   });
 });
 
+describe("대표 이미지(썸네일)", () => {
+  const img = (url: string, alt: string) => createMedia(db, admin, { storage: "local", storageKey: `media/2026/11/${url}`, url: `/media-dev/${url}`, bytes: 1000, width: 800, height: 600, alt });
+
+  it("지정한 대표 이미지는 목록 항목에 주소·대체 텍스트로 실리고, 지정하지 않은 글은 없다", async () => {
+    const a = await img("a.webp", "바다 사진");
+    await put("with-cover", { fields: { coverMediaId: a.id } });
+    await put("no-cover");
+    const list = await queryLiveStories(db, NOW);
+    expect(list.find((s) => s.slug === "with-cover")?.cover).toEqual({ src: "/media-dev/a.webp", alt: "바다 사진" });
+    expect(list.find((s) => s.slug === "no-cover")?.cover).toBeUndefined();
+  });
+
+  it("삭제된 이미지나 깨진 값은 대표에서 빠져 장식 배경으로 돌아간다", async () => {
+    const gone = await img("gone.webp", "지운 사진");
+    await db.update(media).set({ deletedAt: new Date() }).where(eq(media.id, gone.id));
+    await put("deleted-cover", { fields: { coverMediaId: gone.id } });
+    await put("broken-cover", { fields: { coverMediaId: "nope" } });
+    const list = await queryLiveStories(db, NOW);
+    expect(list.map((s) => s.cover)).toEqual([undefined, undefined]);
+  });
+});
+
 describe("보조 함수", () => {
   const item = (slug: string, tags: string[] = []) => ({ slug, title: slug, summary: "", publishedAt: "2026-11-01", publishedAtIso: "", tags, thumbVariant: "sea-a" as const });
 
@@ -160,17 +182,5 @@ describe("보조 함수", () => {
   it("장식 색은 같은 주소에서 항상 같다", () => {
     expect(thumbVariantFor("same")).toBe(thumbVariantFor("same"));
     expect(["sea-a", "sea-b", "sea-c", "sea-d"]).toContain(thumbVariantFor("anything"));
-  });
-});
-
-
-describe("스토리 대표 이미지", () => {
-  it("발행된 선택만 카드에 보내고 수정 초안과 삭제 이미지는 노출하지 않는다", async () => {
-    const a = await createMedia(db, admin, { storage: "local", storageKey: "media/2026/11/a.webp", url: "/media-dev/a.webp", bytes: 100, width: 100, height: 200, alt: "공개 표지" });
-    const b = await createMedia(db, admin, { storage: "local", storageKey: "media/2026/11/b.webp", url: "/media-dev/b.webp", bytes: 100, width: 100, height: 200, alt: "수정 표지" });
-    await put("cover", { fields: { thumbMediaId: a.id }, draft: { fields: { thumbMediaId: b.id } } });
-    expect((await queryLiveStories(db, NOW))[0]?.cover).toEqual({ src: a.url, alt: "공개 표지" });
-    await db.update(media).set({ deletedAt: new Date() }).where(eq(media.id, a.id));
-    expect((await queryLiveStories(db, NOW))[0]?.cover).toBeUndefined();
   });
 });

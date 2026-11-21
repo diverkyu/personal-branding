@@ -94,10 +94,10 @@ describe("투어 만들기·저장", () => {
     expect((await getContent(db, admin, row.id))?.version).toBe(row.version);
   });
 
-  it("스토리에 투어 항목을 보내도 저장되지 않는다", async () => {
+  it("스토리에 투어 항목을 보내도 저장되지 않는다 (스토리의 항목은 대표 이미지뿐)", async () => {
     const story = await createContent(db, admin, { type: "story", title: "A Story" });
     await saveContent(db, admin, story.id, story.version, edit(story.slug, { title: "A Story", fields: tourFields() }));
-    expect((await getContent(db, admin, story.id))?.fields).toEqual({ thumbMediaId: null });
+    expect((await getContent(db, admin, story.id))?.fields).toEqual({ coverMediaId: null });
   });
 });
 

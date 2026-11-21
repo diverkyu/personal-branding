@@ -12,7 +12,7 @@ export const tourHref = (t: Tour) => `/freediving/tours/${t.slug}`;
 export const equipmentHref = (e: Equipment) => `/freediving/equipment/${e.slug}`;
 
 export function storyCard(s: Pick<Story, "slug" | "title" | "summary" | "publishedAt" | "thumbVariant"> & { cover?: { src: string; alt: string } }): StoryCardData {
-  return { image: s.cover, href: storyHref(s), title: s.title, summary: s.summary, dateLabel: formatDate(s.publishedAt), thumbVariant: s.thumbVariant };
+  return { href: storyHref(s), title: s.title, summary: s.summary, dateLabel: formatDate(s.publishedAt), thumbVariant: s.thumbVariant, ...(s.cover ? { image: s.cover } : {}) };
 }
 
 export function tourCard(t: Tour): TourCardData {

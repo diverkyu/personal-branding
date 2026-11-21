@@ -9,6 +9,18 @@ import { DEFAULT_CONSENT_TEXT, BUILTIN_VERSION, type CurrentConsent } from "@/se
 import { IDLE, type FormState } from "@/lib/forms/state";
 import styles from "./TourInquiryCard.module.css";
 
+/** 동의 문구 뒤의 처리방침 전문 링크. 새 탭으로 열어 쓰던 폼이 지워지지 않게 한다 */
+function ConsentLabel({ text }: { text: string }) {
+  return (
+    <>
+      {text}{" "}
+      <a href="/privacy" target="_blank" rel="noopener noreferrer" className={styles.policyLink} aria-label="개인정보 처리방침 전문 보기 (새 탭)">
+        개인정보 처리방침 전문 보기
+      </a>
+    </>
+  );
+}
+
 const FAILED_TEXT = "전송하지 못했습니다. 잠시 후 다시 시도하거나 이메일로 문의해주세요.";
 
 /** 허니팟 (TOUR-F08). 사람에게는 보이지 않고 보조기기에도 읽히지 않으며, 키보드로 닿지 않는다. 값이 있으면 서버가 차단한다. */
@@ -76,7 +88,7 @@ export function ReservationForm({ slug, capacity, consent = { version: BUILTIN_V
         error={err.message}
         onInput={(e) => setCount(e.currentTarget.value.length)}
       />
-      <Checkbox id="inq-consent" name="consent" required label={consent.text} error={err.consent} />
+      <Checkbox id="inq-consent" name="consent" required label={<ConsentLabel text={consent.text} />} error={err.consent} />
       <input type="hidden" name="consentVersion" value={consent.version} />
       <Honeypot />
       <Button type="submit" size="L" busy={pending} className={styles.submit}>
@@ -104,7 +116,7 @@ export function NoticeForm({ slug, consent = { version: BUILTIN_VERSION, text: D
     <form ref={formRef} action={action} className={styles.form} aria-label="소식 받기" noValidate>
       <TextField id="notify-name" name="name" label="이름" required autoComplete="name" maxLength={LIMITS.nameMax} defaultValue={val.name} error={err.name} />
       <TextField id="notify-email" name="email" type="email" label="이메일" required autoComplete="email" maxLength={LIMITS.emailMax} defaultValue={val.email} error={err.email} />
-      <Checkbox id="notify-consent" name="consent" required label={consent.text} error={err.consent} />
+      <Checkbox id="notify-consent" name="consent" required label={<ConsentLabel text={consent.text} />} error={err.consent} />
       <input type="hidden" name="consentVersion" value={consent.version} />
       <Honeypot />
       <Button type="submit" size="M" busy={pending}>
