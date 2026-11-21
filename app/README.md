@@ -30,6 +30,7 @@ npm run dev                  # http://localhost:3000
 | `npm run admin:create` | 어드민 계정 생성 (`admin:reset-password`, `admin:reset-2fa`도 있음). 비밀번호는 터미널에서 직접 입력 |
 | `npm run test:remote` | 배포된 주소 스모크 시험 (`REMOTE_URL=… npm run test:remote`, 절차는 INFRASTRUCTURE §10) |
 | `npm run db:cleanup-smoke` | 원격 스모크 시험이 남긴 가짜 문의 삭제 |
+| `npm run dev:seed` · `dev:seed-clean` | **개발 DB 전용** 시험 데이터(가상 투어 4개·신청 14건)를 넣고/지움. 시험이 아닌 발행 콘텐츠가 있으면 멈춤 |
 | `npm run test:e2e` | 운영 빌드를 3100 포트(`E2E_PORT`로 변경 가능)로 띄워 Chrome에서 390 / 768 / 1440 폭으로 시험. 캡처는 `artifacts/`에 저장 |
 
 E2E는 설치된 Chrome을 쓴다. 번들 Chromium을 쓰려면 `PW_CHANNEL= npx playwright install chromium` 후 `PW_CHANNEL= npm run test:e2e`.

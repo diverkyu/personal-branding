@@ -52,6 +52,7 @@ npm run test:e2e     # 실제 Chrome, 화면 폭 390/768/1440, 운영 빌드를 
 npm run db:generate  # 스키마 변경으로 마이그레이션 SQL 생성 (DB 접속 불필요)
 npm run db:migrate   # DATABASE_URL 의 DB 에 마이그레이션 적용 — 대상 DB 를 먼저 확인한다 (§8)
 npm run db:status    # 코드와 DB 의 마이그레이션 차이를 읽기만 해서 보여 줌 — 배포 전 dev·운영 모두 OK 인지 본다 (§8)
+npm run dev:seed       # 개발 DB 전용: 가상 투어·신청 시험 데이터 넣기 (dev:seed-clean 으로 지움)
 npm run admin:create # 어드민 계정 생성·재설정 (admin:reset-password, admin:reset-2fa). 비밀번호는 사람이 터미널에서 입력
 ```
 
