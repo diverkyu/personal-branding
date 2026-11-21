@@ -213,6 +213,37 @@ describe("발행된 글 수정 (초안 칸)", () => {
   });
 });
 
+describe("스토리 대표 이미지", () => {
+  let seq = 0;
+  const img = (n: string) => createMedia(db, admin, { storage: "local", storageKey: `media/2026/11/${n}-${++seq}.webp`, url: `/media-dev/${n}-${seq}.webp`, bytes: 1000, width: 800, height: 600, alt: `사진 ${n}` });
+  const body = (...ids: string[]) => ({ type: "doc", content: ids.map((id) => ({ type: "image", attrs: { mediaId: id } })) }) as never;
+
+  it("본문에 있는 이미지만 대표로 저장되고, 본문에서 빠지면 대표도 사라진다", async () => {
+    const a = await img("a");
+    const b = await img("b");
+    const c = await make("대표 시험", { body: body(a.id, b.id), fields: { coverMediaId: b.id } });
+    expect((await getContent(db, admin, c.id))!.fields).toEqual({ coverMediaId: b.id });
+    const s = await saveContent(db, admin, c.id, c.version, edit({ slug: c.slug, body: body(a.id), fields: { coverMediaId: b.id } }));
+    expect((await getContent(db, admin, c.id))!.fields).toEqual({ coverMediaId: null });
+    await saveContent(db, admin, c.id, s.version, edit({ slug: c.slug, body: body(a.id), fields: { coverMediaId: a.id } }));
+    expect((await getContent(db, admin, c.id))!.fields).toEqual({ coverMediaId: a.id });
+  });
+
+  it("올바르지 않은 대표 값은 거부하고, 발행된 글의 대표 변경은 초안에 쌓였다가 반영하면 공개 값이 바뀐다", async () => {
+    const a = await img("a");
+    const b = await img("b");
+    const c = await make("대표 초안", { body: body(a.id, b.id), fields: { coverMediaId: a.id } });
+    await expect(saveContent(db, admin, c.id, c.version, edit({ slug: c.slug, body: body(a.id), fields: { coverMediaId: "깨짐" } }))).rejects.toThrow("대표 이미지");
+    const p = await transitionContent(db, admin, c.id, "published", { version: c.version, now: NOW });
+    const s = await saveContent(db, admin, c.id, p.version, edit({ slug: c.slug, body: body(a.id, b.id), fields: { coverMediaId: b.id } }));
+    expect(s.savedAsDraft).toBe(true);
+    expect((await getContent(db, admin, c.id))!.fields).toEqual({ coverMediaId: a.id });
+    expect(editableView((await getContent(db, admin, c.id))!).fields).toEqual({ coverMediaId: b.id });
+    await publishDraft(db, admin, c.id, s.version);
+    expect((await getContent(db, admin, c.id))!.fields).toEqual({ coverMediaId: b.id });
+  });
+});
+
 describe("목록·일정·삭제", () => {
   it("유형·상태·검색으로 거르고 상태별 개수를 돌려준다 (와일드카드는 글자)", async () => {
     await make("Alpha Dive");

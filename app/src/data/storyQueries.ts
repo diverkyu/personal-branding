@@ -11,6 +11,7 @@ import { and, desc, eq, inArray, isNull, lte, or, sql } from "drizzle-orm";
 import type { AdminDb } from "@/data/admin/db";
 import { collectMediaIds, plainTextFromBody, sanitizeBody, type BodyDoc } from "@/content/body";
 import type { BodyMedia } from "@/content/ContentBody";
+import { readStoryFields } from "@/content/storyFields";
 import { contents, media } from "@/db/schema";
 import type { ThumbVariant } from "@/components/ui/Thumb";
 
@@ -25,6 +26,8 @@ export interface StoryListItem {
   publishedAtIso: string;
   tags: string[];
   thumbVariant: ThumbVariant;
+  /** 대표 이미지(목록·카드의 썸네일). 지정하지 않았거나 이미지가 삭제됐으면 없다 → 카드는 장식 배경 */
+  cover?: { src: string; alt: string };
 }
 
 export interface StoryDetail extends StoryListItem {
@@ -74,6 +77,7 @@ export async function queryLiveStories(db: AdminDb, now: Date = new Date()): Pro
       title: contents.title,
       summary: contents.summary,
       tags: contents.tags,
+      fields: contents.fields,
       liveAt,
       // 요약이 비어 있는 글만 본문을 읽는다
       body: sql<unknown>`case when ${contents.summary} = '' then ${contents.body} else null end`,
@@ -81,6 +85,11 @@ export async function queryLiveStories(db: AdminDb, now: Date = new Date()): Pro
     .from(contents)
     .where(liveStories(now))
     .orderBy(desc(liveAt), desc(contents.createdAt));
+
+  // 대표 이미지: 지정된 것만 한 번에 찾는다 (삭제된 이미지는 빠져서 카드가 장식 배경으로 돌아간다)
+  const coverIds = [...new Set(rows.map((r) => readStoryFields(r.fields).coverMediaId).filter((id): id is string => id !== null))];
+  const coverRows = coverIds.length > 0 ? await db.select({ id: media.id, url: media.url, alt: media.alt }).from(media).where(and(inArray(media.id, coverIds), isNull(media.deletedAt))) : [];
+  const coverById = new Map(coverRows.map((m) => [m.id, { src: m.url, alt: m.alt ?? "" }]));
 
   const items: StoryListItem[] = [];
   for (const r of rows) {
@@ -91,7 +100,9 @@ export async function queryLiveStories(db: AdminDb, now: Date = new Date()): Pro
       summary = plainTextFromBody(body.doc).slice(0, SUMMARY_FALLBACK_CHARS);
     }
     const when = at(r.liveAt);
-    items.push({ slug: r.slug, title: r.title, summary, publishedAt: kstDate(when), publishedAtIso: when.toISOString(), tags: r.tags, thumbVariant: thumbVariantFor(r.slug) });
+    const coverId = readStoryFields(r.fields).coverMediaId;
+    const cover = coverId ? coverById.get(coverId) : undefined;
+    items.push({ slug: r.slug, title: r.title, summary, publishedAt: kstDate(when), publishedAtIso: when.toISOString(), tags: r.tags, thumbVariant: thumbVariantFor(r.slug), ...(cover ? { cover } : {}) });
   }
   return items;
 }
