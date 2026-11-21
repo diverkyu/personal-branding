@@ -22,7 +22,9 @@
     "db:cleanup-smoke": "node --env-file-if-exists=.env.local scripts/cleanup-smoke.mjs",
     "admin:create": "tsx --env-file-if-exists=.env.local scripts/admin-account.ts create",
     "admin:reset-password": "tsx --env-file-if-exists=.env.local scripts/admin-account.ts reset-password",
-    "admin:reset-2fa": "tsx --env-file-if-exists=.env.local scripts/admin-account.ts reset-2fa"
+    "admin:reset-2fa": "tsx --env-file-if-exists=.env.local scripts/admin-account.ts reset-2fa",
+    "dev:seed": "tsx --env-file-if-exists=.env.local scripts/dev-seed.ts seed",
+    "dev:seed-clean": "tsx --env-file-if-exists=.env.local scripts/dev-seed.ts clean"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
