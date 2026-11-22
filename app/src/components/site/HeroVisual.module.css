@@ -16,31 +16,17 @@
   color: transparent;
 }
 
-/* 글자가 어떤 사진 위에서도 읽히도록 위·아래만 어둡게 깐다 */
+/* 아래쪽 문구가 어떤 사진 위에서도 읽히도록 아래만 어둡게 깐다 (위쪽은 사진 그대로) */
 .scrim {
   position: absolute;
   inset: 0;
   pointer-events: none;
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--kyu-navy) 45%, transparent) 0%,
-    transparent 28%,
+    transparent 0%,
     transparent 60%,
     color-mix(in srgb, var(--kyu-navy) 72%, transparent) 100%
   );
-}
-
-.top {
-  position: absolute;
-  top: 12%;
-  left: 0;
-  right: 0;
-  margin: 0;
-  text-align: center;
-  color: var(--kyu-paper);
-  font-family: var(--kyu-font-sans);
-  font-size: 15px;
-  letter-spacing: 3px;
 }
 
 .bottom {
@@ -62,10 +48,6 @@
 }
 
 @media (max-width: 680px) {
-  .top {
-    font-size: 13px;
-  }
-
   .bottom {
     font-size: 19px;
   }
