@@ -821,3 +821,13 @@ Phase 1 범위 밖이던 AI 영상 섹션을 앞당겨 구현하는 계획이다
 - **기능 변경 없음**: 태그는 여전히 하나의 자유 목록이다. 태그를 "활동/주제"처럼 묶어 보여 주는 기능은 필요해지면 따로 논의한다.
 - **운영 반영(대기)**: 규강 님이 어드민 > 태그·카테고리에서 같은 태그를 "새 태그 추가"로 등록하면 운영 편집 화면에도 칩이 나타난다. Films에 있는 "AI 영상 제작 가이드" 정리는 운영자가 규강 님께 요청한다.
 
+## 49. 연락처 통일과 SNS 로고 링크 (0.61.0)
+
+- **관측**: About 하단 Contact 영역에 예시 주소(contact@example.com)가 보였다. 원인은 `AboutView`가 `ContactSection`을 설정값 없이 불러 코드 기본값을 썼기 때문이다(홈·/contact 는 설정값을 넘기고 있었다). SNS 링크는 SCREEN-SPEC(CONTACT-07, ABOUT-07, GL-F3)에 있었지만 설정이 없어 빈 목록(`SOCIAL_LINKS`)이었다.
+- **연락처 한곳에서**: `settings/social.ts`의 `contactPropsOf(settings)`가 이메일·안내문·SNS 묶음을 만든다. 홈·/contact·About(공개·어드민 미리보기)이 이것을 쓰고, 푸터는 `socialLinksOf`를 쓴다. 어드민에서 바꾸면 모두 함께 바뀐다(설정 캐시는 저장 때 바로 갱신, 최대 1시간 안전 한도).
+- **설정 추가**(사이트 설정 > 연락): `social.instagram`(인스타그램 주소), `social.youtube`(유튜브 주소). 새 설정 종류 `url`: https만, 허용 호스트만(instagram.com·www.instagram.com / youtube.com·www.youtube.com·m.youtube.com·youtu.be), 아이디·비밀번호가 든 주소 거부, 첫 화면(경로 없음) 거부, `https://`가 없으면 붙여 표준 형식으로 저장. 저장된 값이 규칙에 맞지 않으면 쓰지 않는다. **DB 마이그레이션 없음**(`site_settings` 기존 표).
+- **화면**: 주소가 있는 SNS만 인스타그램 → 유튜브 순서로 로고 버튼(44px 원)을 Contact 영역의 문의 링크 아래와 푸터 메뉴 옆에 둔다. 새 탭(`rel="noopener noreferrer"`), 이름은 `aria-label`("인스타그램 (새 탭)"), 로고 그림은 장식(`aria-hidden`).
+- **로고 그림**: Lucide 1.x에 상표 아이콘이 없어, 같은 선 굵기·24 격자로 단순한 기호를 직접 그렸다(`SocialIcon.tsx`, 공식 로고 파일 복사 없음). 공식 브랜드 표기가 필요하면 각 사의 브랜드 가이드에 따라 교체한다.
+- **시험**: 주소 검사(허용·거부·정리), 저장값 재검사, 순서, 연락 이메일 반영, Contact 영역·푸터 렌더(`social.test.tsx`).
+- **미검증(대기)** 로그인한 어드민 설정 화면, 규강 님의 실제 계정 주소 입력.
+

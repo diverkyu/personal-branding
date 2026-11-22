@@ -4,7 +4,7 @@
  * - 레이아웃·색·글꼴은 설정에 없다 (SCREEN-SPEC §2: 고정 디자인은 개발 요청).
  * - 순수 코드라 서버 액션·화면·시험이 같은 규칙을 쓴다.
  */
-export type SettingType = "text" | "lines" | "email";
+export type SettingType = "text" | "lines" | "email" | "url";
 export type SettingGroup = "home" | "films" | "travel" | "contact" | "footer" | "seo";
 
 export interface SettingDef {
@@ -20,6 +20,8 @@ export interface SettingDef {
   maxLines?: number;
   default: string;
   hint?: string;
+  /** url 일 때 허용하는 사이트(호스트 이름). 이 밖의 주소는 거부한다 */
+  hosts?: readonly string[];
   /** 브랜드 핵심 문구: 저장 전 확인을 받는다 (SCREEN-SPEC §12 결정 1) */
   brandCore?: boolean;
 }
@@ -170,6 +172,28 @@ export const SETTINGS: SettingDef[] = [
     hint: "최대 2줄, 한 줄 40자까지",
   },
   {
+    key: "social.instagram",
+    group: "contact",
+    label: "인스타그램 주소",
+    usedAt: "Contact 영역(홈·/contact·About 하단)과 푸터의 인스타그램 로고 링크 (CONTACT-07, ABOUT-07, GL-F3)",
+    type: "url",
+    maxLength: 200,
+    hosts: ["instagram.com", "www.instagram.com"],
+    default: "",
+    hint: "예: https://www.instagram.com/계정이름 — 비우면 로고가 보이지 않습니다. 누르면 새 탭으로 열립니다.",
+  },
+  {
+    key: "social.youtube",
+    group: "contact",
+    label: "유튜브 주소",
+    usedAt: "Contact 영역(홈·/contact·About 하단)과 푸터의 유튜브 로고 링크 (CONTACT-07, ABOUT-07, GL-F3)",
+    type: "url",
+    maxLength: 200,
+    hosts: ["youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be"],
+    default: "",
+    hint: "예: https://www.youtube.com/@채널이름 — 비우면 로고가 보이지 않습니다. 누르면 새 탭으로 열립니다.",
+  },
+  {
     key: "notify.email",
     group: "contact",
     label: "신청 알림 수신 이메일",
@@ -236,7 +260,30 @@ export function validateSetting(def: SettingDef, raw: string): Validation {
   if (value.includes("\n")) return { ok: false, error: "줄바꿈 없이 한 줄로 입력해 주세요." };
   if (value.length > def.maxLength) return { ok: false, error: `${def.maxLength}자까지 쓸 수 있습니다.` };
   if (def.type === "email" && !EMAIL.test(value)) return { ok: false, error: "이메일 주소 형식이 올바르지 않습니다." };
+  if (def.type === "url") return validateUrl(def, value);
   return { ok: true, value };
+}
+
+/**
+ * 링크 주소 검사: https 로만 열고(앞에 https:// 가 없으면 붙인다), 허용한 사이트만 받으며, 계정 정보가 든 주소는 거부한다.
+ * 저장하는 값은 정리된 주소(URL 표준 형식)다.
+ */
+function validateUrl(def: SettingDef, value: string): Validation {
+  const withScheme = /^[a-z][a-z0-9+.-]*:/i.test(value) ? value : `https://${value}`;
+  let url: URL;
+  try {
+    url = new URL(withScheme);
+  } catch {
+    return { ok: false, error: "주소 형식이 올바르지 않습니다." };
+  }
+  const site = def.hosts?.[0]?.replace(/^www\./, "") ?? "";
+  if (url.protocol !== "https:") return { ok: false, error: "https 로 시작하는 주소만 쓸 수 있습니다." };
+  if (url.username || url.password) return { ok: false, error: "주소 형식이 올바르지 않습니다." };
+  if (def.hosts && !def.hosts.includes(url.hostname.toLowerCase())) return { ok: false, error: `${site} 주소만 쓸 수 있습니다.` };
+  if (url.pathname === "/" && !url.search) return { ok: false, error: "계정이나 채널 주소까지 넣어 주세요." };
+  const clean = url.toString();
+  if (clean.length > def.maxLength) return { ok: false, error: `${def.maxLength}자까지 쓸 수 있습니다.` };
+  return { ok: true, value: clean };
 }
 
 /**

@@ -5,6 +5,7 @@ import { websiteLd } from "@/lib/structured";
 import { HomeHeroSection } from "@/components/site/HomeHeroSection";
 import { getPublicHeroImage } from "@/data/homeHero";
 import { ContactSection } from "@/components/site/ContactSection";
+import { contactPropsOf } from "@/settings/social";
 import { StoryCard } from "@/components/site/StoryCard";
 import { TourCard } from "@/components/site/TourCard";
 import { ReviewCard } from "@/components/site/ReviewCard";
@@ -150,7 +151,7 @@ export default async function HomePage() {
 
       {featuredFilm ? <HomeFilms film={featuredFilm} copy={filmsCopy(settings)} /> : null}
 
-      <ContactSection withFilms={featuredFilm !== null} email={settings["contact.email"]} intro={settings["contact.intro"]?.split("\n")} />
+      <ContactSection withFilms={featuredFilm !== null} {...contactPropsOf(settings)} />
     </>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ContactSection } from "@/components/site/ContactSection";
+import { contactPropsOf } from "@/settings/social";
 import { listFilms } from "@/data/films";
 import { getSiteSettings } from "@/settings/read";
 
@@ -9,5 +10,5 @@ export const metadata: Metadata = { title: "Contact" };
 export default async function ContactPage() {
   const settings = await getSiteSettings();
   const withFilms = (await listFilms()).length > 0;
-  return <ContactSection asPage withFilms={withFilms} email={settings["contact.email"]} intro={settings["contact.intro"]?.split("\n")} />;
+  return <ContactSection asPage withFilms={withFilms} {...contactPropsOf(settings)} />;
 }

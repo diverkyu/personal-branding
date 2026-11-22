@@ -1,15 +1,18 @@
 import { filmsMailto } from "@/config/films";
 import { contactConfig } from "@/config/site";
-import { SOCIAL_LINKS } from "@/config/nav";
 import { Section } from "@/components/ui/Section";
 import { SectionLabel } from "@/components/ui/SectionHeader";
-import { SmartLink } from "@/components/ui/SmartLink";
 import { Icon } from "@/components/ui/Icon";
+import type { SocialLink } from "@/settings/social";
 import { CopyEmailButton } from "./CopyEmailButton";
+import { SocialLinks } from "./SocialIcon";
 import styles from "./ContactSection.module.css";
 
-/** 홈 하단과 /contact 가 함께 쓰는 Contact 영역 (SCREEN-SPEC §5.11). 페이지의 h1 이 아니므로 기본은 h2. */
-export function ContactSection({ asPage = false, email = contactConfig.email, intro = contactConfig.intro, withFilms = false }: { asPage?: boolean; email?: string; intro?: readonly string[]; withFilms?: boolean }) {
+/**
+ * 홈 하단·/contact·About 하단이 함께 쓰는 Contact 영역 (SCREEN-SPEC §5.11). 페이지의 h1 이 아니므로 기본은 h2.
+ * 이메일·안내문·SNS 는 사이트 설정에서 온다(`contactPropsOf`). 기본값은 화면 시험용이다.
+ */
+export function ContactSection({ asPage = false, email = contactConfig.email, intro = contactConfig.intro, social = [], withFilms = false }: { asPage?: boolean; email?: string; intro?: readonly string[]; social?: SocialLink[]; withFilms?: boolean }) {
   const { subjects } = contactConfig;
   const Title = asPage ? "h1" : "h2";
   return (
@@ -54,15 +57,8 @@ export function ContactSection({ asPage = false, email = contactConfig.email, in
             </a>
           </li>
         ) : null}
-        {SOCIAL_LINKS.slice(0, 4).map((l) => (
-          <li key={l.href}>
-            <SmartLink href={l.href}>
-              {l.label}
-              <Icon name="arrow-up-right" size={16} />
-            </SmartLink>
-          </li>
-        ))}
       </ul>
+      <SocialLinks links={social} className={styles.social} itemClassName={styles.socialLink} />
     </Section>
   );
 }
