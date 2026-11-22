@@ -46,12 +46,7 @@ export const FOOTER_LINKS: readonly NavChild[] = [
   { label: "개인정보 처리방침", href: "/privacy" },
 ];
 
-/** 사이트 설정 > SNS (0~4개). 설정 화면이 생기기 전까지 비어 있다. */
-export interface SocialLink {
-  label: string;
-  href: string;
-}
-export const SOCIAL_LINKS: readonly SocialLink[] = [];
+/* SNS 링크는 사이트 설정 > 연락(인스타그램·유튜브 주소)에서 온다: settings/social.ts */
 
 /** 현재 경로가 이 메뉴 항목에 해당하는지. 하위 경로도 포함한다 (/story/abc → Story). */
 export function isCurrentPath(pathname: string, href: string): boolean {

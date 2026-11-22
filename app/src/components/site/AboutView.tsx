@@ -3,6 +3,7 @@ import { ContactSection } from "@/components/site/ContactSection";
 import { PageIntro } from "@/components/layout/PageIntro";
 import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
+import type { ContactProps } from "@/settings/social";
 import pages from "@/app/pages.module.css";
 
 /** 헤드라인의 줄바꿈(최대 2줄)을 화면의 줄바꿈으로 */
@@ -26,10 +27,12 @@ export interface AboutViewProps {
   photo: { url: string; alt: string; width: number; height: number } | null;
   /** 본문 (공개 화면·미리보기가 같은 모양으로 그린다) */
   children: ReactNode;
+  /** 하단 Contact 영역의 이메일·안내문·SNS (사이트 설정). 홈·/contact 와 같은 값을 쓴다 */
+  contact: ContactProps;
 }
 
 /** ABOUT 화면 본체 (SCREEN-SPEC §5.2). 공개 /about 과 어드민 미리보기가 함께 쓴다 */
-export function AboutView({ headline, signature, photo, children }: AboutViewProps) {
+export function AboutView({ headline, signature, photo, children, contact }: AboutViewProps) {
   return (
     <>
       <PageIntro label="01 / ABOUT KYU" tone="light" title={<Headline text={headline} />} />
@@ -57,7 +60,7 @@ export function AboutView({ headline, signature, photo, children }: AboutViewPro
           </Button>
         </div>
       </Section>
-      <ContactSection />
+      <ContactSection {...contact} />
     </>
   );
 }

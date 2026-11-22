@@ -6,6 +6,8 @@ import { getAbout } from "@/data/admin/about";
 import { adminDb } from "@/data/admin/dbServer";
 import { getMediaByIds } from "@/data/admin/media";
 import { requireAdmin } from "@/lib/auth/session";
+import { getSiteSettings } from "@/settings/read";
+import { contactPropsOf } from "@/settings/social";
 
 export const metadata = { title: "About 미리보기 · KYU 어드민", robots: { index: false, follow: false } };
 
@@ -20,7 +22,7 @@ export default async function AboutPreviewPage() {
   const photoRow = content.photoMediaId ? media.find((m) => m.id === content.photoMediaId) : undefined;
   const photo = photoRow && photoRow.alt.trim() ? { url: photoRow.url, alt: photoRow.alt.trim(), width: photoRow.width, height: photoRow.height } : null;
   return (
-    <AboutView headline={content.headline || "(헤드라인 없음)"} signature={content.signature} photo={photo}>
+    <AboutView headline={content.headline || "(헤드라인 없음)"} signature={content.signature} photo={photo} contact={contactPropsOf(await getSiteSettings())}>
       <ContentBody doc={content.body} media={new Map(media.map((m) => [m.id, m]))} />
     </AboutView>
   );

@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { listFilms } from "@/data/films";
 import { listTravel } from "@/data/travel";
 import { getSiteSettings } from "@/settings/read";
+import { socialLinksOf } from "@/settings/social";
 import { SiteFrame } from "@/components/layout/SiteFrame";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SkipLink } from "@/components/layout/SkipLink";
@@ -65,7 +66,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="ko" className={`${dmSans.variable} ${notoSansKr.variable} ${lora.variable}`}>
       <body>
-        <SiteFrame skip={<SkipLink />} header={<SiteHeader showFilms={showFilms} showTravel={showTravel} />} footer={<SiteFooter owner={settings["footer.owner"]} />}>
+        <SiteFrame skip={<SkipLink />} header={<SiteHeader showFilms={showFilms} showTravel={showTravel} />} footer={<SiteFooter owner={settings["footer.owner"]} social={socialLinksOf(settings)} />}>
           {children}
         </SiteFrame>
       </body>

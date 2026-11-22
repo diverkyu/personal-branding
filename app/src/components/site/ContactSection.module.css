@@ -86,3 +86,29 @@
   text-decoration: underline;
   text-underline-offset: 6px;
 }
+
+/* SNS 로고 링크 (CONTACT-07). 누르기 쉬운 크기(44px)를 지킨다 */
+.social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--kyu-touch);
+  height: var(--kyu-touch);
+  border: 1px solid var(--kyu-line-dark-strong);
+  border-radius: 50%;
+  color: var(--kyu-paper);
+}
+
+.socialLink:hover {
+  color: var(--kyu-lime);
+  border-color: var(--kyu-lime);
+}

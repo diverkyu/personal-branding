@@ -10,7 +10,7 @@ export interface SettingField {
   key: string;
   label: string;
   usedAt: string;
-  type: "text" | "lines" | "email";
+  type: "text" | "lines" | "email" | "url";
   maxLength: number;
   maxLines?: number;
   hint?: string;
@@ -48,7 +48,7 @@ export function SettingsGroupForm({ group, title, fields }: { group: string; tit
             {f.type === "lines" ? (
               <Textarea key={`${f.key}-${f.version}-${state.values?.[f.key] ?? ""}`} id={`s-${f.key}`} name={`v_${f.key}`} label={f.label} rows={f.maxLines ?? 2} defaultValue={shown(f)} hint={hint} error={errors[f.key]} surface="light" />
             ) : (
-              <TextField key={`${f.key}-${f.version}-${state.values?.[f.key] ?? ""}`} id={`s-${f.key}`} name={`v_${f.key}`} type={f.type === "email" ? "email" : "text"} label={f.label} defaultValue={shown(f)} maxLength={f.maxLength + 5} hint={hint} error={errors[f.key]} surface="light" />
+              <TextField key={`${f.key}-${f.version}-${state.values?.[f.key] ?? ""}`} id={`s-${f.key}`} name={`v_${f.key}`} type={f.type === "email" ? "email" : f.type === "url" ? "url" : "text"} label={f.label} defaultValue={shown(f)} maxLength={f.maxLength + 5} hint={hint} error={errors[f.key]} surface="light" />
             )}
           </div>
         );
