@@ -48,6 +48,8 @@ export async function generateMetadata(): Promise<Metadata> {
   description: settings["seo.description"] ?? siteConfig.description,
   // 공개 전에는 색인되지 않게 한다. 게시 때 SITE_INDEXING=on 으로 켠다.
   robots: isIndexingAllowed(process.env) ? { index: true, follow: true } : { index: false, follow: false },
+  // iPhone 사파리 "홈 화면에 추가": 아이콘 이름과 주소창 없는 화면 (아이콘은 app/apple-icon.png, 안드로이드는 manifest.ts)
+  appleWebApp: { capable: true, title: siteConfig.name, statusBarStyle: "black" },
   };
 }
 

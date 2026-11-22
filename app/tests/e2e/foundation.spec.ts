@@ -73,6 +73,25 @@ test.describe("보안 기본값", () => {
     expect(response.headers()["content-type"]).toContain("image/svg+xml");
   });
 
+  test("홈 화면 추가: manifest·아이콘·iPhone 설정이 연결되고 파일이 열린다 (GL-M)", async ({ page, request }) => {
+    await page.goto("/");
+    const manifestHref = await page.locator('link[rel="manifest"]').getAttribute("href");
+    expect(manifestHref).toBeTruthy();
+    const res = await request.get(manifestHref!);
+    expect(res.status()).toBe(200);
+    const manifest = (await res.json()) as { display: string; start_url: string; icons: { src: string; type: string }[] };
+    expect(manifest.display).toBe("standalone");
+    expect(manifest.start_url).toBe("/");
+    for (const icon of manifest.icons) {
+      const r = await request.get(icon.src);
+      expect(r.status(), icon.src).toBe(200);
+      expect(r.headers()["content-type"]).toContain("image/png");
+    }
+    const apple = await page.locator('link[rel="apple-touch-icon"]').getAttribute("href");
+    expect((await request.get(apple!)).status()).toBe(200);
+    await expect(page.locator('meta[name="apple-mobile-web-app-title"]')).toHaveAttribute("content", "KYU");
+  });
+
   test("없는 주소는 404 를 돌려준다", async ({ request }) => {
     const response = await request.get("/this-page-does-not-exist");
     expect(response.status()).toBe(404);
