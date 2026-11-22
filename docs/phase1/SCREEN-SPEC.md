@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.62.0** | 2026-11-22 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude |
+| **0.63.0** | 2026-11-22 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 상위: [PRD.md](PRD.md) · [CONCEPT.md](CONCEPT.md) · 시각: [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) · 화면 시안: [mockup/](mockup/README.md) · 지침: [DEVELOPMENT.md](DEVELOPMENT.md) · [SECURITY.md](SECURITY.md)
 
@@ -136,6 +136,19 @@ PRD 요구사항 ID(S-, T-, E-, R-, A-, W-)를 함께 적는다. 이 문서가 P
 - 아이콘만 있는 버튼에는 `aria-label`. 장식 아이콘은 `aria-hidden="true"`.
 - 성공·오류 안내는 `role="status"` (오류는 필요 시 `role="alert"`).
 - 날짜 표기 `2026.11.08`. 기간은 `2026.11.08 – 11.10`.
+
+### 4.5 홈 화면 추가 (GL-M, 0.63.0)
+
+스토어 배포 없이 휴대폰 홈 화면에 사이트를 앱처럼 올릴 수 있게 한다. 화면에 보이는 요소는 없고 브라우저가 읽는 정보다.
+
+| ID | 요소 | 유형 | 내용 | 동작 |
+| --- | --- | --- | --- | --- |
+| GL-M1 | 앱 정보 (`/manifest.webmanifest`) | F | 이름 `KYU — Dive deeper. Create beyond.`, 짧은 이름 `KYU`, 시작 `/`, 색 `#071e29`(theme-color와 같음) | 안드로이드 크롬이 "앱 설치"를 제안. 설치 후 주소창 없이 열림(standalone) |
+| GL-M2 | 홈 화면 아이콘 | F | KYU 아치 로고. 192·512px, 안드로이드 자르기용(maskable) 512px, iPhone용 180px | 원본 `icon.svg`와 같은 모양. `app/scripts/make-app-icons.mjs`로 만든다 |
+| GL-M3 | iPhone 설정 | F | 홈 화면 이름 `KYU`, 주소창 없이 열기, 상태 표시줄 검정 | iPhone은 자동 안내가 없다. 사파리 공유 → "홈 화면에 추가" |
+
+- 오프라인 캐시(service worker)와 푸시 알림은 두지 않는다. 내용이 자주 바뀌는 사이트라 예전 화면이 남는 문제를 피한다.
+- 어드민도 같은 사이트라 설치한 앱에서 `/admin`을 열 수 있다. 시작 화면은 홈이다.
 
 ## 5. 공개 화면 설계
 
