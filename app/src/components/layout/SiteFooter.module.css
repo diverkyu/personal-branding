@@ -76,3 +76,19 @@
     align-items: flex-start;
   }
 }
+
+/* SNS 로고 링크 (GL-F3) */
+.links ul.social {
+  gap: 4px 8px;
+  margin-top: 4px;
+}
+
+.links a.socialLink {
+  justify-content: center;
+  width: var(--kyu-touch);
+  color: var(--kyu-teal-text);
+}
+
+.links a.socialLink:hover {
+  color: var(--kyu-lime);
+}

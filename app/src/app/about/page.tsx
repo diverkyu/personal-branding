@@ -3,6 +3,8 @@ import { DEFAULT_ABOUT } from "@/about/fields";
 import { AboutView } from "@/components/site/AboutView";
 import { ContentBody } from "@/content/ContentBody";
 import { getPublicAbout } from "@/data/about";
+import { getSiteSettings } from "@/settings/read";
+import { contactPropsOf } from "@/settings/social";
 
 export const metadata: Metadata = { title: "About" };
 
@@ -15,9 +17,10 @@ export const revalidate = 300;
  */
 export default async function AboutPage() {
   const about = await getPublicAbout();
+  const contact = contactPropsOf(await getSiteSettings());
   if (!about) {
     return (
-      <AboutView headline={DEFAULT_ABOUT.headline} signature={DEFAULT_ABOUT.signature} photo={null}>
+      <AboutView headline={DEFAULT_ABOUT.headline} signature={DEFAULT_ABOUT.signature} photo={null} contact={contact}>
         {DEFAULT_ABOUT.paragraphs.map((p) => (
           <p key={p}>{p}</p>
         ))}
@@ -25,7 +28,7 @@ export default async function AboutPage() {
     );
   }
   return (
-    <AboutView headline={about.headline} signature={about.signature} photo={about.photo}>
+    <AboutView headline={about.headline} signature={about.signature} photo={about.photo} contact={contact}>
       <ContentBody doc={about.doc} media={new Map(about.media.map((m) => [m.id, m]))} />
     </AboutView>
   );
