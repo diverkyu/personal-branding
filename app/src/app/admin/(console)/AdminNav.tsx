@@ -35,6 +35,7 @@ const GROUPS = [
     title: "사이트",
     items: [
       { href: "/admin/about", label: "About" },
+      { href: "/admin/home-hero", label: "홈 히어로 이미지" },
       { href: "/admin/settings", label: "사이트 설정" },
       { href: "/admin/legal", label: "동의·방침" },
     ],

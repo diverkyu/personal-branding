@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.58.0** | 2026-11-21 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude |
+| **0.59.0** | 2026-11-22 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 상위: [PRD.md](PRD.md) · [CONCEPT.md](CONCEPT.md) · 시각: [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) · 화면 시안: [mockup/](mockup/README.md) · 지침: [DEVELOPMENT.md](DEVELOPMENT.md) · [SECURITY.md](SECURITY.md)
 
@@ -153,7 +153,7 @@ PRD 요구사항 ID(S-, T-, E-, R-, A-, W-)를 함께 적는다. 이 문서가 P
 | HOME-04 | 소개문 (2줄) | S | 사이트 설정 > 홈 | — | 줄 길이 제한 안내 |
 | HOME-05 | 버튼 "나의 세계 둘러보기" | S(라벨), B | 라벨 S, 목적지 F | Story 목록으로 이동 | primary 버튼 |
 | HOME-06 | 보조 라벨 `LEE DONG KYU · 이동규`, `SCROLL TO EXPLORE` | F | — | — | 장식. 모바일에서는 숨길 수 있음 |
-| HOME-07 | 히어로 수중 일러스트 (아치) | F | 코드 | — | `role="img"`와 설명 문구. 교체는 개발 요청 |
+| HOME-07 | 히어로 그림 (아치). 기본은 수중 일러스트 | S (공개 반영) | 어드민 > 홈 히어로 이미지 (0.59.0, ADMIN-DESIGN §47). 저장 → 미리보기 → 공개 반영, 기본 일러스트로 되돌리기 | — | 기본 일러스트는 `role="img"`와 설명 문구, `CONCEPT VISUAL` 표시. 이미지일 때는 대체 텍스트 필수, 위에 `01 / INTO THE BLUE`·"한 호흡, 무한한 가능성." 문구를 얹고 `CONCEPT VISUAL`은 숨김 |
 | HOME-08 | 구분 띠 텍스트 | S | 사이트 설정 > 홈 | — | 한 줄, 넘치면 잘림(장식, `aria-hidden`) |
 | HOME-09 | 섹션 라벨 `01 / ABOUT KYU` | F | — | — | 번호는 메뉴 순서와 연동 |
 | HOME-10 | About 요약 헤드라인 "서로 다른 두 세계. 하나의 호기심." | S | 사이트 설정 > 홈 (About 페이지 헤드라인과 공유) | — | |

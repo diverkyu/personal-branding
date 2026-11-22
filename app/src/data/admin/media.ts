@@ -3,7 +3,8 @@
  * 업로드·대체 텍스트 수정·삭제는 활동 기록에 남는다 (파일명·대체 텍스트 내용은 기록하지 않는다).
  */
 import { and, count, desc, eq, inArray, isNull, or, sql } from "drizzle-orm";
-import { about, contents, media, type MediaRow } from "@/db/schema";
+import { about, contents, media, siteSettings, type MediaRow } from "@/db/schema";
+import { HERO_SETTING_KEY } from "@/home/heroImage";
 import { AppError } from "@/lib/errors";
 import type { AdminSession } from "@/lib/auth/types";
 import { recordAudit } from "./audit";
@@ -92,7 +93,12 @@ export async function mediaUsageCount(db: AdminDb, admin: AdminSession, id: stri
     .select({ value: count() })
     .from(about)
     .where(or(eq(about.photoMediaId, id), sql`${about.body}::text like ${pattern}`, sql`${about.draft}::text like ${pattern}`));
-  return (row?.value ?? 0) + (aboutRow?.value ?? 0);
+  // 홈 히어로 이미지(공개 중·수정 중)도 이미지를 쓴다
+  const [heroRow] = await db
+    .select({ value: count() })
+    .from(siteSettings)
+    .where(and(eq(siteSettings.key, HERO_SETTING_KEY), sql`${siteSettings.value} like ${pattern}`));
+  return (row?.value ?? 0) + (aboutRow?.value ?? 0) + (heroRow?.value ?? 0);
 }
 
 export interface PickerMedia {
