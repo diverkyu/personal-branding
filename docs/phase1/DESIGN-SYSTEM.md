@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.63.0** | 2026-11-22 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.63.1** | 2026-11-22 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [CONCEPT.md](CONCEPT.md) · 화면 시안: [mockup/](mockup/README.md) · 시각 보기: 캔버스의 "디자인 시스템" 보드
 
@@ -102,6 +102,7 @@
 | `Section` | 배경, 위아래·좌우 여백, 컨테이너 | `dark`(navy), `light`(paper), `teal` |
 | `SectionHeader` | `SectionLabel` + 제목 + 보조 문구(선택) + 우측 링크(선택) | 제목 단계 H2 / H3 |
 | `SectionLabel` | `01 / ABOUT KYU` 형식. 번호는 메뉴 순서 | 어두운/밝은 배경 색 자동 |
+| `PageIntro` | 하위 페이지 맨 위 제목(h1). 같은 색 내용은 **children 으로 넣고** 제목과 40px(`pages.after`) 띄운다 | 같은 색 `Section`을 바로 아래에 따로 두지 않는다 — 위아래 여백이 겹쳐 200px(모바일 140px)이 빈다 (0.63.1) |
 
 ### 3.2 행동·상태
 
