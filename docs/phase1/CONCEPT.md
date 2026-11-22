@@ -38,7 +38,7 @@
 /admin                     CMS 어드민 (비공개)
 ```
 
-내비게이션 (확정 순서): `KYU　|　About　Story　Freediving　|　Contact ↗` (Freediving은 드롭다운으로 투어·장비·후기). 먼저 규강이 누구인지(About), 규강이 생각하는 것(Story)을 보여 준 뒤 프리다이빙 활동(Freediving)으로 이어지는 순서다. Phase 2에서 `Films`는 Freediving 뒤, Contact 앞에 추가된다.
+내비게이션 (확정 순서): `KYU　|　About　Story　Freediving　|　Contact ↗` (Freediving은 드롭다운으로 투어·장비·후기). 먼저 규강이 누구인지(About), 규강이 생각하는 것(Story)을 보여 준 뒤 프리다이빙 활동(Freediving)으로 이어지는 순서다. `Films`는 Freediving 뒤, Contact 앞에 있다. 처음에는 Phase 2로 두었으나 0.37.0~0.38.0에 구현되었고, **첫 작품을 공개해야 메뉴에 나타난다**(ADMIN-DESIGN §31).
 
 ## 4. 페이지별 콘셉트
 
