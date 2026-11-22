@@ -39,10 +39,6 @@ export default async function HomeHeroAdminPage({ searchParams }: { searchParams
         <Link href="/" className={styles.linkButton} target="_blank" rel="noopener noreferrer">
           홈 보기 (새 탭)
         </Link>
-        {" · "}
-        <a href="/admin/home-hero/preview" className={styles.linkButton} target="_blank" rel="noopener noreferrer">
-          수정 중인 내용 미리보기 (새 탭)
-        </a>
       </p>
       <p className={styles.note}>
         홈 첫 화면 오른쪽의 아치 모양 그림입니다. 이미지를 고르면 그 위에 &ldquo;01 / INTO THE BLUE&rdquo;와 &ldquo;한 호흡, 무한한 가능성.&rdquo;이 그대로 얹히고, &ldquo;CONCEPT VISUAL&rdquo; 표시는 기본 일러스트에서만 보입니다. 저장해도 홈은 바뀌지 않고 <strong>&ldquo;공개 반영&rdquo;</strong>을 눌러야 바뀝니다.
@@ -86,8 +82,13 @@ export default async function HomeHeroAdminPage({ searchParams }: { searchParams
                   </ul>
                 </div>
               ) : (
-                <p className={styles.note}>공개 전 점검을 통과했습니다. 미리보기로 확인해 보세요.</p>
+                <p className={styles.note}>공개 전 점검을 통과했습니다. 공개 반영 전에 미리보기로 확인해 보세요.</p>
               )}
+              <p style={{ marginTop: 12 }}>
+                <a href="/admin/home-hero/preview" className={styles.linkButton} target="_blank" rel="noopener noreferrer">
+                  수정 중인 내용 미리보기 (새 탭)
+                </a>
+              </p>
               <form action={publishHeroAction} style={{ marginTop: 12 }}>
                 <input type="hidden" name="version" value={view.version} />
                 <button type="submit" className={styles.smallButton} disabled={view.problems.length > 0}>
