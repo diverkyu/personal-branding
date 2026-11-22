@@ -21,6 +21,7 @@ import { BUILTIN_VERSION } from "../src/settings/consent";
 import { createContent, deleteContent, saveContent, transitionContent } from "../src/data/admin/contents";
 import { saveAboutDraft, publishAbout } from "../src/data/admin/about";
 import { publishHero, saveHeroDraft } from "../src/data/admin/homeHero";
+import { addRegisteredTerm } from "../src/data/admin/taxonomyRegistry";
 import { HERO_SETTING_KEY, readHeroState } from "../src/home/heroImage";
 import { createReview, deleteReview, setReviewStatus, withdrawReview } from "../src/data/admin/reviews";
 import { publishConsentVersion } from "../src/data/admin/settings";
@@ -30,7 +31,7 @@ import type { AdminDb } from "../src/data/admin/db";
 import type { AdminSession } from "../src/lib/auth/types";
 import { getMediaStorage, type MediaStorage } from "../src/media/storage";
 import type { BodyDoc } from "../src/content/body";
-import { INSTAGRAM_SAMPLE, MARK, ORIGIN_NOTE, SLUG_PREFIX as PREFIX, VIMEO_SAMPLE, YOUTUBE_SAMPLE, YOUTUBE_SAMPLE_2, artwork, code, doc, h2, h3, hr, img, longParagraphs, ol, p, quote, table, ul, video } from "./dev-seed-data";
+import { INSTAGRAM_SAMPLE, MARK, ORIGIN_NOTE, STORY_TAGS, SLUG_PREFIX as PREFIX, VIMEO_SAMPLE, YOUTUBE_SAMPLE, YOUTUBE_SAMPLE_2, artwork, code, doc, h2, h3, hr, img, longParagraphs, ol, p, quote, table, ul, video } from "./dev-seed-data";
 
 const ACTOR: AdminSession = { userId: "dev-seed", name: "시험 데이터", email: "dev-seed@example.com" };
 const DAY = 24 * 60 * 60 * 1000;
@@ -186,7 +187,7 @@ async function seedStories(db: AdminDb, im: Images): Promise<number> {
       slug: `${PREFIX}story-ai-guide`,
       title: `${MARK} AI 영상 제작 가이드 샘플 (표·복사 상자·영상 포함)`,
       summary: "표, 복사 상자, 영상, 이미지가 모두 들어간 긴 가이드 글의 가상 샘플입니다.",
-      tags: ["AI영상", "제작가이드", "튜토리얼"],
+      tags: ["AI영상"],
       answers: ["AI 영상은 어떤 순서로 만드나요?", "프롬프트는 어떻게 쓰나요?"],
       body: doc(
         p(`${MARK} 이 글은 사이트의 본문 서식이 모두 보이는지 확인하는 가상 샘플입니다.`),
@@ -216,7 +217,7 @@ async function seedStories(db: AdminDb, im: Images): Promise<number> {
       slug: `${PREFIX}story-freediving-notes`,
       title: `${MARK} 프리다이빙 기록: 숨 고르기와 평정심`,
       summary: "대표 이미지를 두 번째 이미지로 고른 글의 가상 샘플입니다. 발행 뒤 수정 중인 초안도 남겨 두었습니다.",
-      tags: ["프리다이빙", "기록"],
+      tags: ["프리다이빙", "일상"],
       body: doc(p(`${MARK} 가상 기록입니다.`), img(c[1]!), h2("숨 고르기"), p(`${MARK} 숨을 고르는 방법에 대한 가상 문단입니다.`), img(c[2]!), p(`${MARK} 끝.`)),
       fields: { coverMediaId: c[2] },
       final: "published",
@@ -224,29 +225,39 @@ async function seedStories(db: AdminDb, im: Images): Promise<number> {
     },
     {
       type: "story",
-      slug: `${PREFIX}story-workflow`,
-      title: `${MARK} 워크플로우 정리 (이미지 없는 글)`,
-      summary: "본문에 이미지가 없어 카드가 색 배경으로 보이는 글의 가상 샘플입니다.",
-      tags: ["워크플로우", "튜토리얼"],
-      body: doc(h2("순서"), ol("아이디어 적기", "장면 나누기", "시험 생성", "편집"), p(`${MARK} 이미지가 없는 글은 대표 이미지 없이 색 배경 카드로 보입니다.`)),
+      slug: `${PREFIX}story-coffee`,
+      title: `${MARK} 오늘의 커피 기록 (이미지 없는 글)`,
+      summary: "커피 일상 기록의 가상 샘플입니다. 본문에 이미지가 없어 카드가 색 배경으로 보입니다.",
+      tags: ["커피", "일상"],
+      body: doc(p(`${MARK} 하루를 여는 커피 한 잔에 대한 가상 기록입니다.`), h2("오늘 마신 것"), ul("원두: 가상 원두", "추출: 핸드드립 (가상)", "한 줄 감상: 시험 문장"), p(`${MARK} 이미지가 없는 글은 대표 이미지 없이 색 배경 카드로 보입니다.`)),
       final: "published",
     },
     {
       type: "story",
       slug: `${PREFIX}story-long`,
-      title: `${MARK} 아주 긴 글 (스크롤·가독성 확인)`,
-      summary: "문단이 많은 긴 글의 가상 샘플입니다.",
-      tags: ["기록", "워크플로우"],
+      title: `${MARK} 바다와 커피 사이에서 만난 사람들 (긴 글)`,
+      summary: "사람 이야기를 담은 긴 글의 가상 샘플입니다. 스크롤과 가독성 확인용입니다.",
+      tags: ["사람", "일상"],
       body: doc(img(c[3]!), h2("1부"), ...longParagraphs("1부", 5), h2("2부"), ...longParagraphs("2부", 5), hr(), h2("3부"), ...longParagraphs("3부", 5)),
       fields: { coverMediaId: c[3] },
       final: "published",
     },
-    { type: "story", slug: `${PREFIX}story-ai-short`, title: `${MARK} AI 영상 한 줄 팁`, summary: "짧은 글의 가상 샘플입니다.", tags: ["AI영상"], body: doc(p(`${MARK} 짧은 팁 한 줄.`)), final: "published" },
-    { type: "story", slug: `${PREFIX}story-draft`, title: `${MARK} 임시저장 글`, summary: "임시저장 상태의 가상 글입니다.", tags: ["기록"], final: "draft" },
-    { type: "story", slug: `${PREFIX}story-review`, title: `${MARK} 검토 중인 글`, summary: "검토 상태의 가상 글입니다.", tags: ["기록"], body: doc(img(c[4]!), p(`${MARK} 검토 중.`)), fields: { coverMediaId: c[4] }, final: "review" },
-    { type: "story", slug: `${PREFIX}story-scheduled`, title: `${MARK} 예약 발행 글 (7일 뒤)`, summary: "예약 상태의 가상 글입니다. 7일 뒤에 공개되도록 예약되어 있습니다.", tags: ["기록"], final: "scheduled" },
-    { type: "story", slug: `${PREFIX}story-archived`, title: `${MARK} 보관한 글`, summary: "보관 상태의 가상 글입니다.", tags: ["기록"], final: "archived" },
-    { type: "story", slug: `${PREFIX}story-trashed`, title: `${MARK} 휴지통의 글`, summary: "휴지통에 있는 가상 글입니다.", tags: ["기록"], final: "trashed" },
+    {
+      type: "story",
+      slug: `${PREFIX}story-community`,
+      title: `${MARK} 커뮤니티 모임을 마치고`,
+      summary: "커뮤니티 활동 기록의 가상 샘플입니다.",
+      tags: ["커뮤니티", "사람"],
+      body: doc(p(`${MARK} 여러 사람이 모인 저녁에 대한 가상 기록입니다. 실제 모임이나 사람을 담고 있지 않습니다.`), img(c[5]!), h2("기억에 남은 것"), p(`${MARK} 가상 문단입니다.`)),
+      fields: { coverMediaId: c[5] },
+      final: "published",
+    },
+    { type: "story", slug: `${PREFIX}story-host-short`, title: `${MARK} SMCC 호스트 기록 한 줄`, summary: "호스트 활동을 남기는 짧은 글의 가상 샘플입니다.", tags: ["SMCC 호스트", "커뮤니티"], body: doc(p(`${MARK} 호스트로 보낸 하루를 한 줄로 남기는 가상 기록입니다.`)), final: "published" },
+    { type: "story", slug: `${PREFIX}story-draft`, title: `${MARK} 임시저장 글`, summary: "임시저장 상태의 가상 글입니다.", tags: ["일상"], final: "draft" },
+    { type: "story", slug: `${PREFIX}story-review`, title: `${MARK} 검토 중인 글`, summary: "검토 상태의 가상 글입니다.", tags: ["일상"], body: doc(img(c[4]!), p(`${MARK} 검토 중.`)), fields: { coverMediaId: c[4] }, final: "review" },
+    { type: "story", slug: `${PREFIX}story-scheduled`, title: `${MARK} 예약 발행 글 (7일 뒤)`, summary: "예약 상태의 가상 글입니다. 7일 뒤에 공개되도록 예약되어 있습니다.", tags: ["일상"], final: "scheduled" },
+    { type: "story", slug: `${PREFIX}story-archived`, title: `${MARK} 보관한 글`, summary: "보관 상태의 가상 글입니다.", tags: ["일상"], final: "archived" },
+    { type: "story", slug: `${PREFIX}story-trashed`, title: `${MARK} 휴지통의 글`, summary: "휴지통에 있는 가상 글입니다.", tags: ["일상"], final: "trashed" },
   ];
   for (const s of specs) await put(db, s);
   return specs.length;
@@ -257,7 +268,7 @@ async function seedFilms(db: AdminDb, im: Images): Promise<number> {
   const notes = { sceneIntent: `${MARK} 장면 의도: 감정이 바뀌는 순간을 보여 주려 했습니다.`, promptNotes: `${MARK} 프롬프트 예시\n15초 길이의 세로 영상을 만들어 줘.\n배경음악은 넣지 마.`, editNotes: `${MARK} 편집 판단: 대사 전후의 기다림을 줄였습니다.` };
   const specs: Spec[] = [
     { type: "video", slug: `${PREFIX}film-youtube`, title: `${MARK} 대표 작품 (YouTube)`, summary: "대표 작품으로 표시된 가상 영상입니다.", tags: ["AI영상"], body: doc(p(`${MARK} 영상 소개 문단입니다.`)), fields: { videoUrl: YOUTUBE_SAMPLE, duration: "0:15", hasCaptions: true, posterMediaId: P[0], cutLabel: "FINAL CUT", featured: true, ...notes }, final: "published" },
-    { type: "video", slug: `${PREFIX}film-vimeo`, title: `${MARK} Vimeo 영상`, summary: "Vimeo 주소를 쓴 가상 영상입니다. 자막은 없습니다.", tags: ["AI영상", "제작가이드"], fields: { videoUrl: VIMEO_SAMPLE, duration: "1:02", hasCaptions: false, posterMediaId: P[1], cutLabel: "", featured: false, sceneIntent: notes.sceneIntent, promptNotes: "", editNotes: "" }, final: "published" },
+    { type: "video", slug: `${PREFIX}film-vimeo`, title: `${MARK} Vimeo 영상`, summary: "Vimeo 주소를 쓴 가상 영상입니다. 자막은 없습니다.", tags: ["AI영상", "단편"], fields: { videoUrl: VIMEO_SAMPLE, duration: "1:02", hasCaptions: false, posterMediaId: P[1], cutLabel: "", featured: false, sceneIntent: notes.sceneIntent, promptNotes: "", editNotes: "" }, final: "published" },
     { type: "video", slug: `${PREFIX}film-instagram`, title: `${MARK} 인스타 릴스 영상`, summary: "인스타 릴스 주소를 쓴 가상 영상입니다(세로 영상 표시 확인).", tags: ["AI영상"], fields: { videoUrl: INSTAGRAM_SAMPLE, duration: "0:15", hasCaptions: true, posterMediaId: P[2], cutLabel: "ROUGH CUT", featured: false, ...notes }, final: "published" },
     { type: "video", slug: `${PREFIX}film-shorts`, title: `${MARK} YouTube Shorts 영상`, summary: "짧은 세로 영상의 가상 데이터입니다.", tags: ["AI영상"], fields: { videoUrl: YOUTUBE_SAMPLE_2, duration: "0:30", hasCaptions: false, posterMediaId: P[3], cutLabel: "", featured: false, ...notes }, final: "published" },
     { type: "video", slug: `${PREFIX}film-draft`, title: `${MARK} 포스터가 없는 영상 (임시저장)`, summary: "포스터가 없어 발행할 수 없는 상태의 가상 영상입니다.", fields: { videoUrl: YOUTUBE_SAMPLE, duration: "", hasCaptions: false, posterMediaId: null, cutLabel: "", featured: false, sceneIntent: "", promptNotes: "", editNotes: "" }, final: "draft" },
@@ -409,6 +420,13 @@ async function seedHero(db: AdminDb, im: Images): Promise<boolean> {
   return true;
 }
 
+/** Story 태그를 미리 등록해 둔다. 이미 등록된 이름은 그대로 둔다. 등록 목록은 지우기(dev:seed-clean) 대상이 아니다(사람이 등록한 이름과 구분할 수 없어서) */
+async function seedTagRegistry(db: AdminDb): Promise<number> {
+  let added = 0;
+  for (const name of STORY_TAGS) if ((await addRegisteredTerm(db, ACTOR, "tag", name)).added) added += 1;
+  return added;
+}
+
 async function seedConsent(db: AdminDb): Promise<void> {
   const privacy = [
     `${MARK} 개인정보 처리방침 (개발 DB 시험용 가상 문서)`,
@@ -431,6 +449,7 @@ async function seed(db: AdminDb, storage: MediaStorage) {
   const im = await makeImages(db, storage);
   done.push(`이미지 ${im.cover.length + im.poster.length + im.gear.length + 2 + im.fillerCount}장`);
   done.push(`Story ${await seedStories(db, im)}`);
+  done.push(`Story 태그 미리 등록 ${await seedTagRegistry(db)}`);
   done.push(`Films ${await seedFilms(db, im)}`);
   done.push(`장비 ${await seedEquipment(db, im)}`);
   done.push(`여행 추천 ${await seedTravel(db)}`);

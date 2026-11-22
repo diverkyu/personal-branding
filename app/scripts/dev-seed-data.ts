@@ -11,6 +11,12 @@ export const SLUG_PREFIX = "test-";
 /** 시험 콘텐츠에 붙는 제작 메모. 시험 데이터 구분과 운영 DB 오인 방지 점검에 쓴다 */
 export const ORIGIN_NOTE = "dev-seed 시험 데이터";
 
+/**
+ * Story 의 성격(규강 님의 개인 기록)을 보여 주는 태그. 시험 글에 쓰고, 태그 미리 등록 목록에도 넣어 편집 화면의 칩으로 보이게 한다.
+ * Films 는 완성된 영상 작품을 모아 두는 곳이라 "AI영상"·"단편" 같은 작품 태그만 쓴다.
+ */
+export const STORY_TAGS = ["일상", "커피", "사람", "커뮤니티", "SMCC 호스트", "프리다이빙", "AI영상"] as const;
+
 // ---------- 이미지 (글자 없는 그림) ----------
 
 function hex(h: number, s: number, l: number): string {
