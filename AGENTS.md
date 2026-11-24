@@ -41,6 +41,7 @@ Next.js 16.4(App Router) + React 19 + TypeScript strict + CSS 변수·CSS Module
 | 편집기 | Tiptap | 허용 목록 밖의 서식은 서버가 거른다 |
 | 이미지 | Vercel Blob | 업로드는 서버가 WebP로 다시 만들며 메타데이터를 버린다 |
 | 접수 알림 메일 | Resend | 구현됨(0.39.0). 실제 발송은 키·발신 도메인 연결 후(규강) |
+| 도메인 | `diverkyu.com` (가비아, 규강 소유) | 2026-11-24 연결, 대표 주소 `https://www.diverkyu.com`. 코드에는 쓰지 않고 `SITE_URL` 만 따른다 |
 
 호스팅 전용 기능에 직접 기대는 코드를 넣지 않는다 — 데이터 접근은 `data/` 어댑터 뒤에 둔다. 의존성은 **상업적 사용이 명확한 라이선스만** 추가하고 [THIRD-PARTY-NOTICES](app/THIRD-PARTY-NOTICES.md)에 적는다. 버전을 올릴 때는 [DEVELOPMENT §10](docs/phase1/DEVELOPMENT.md) 규칙(안정판, 한 번에 하나, `chore:` 커밋)을 따른다.
 

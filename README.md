@@ -5,8 +5,8 @@
 프리다이빙 강사이자 AI 크리에이터 **이동규 · KYU**의 개인 브랜딩 사이트(diverkyu.com)와, 규강이 코드 없이 글과 신청을 관리하는 **CMS 어드민**을 만드는 저장소입니다.
 
 - **GitHub:** [diverkyu/personal-branding](https://github.com/diverkyu/personal-branding)
-- **현재 단계:** Phase 1 구현 완료에 가깝고 정식 공개(게시) 이전입니다. 임시 주소(`*.vercel.app`)로 운영 중이며 검색엔진에는 노출되지 않습니다(noindex). 진행 현황과 결정은 [문서 변경 이력](docs/phase1/CHANGELOG.md), 운영 기록은 [docs/operations](docs/operations/)에 있습니다.
-- **도메인:** diverkyu.com은 가칭이며, 주소는 `SITE_URL` 설정으로 바뀌므로 코드 수정 없이 바꿀 수 있습니다.
+- **현재 단계:** Phase 1 구현 완료에 가깝고 정식 공개(게시) 이전입니다. 도메인 **[www.diverkyu.com](https://www.diverkyu.com)** 이 연결되어 있고(2026-11-24), 검색엔진에는 아직 노출되지 않습니다(noindex). 남은 공개 조건은 Vercel Pro 전환, 개인정보 처리방침 법무 확인·게시, `SITE_URL` 변경입니다. 진행 현황과 결정은 [문서 변경 이력](docs/phase1/CHANGELOG.md), 운영 기록은 [docs/operations](docs/operations/)에 있습니다.
+- **도메인:** `diverkyu.com`(가비아 등록, 규강 소유). 사이트 주소는 `SITE_URL` 설정 하나로 정하므로 바뀌어도 코드 수정이 필요 없습니다. 상태와 남은 일은 [INFRASTRUCTURE §11](docs/phase1/INFRASTRUCTURE.md).
 
 ## 지금 있는 것
 
@@ -30,9 +30,10 @@
 | 기능 | 내용 |
 | --- | --- |
 | 로그인 | 이메일·비밀번호 + **TOTP 2차 인증 필수**, 가입 화면 없음(계정은 운영자가 스크립트로 생성) |
+| 대시보드 | 새 신청·알림 메일 실패 집계, **공개 전 점검 카드**(연락 이메일·처리방침·동의 문구·알림 메일·이미지 저장소·예약 발행·사이트 주소·검색 노출이 끝났는지) |
 | 신청·문의 | 목록·상세·상태 처리·CSV 내보내기·개인정보 파기. 접수 후 1년이 지난 신청은 매일 자동 삭제(`CRON_SECRET` 필요) |
 | 활동 기록 | 누가 무엇을 했는지 남기는 기록(개인정보는 담지 않음) |
-| 사이트 설정 | 연락처·SNS·문구, 동의·처리방침 버전 관리 |
+| 사이트 설정 · 동의·방침 | 연락처·SNS(인스타그램·유튜브 로고 링크)·문구·검색 기본 제목/설명, 동의 문구·처리방침 버전 게시 |
 | 미디어 | 이미지 업로드(WebP 변환, 위치정보 제거), 대체 텍스트, 사용 중 삭제 방지 |
 | 영상 · 여행 추천 | 어드민에서 만들고 발행 절차(임시저장·예약·발행·휴지통)를 쓸 수 있습니다. 영상에는 포스터·표시 문구·대표 작품·제작 노트(3칸) 입력이 있습니다. 영상은 발행하면 **Films 화면(`/films`)**에 나타나고, 첫 작품을 공개하면 메뉴·홈 구역·Contact 특강 링크도 함께 나타납니다. 소개 문구와 AI 제작 표기는 사이트 설정 > Films에서 고칩니다. 여행 추천은 발행하면 **여행 추천 화면(`/freediving/travel`)**에 나타나고, 첫 글을 공개하면 Freediving 하위 메뉴·허브 구역도 함께 나타납니다. 제목·부제는 사이트 설정 > 여행 추천에서 고칩니다 |
 | About | 헤드라인·본문·서명·프로필 사진 편집. 저장해도 공개되지 않고 **“공개 반영”을 눌러야** 공개됩니다 |
@@ -107,14 +108,15 @@ npm run admin:reset-2fa        # 2차 인증 초기화
 
 - **Vercel**에 배포하며 데이터베이스는 Neon, 이미지는 Vercel Blob입니다. 결정과 조건은 [INFRASTRUCTURE.md](docs/phase1/INFRASTRUCTURE.md)에 있습니다.
 - **마이그레이션은 배포와 별개입니다.** 새 마이그레이션이 들어간 변경을 운영에 올리기 전에 운영 DB와 Preview가 쓰는 `dev` DB 모두에 먼저 적용해야 하며, 빠지면 어드민이 오류를 냅니다. `npm run db:status`(읽기 전용)로 빠진 마이그레이션을 확인합니다.
-- 예약 발행은 `/api/cron/publish`를 Vercel Cron이 부르며, 환경변수 `CRON_SECRET`이 있어야 동작합니다. 무료(Hobby) 플랜의 Cron은 하루 한 번이지만, 예약 시각이 지난 글은 공개 화면에 5분 안에 나타납니다.
+- 예약 발행은 `/api/cron/publish`(매일 09:00 KST), 휴지통 30일 정리·접수 후 1년 지난 신청 자동 삭제는 `/api/cron/cleanup`(매일 03:30 KST)을 Vercel Cron이 부릅니다(`app/vercel.json`). 둘 다 환경변수 `CRON_SECRET`이 있어야 동작합니다. 무료(Hobby) 플랜의 Cron은 하루 한 번이지만, 예약 시각이 지난 글은 공개 화면에 5분 안에 나타납니다.
 - 시크릿은 Vercel 환경변수에만 두고, 환경(로컬·프리뷰·운영)마다 다른 값을 씁니다.
 
 ## 최근 운영 작업
 
+- 2026-11-24 도메인 `diverkyu.com` 구매·연결 — [INFRASTRUCTURE §11](docs/phase1/INFRASTRUCTURE.md)에 기록.
 - [2026-11-20 Story 썸네일 연결](docs/operations/2026-11-20-story-thumbnail.md) — 기능 변경 및 배포 후 이미지 지정 절차.
-
 - [2026-11-17 이미지 저장소·Story/Films 발행·문의 이메일 인수인계](docs/operations/2026-11-17-content-publishing-handoff.md) — 완료 항목, 확인 범위, 남은 작업.
+- [2026-11-14 관리자 설정·운영/개발 환경 인수인계](docs/operations/2026-11-14-admin-setup-handoff.md) — 운영·개발 DB 분리, 관리자 2차 인증.
 
 ## 문서
 
@@ -125,7 +127,9 @@ npm run admin:reset-2fa        # 2차 인증 초기화
 3. [보안 설계 지침](docs/phase1/SECURITY.md) — 인증·입력·업로드·개인정보
 4. [화면 설계서](docs/phase1/SCREEN-SPEC.md) · [디자인 시스템](docs/phase1/DESIGN-SYSTEM.md) · [컨셉·카피](docs/phase1/CONCEPT.md)
 5. [어드민 설계](docs/phase1/ADMIN-DESIGN.md) — 어드민 구조와 단계별 구현 기록
-6. [인프라 결정](docs/phase1/INFRASTRUCTURE.md) · [사용자 테스트](docs/phase1/USER-TEST.md) · [상표 확인](docs/phase1/TRADEMARK-CHECK.md)
+6. [인프라 결정](docs/phase1/INFRASTRUCTURE.md)(호스팅·DB·도메인) · [사용자 테스트](docs/phase1/USER-TEST.md) · [상표 확인](docs/phase1/TRADEMARK-CHECK.md) · [검색 노출 계획](docs/phase1/SEO-GEO.md)
+7. [법무 초안](docs/legal/README.md) — 개인정보 처리 현황·처리방침 초안·법무 검토 의뢰서 (먼저 [PRIVACY-OVERVIEW](docs/legal/PRIVACY-OVERVIEW.md))
+8. [운영 기록](docs/operations/README.md) · [콘텐츠 원고](docs/content/ai-video-guide/README.md)
 
 문서 세트는 하나의 버전을 함께 씁니다. 코드가 명세를 바꾸면 같은 PR에서 문서와 [변경 이력](docs/phase1/CHANGELOG.md)을 함께 고칩니다.
 

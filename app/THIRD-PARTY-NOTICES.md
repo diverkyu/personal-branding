@@ -18,6 +18,10 @@ OFL에 따라 글꼴 자체를 단독으로 판매하지 않으며, 수정본을
 
 `lucide-react` 패키지. Copyright (c) 2026 Lucide Icons and Contributors. 일부 아이콘은 Feather 프로젝트에서 유래했으며 해당 아이콘은 MIT 라이선스(Copyright (c) 2013-present Cole Bemis)를 따른다. 전문: <https://github.com/lucide-icons/lucide/blob/main/LICENSE>
 
+## 프레임워크
+
+`next`(MIT, Vercel), `react`·`react-dom`(MIT, Meta Platforms)로 사이트와 어드민을 만든다. 개발·시험 도구 `typescript`(Apache-2.0), `eslint`(MIT), `vitest`(MIT), `@playwright/test`(Apache-2.0)는 배포 결과물에 포함되지 않는다. 각 패키지의 `license` 필드로 2026-11-25에 확인했다(문서 점검 때 이 절이 빠져 있던 것을 추가).
+
 ## 데이터베이스 라이브러리
 
 `drizzle-orm`(Apache-2.0), `@neondatabase/serverless`(MIT)는 운영에서 쓰고, `drizzle-kit`(MIT)과 `@electric-sql/pglite`(Apache-2.0)는 개발·시험에서만 쓴다. 각 패키지의 `license` 필드로 2026-11-08에 확인했다.
@@ -28,7 +32,7 @@ OFL에 따라 글꼴 자체를 단독으로 판매하지 않으며, 수정본을
 
 ## 이미지 업로드
 
-`@vercel/blob`(Apache-2.0, 이미지 저장소 연결)과 `sharp`(Apache-2.0, 업로드 이미지의 형식 확인·위치정보 제거·WebP 변환)를 쓴다. sharp는 libvips(LGPL-3.0-or-later)를 미리 빌드한 바이너리로 함께 쓰며 동적으로 연결된다. 각 패키지의 `license` 필드로 2026-11-08에 확인했다. 이미지 파서의 취약점 소식은 의존성 점검에 포함한다 (SECURITY §7).
+`@vercel/blob`(Apache-2.0, 이미지 저장소 연결)과 `sharp`(Apache-2.0, 업로드 이미지의 형식 확인·위치정보 제거·WebP 변환)를 쓴다. sharp는 홈 화면 추가 아이콘 생성 스크립트(`scripts/make-app-icons.mjs`, 0.63.0)에도 쓴다. sharp는 libvips(LGPL-3.0-or-later)를 미리 빌드한 바이너리로 함께 쓰며 동적으로 연결된다. 각 패키지의 `license` 필드로 2026-11-08에 확인했다. 이미지 파서의 취약점 소식은 의존성 점검에 포함한다 (SECURITY §7).
 
 ## 본문 편집기
 

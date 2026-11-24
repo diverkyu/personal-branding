@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.64.0** | 2026-11-24 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.65.0** | 2026-11-25 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [CONCEPT.md](CONCEPT.md) · 화면 시안: [mockup/](mockup/README.md) · 시각 보기: 캔버스의 "디자인 시스템" 보드
 
@@ -215,7 +215,10 @@
 | `Icon` (Lucide 20개), `SmartLink`, `Thumb` | `components/ui/` | 구현 (단계 2) |
 | `StoryCard` (큰 카드 포함), `TourCard`, `TourArchiveCard`, `EquipmentCard`, `ReviewCard`, `InfoRow` | `components/site/` | 구현 (단계 2) |
 | `SiteHeader` (데스크톱 메뉴·Freediving 하위 메뉴·모바일 패널), `SiteFooter`, `SkipLink`, `Logo`, `BackToTop` | `components/layout/` | 구현 (단계 3) |
-| `AdminSidebar`, `StatCard`, `DataTable`, `EditorPanel` | — | 대기 (어드민 단계) |
+| 어드민 화면 (`AdminSidebar`·`StatCard`·`DataTable`·`EditorPanel` 후보) | `app/admin/admin.module.css` + 화면별 컴포넌트(`app/admin/(console)/…`) | 구현 (AD-1~AD-9). 별도 공용 컴포넌트로 빼지 않고 어드민 공통 스타일 한 파일과 화면별 컴포넌트로 만들었다 (§3.5 톤 분리 유지) |
+| `HeroVisual`(홈 히어로 그림·이미지), `HomeHeroSection` | `components/site/` | 구현 (0.59.0, 0.62.0) |
+| `SocialIcon`·`SocialLinks`(인스타그램·유튜브 로고 링크) | `components/site/SocialIcon` | 구현 (0.61.0) |
+| `PageIntro`(하위 페이지 제목 영역) | `components/layout/PageIntro` | 구현. 같은 색 내용은 children 으로 (0.63.1, §3.1) |
 
 **구현하면서 정한 것**
 - 카드는 제목 링크를 카드 전체로 넓힌다 (stretched link). 카드 전체를 `<a>`로 감싸지 않아 스크린리더가 제목만 링크 이름으로 읽는다. 장비 카드의 행동 버튼은 카드 링크 위에 떠서 따로 눌린다.
@@ -231,14 +234,14 @@
 - 메뉴가 가리키는 페이지는 4단계에서 모두 생겼다 (미리 불러오기 404 예외와 현재 페이지 E2E 보류는 해소).
 
 **페이지 틀(단계 4)에서 정한 것**
-- 콘텐츠는 `src/data/`(읽기 입구)와 `src/types/content.ts`(스키마)를 거친다. 지금은 가상 데이터(`fixtures.ts`, 이름에 "(예시)")이며 저장소가 정해지면 `data/index.ts` 구현만 바꾼다. 날짜 표기는 `lib/format.ts` 한 곳.
+- 콘텐츠는 `src/data/`(읽기 입구)와 `src/types/content.ts`(스키마)를 거친다. 4단계에는 가상 데이터(`fixtures.ts`, 이름에 "(예시)")만 있었고, **지금은 `DATABASE_URL` 이 있으면 DB 의 공개 콘텐츠를 읽는다**(`data/stories.ts`·`tours.ts` 등, AD-5c~). 가상 데이터는 DB 없는 로컬 개발·자동 시험에서만 쓰고, 배포 환경에서는 절대 보이지 않는다. 날짜 표기는 `lib/format.ts` 한 곳.
 - 카드의 제목 수준은 `headingLevel`(2 또는 3, 기본 3)로 정한다. 페이지 제목(h1) 바로 아래에 카드가 오면 2를 넘겨 **제목 단계를 건너뛰지 않는다** (E2E가 모든 화면을 검사).
 - 칩 필터(`FilteredList`)는 선택을 URL 쿼리(`?tag=`, `?category=`, `?status=`, `?tour=`)에 남기고, 알 수 없는 값은 "전체"로 처리한다.
 - 현재 메뉴 표시: 상세 페이지에서도 해당 메뉴를 라임색으로 강조(`data-current`)하고, `aria-current="page"`는 정확히 그 페이지일 때만 붙인다.
 - 장비 카드는 어두운 배경용이다. 밝은 섹션에서는 쓰지 않는다 (상세 페이지의 "다른 장비"는 어두운 섹션).
-- Contact 영역은 홈 하단과 `/contact`가 같은 컴포넌트(`ContactSection`)를 쓰고, 연락 주소는 예약 도메인 `contact@example.com` 자리표시다 (실수로 실제 메일이 나가지 않음).
+- Contact 영역은 홈 하단·`/contact`·About 하단이 같은 컴포넌트(`ContactSection`)를 쓰고, 연락 주소·SNS 는 사이트 설정 > 연락에서 온다(`settings/social.ts` `contactPropsOf`, 0.61.0). 설정이 비면 기본값은 예약 도메인 `contact@example.com` 이다 (실수로 실제 메일이 나가지 않음).
 
-**4단계에서 남겼던 것**: 폼은 0.15.0, 나머지(페이지 이동, 더 보기, 갤러리·영상, 고정 문의 버튼, 장비 이미지 전환, 구조화 데이터)는 0.16.0에서 구현했다. 아직 없는 것은 미리보기 띠(INT-12)뿐이다. 시안과의 나란히 비교는 0.14.1에서 했다(CHANGELOG 참고).
+**4단계에서 남겼던 것**: 폼은 0.15.0, 나머지(페이지 이동, 더 보기, 갤러리·영상, 고정 문의 버튼, 장비 이미지 전환, 구조화 데이터)는 0.16.0에서 구현했다. 미리보기(INT-12)는 공개 주소에 띠를 얹는 대신 **어드민 안의 미리보기 화면**(`/admin/contents/[id]/preview`, About·홈 히어로 미리보기)에 "미리보기입니다. 공개되지 않은 화면" 안내를 두는 방식으로 구현했다(AD-5b~, 색인 제외). 시안과의 나란히 비교는 0.14.1에서 했다(CHANGELOG 참고).
 
 **폼(단계 5)에서 정한 것**
 - 폼 검증은 서버가 기준이다. 브라우저 기본 검증은 `noValidate`로 끄고, 서버가 돌려준 필드별 오류(`role="alert"`)를 입력과 `aria-describedby`로 연결한다. 오류가 있으면 첫 오류 필드로 포커스를 옮긴다.

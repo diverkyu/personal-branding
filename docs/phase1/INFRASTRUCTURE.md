@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.64.0** | 2026-11-24 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
+| **0.65.0** | 2026-11-25 | 결정 기록 (일부 조건부·확인 대기) | 규강 공동 작업자 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [PRD.md §12](PRD.md) · [SECURITY.md §16](SECURITY.md) · [DEVELOPMENT.md](DEVELOPMENT.md)
 
@@ -14,10 +14,11 @@
 | --- | --- | --- | --- |
 | 호스팅 | **Vercel** | 확정 (**Hobby로 시작, 공개 운영 전 Pro 전환 조건부**) | §2 |
 | 데이터베이스 | **Neon Postgres** (무료 플랜으로 시작) | **잠정 — 확인 대기** | §3. 상업 사용 가능 여부를 약관으로 확인해야 함 |
-| 접수 알림 메일 | **Resend** | 확정 | §4. 발신 도메인은 도메인 확정 뒤 |
+| 접수 알림 메일 | **Resend** | 확정. 코드 구현(0.39.0), **발송은 아직 꺼져 있음** | §4. 도메인이 생겼으므로(2026-11-24) 규강이 Resend 가입·`diverkyu.com` 발신 인증을 하면 켤 수 있다 |
 | 어드민 인증 | **Better Auth + TOTP 2차 인증** | 확정 (0.20.0) | §5 |
-| 이미지 스토리지 | **Vercel Blob** | 확정 (0.20.0). 코드 구현 완료(0.25.0), **스토어 연결은 소유자 작업 대기** (§6.1) | 어드민 이미지 업로드 단계 전에 결정 (§6) |
+| 이미지 스토리지 | **Vercel Blob** | 확정 (0.20.0). 코드 구현(0.25.0), **운영·프리뷰 연결 완료(2026-11-16, 공개 스토어 `kyu-media`)** | §6.1, [운영 기록 2026-11-17](../operations/2026-11-17-content-publishing-handoff.md) |
 | ORM·마이그레이션 | **Drizzle** (+ drizzle-kit) | 확정 (0.18.0 구현) | §3 아래 "구현 현황" |
+| 도메인 | **`diverkyu.com`** (가비아 등록, 규강 소유) | **구매·연결 완료(2026-11-24)**. DNS 는 가비아 네임서버에서 Vercel 로, 대표 주소 `https://www.diverkyu.com`(루트는 www 로 308) | §11. 남은 것: Production `SITE_URL` 변경·재배포, 옛 `*.vercel.app` 주소 리다이렉트, 메일 발신 인증 |
 
 ## 2. 호스팅: Vercel (Hobby로 시작, 조건부)
 
@@ -32,7 +33,7 @@
 1. Hobby는 **개발·프리뷰·내부 검수 단계에서만** 쓴다. 이 기간에는 실제 투어 모집, 제휴 링크 노출, 실제 방문자 신청 접수를 하지 않는다.
 2. **공개 게시(PRD §12.2 R5) 이전, 또는 투어 모집을 처음 시작하기 이전 중 빠른 때에 Pro로 전환한다.** 이 항목을 R5 체크리스트(PRD §12.3)에 넣는다.
 3. 전환 시점의 판단이 애매하면 Vercel에 직접 문의한다.
-4. 계정(팀) 소유자·요금제 결제 주체는 공동 작업자와 규강이 정한다 (PRD §12.5, 대기).
+4. 계정(팀) 소유자는 **규강**(Vercel `diverkyu` 계정, 2026-11-14 운영 기록). 요금제 결제 주체와 Pro 전환 시점은 남은 결정이다.
 
 **호스팅에 묶이지 않기 위한 원칙 유지**: 호스팅 전용 기능에 직접 기대는 코드를 넣지 않는다. 데이터 접근은 `data/` 어댑터 뒤에 둔다 (AGENTS §3, DEVELOPMENT §10 교체 가능한 경계).
 
@@ -59,7 +60,7 @@
   2. 연결 문자열을 `app/.env.local`의 `DATABASE_URL`에 넣고 `INQUIRY_STORE=postgres`로 둔다 (Vercel에는 환경별 환경변수로).
   3. `cd app && npm run db:migrate`로 표를 만든다.
   4. 개발 서버에서 폼을 제출해 Neon 콘솔의 `inquiries` 표에 행이 생기는지 확인한다.
-- 신청 데이터는 개인정보(이름·연락처·이메일)다. 보관 기간·파기 방식은 SECURITY §16 대기 항목이며, 어드민 접근 통제가 생기기 전에는 DB 콘솔 접근 권한을 소유자·공동 작업자로 제한한다.
+- 신청 데이터는 개인정보(이름·연락처·이메일)다. 보관 기간·파기 방식은 정해졌다(응대 후 지체 없이 삭제, 접수 후 365일 자동 삭제 — SECURITY §16, 0.54.0·0.55.0). DB 콘솔 접근 권한은 소유자·공동 작업자로 제한한다.
 
 **환경 분리 (0.18.2)**
 
@@ -78,7 +79,7 @@
 ## 4. 접수 알림 메일: Resend
 
 - 제3자 글 기준 무료 플랜은 월 3,000통·일 100통, 검증된 발신 도메인 1개 (공식 가격 재확인 필요). 투어 문의 규모에는 충분할 것으로 본다.
-- 발신 도메인 인증(SPF·DKIM)이 필요하므로 **도메인이 정해진 뒤**에 연결한다. 그 전에는 시험 발송만 한다.
+- 발신 도메인 인증(SPF·DKIM)이 필요하다. **도메인 `diverkyu.com` 이 생겼으므로(2026-11-24) 이제 연결할 수 있다.** 인증용 DNS 값은 가비아 DNS 관리에 넣는다(Resend 가 알려 주는 값). 발신 주소 예: `noreply@diverkyu.com`(`MAIL_FROM`).
 - SECURITY §8 유지: 알림 실패해도 신청은 저장하고 어드민에 실패를 표시한다. 수신자·제목에 사용자 입력을 넣지 않는다. 프리뷰에서는 실제 발송을 끈다.
 - 메일은 `data/` 어댑터 뒤에 두어 서비스를 바꿀 수 있게 한다.
 - **구현됨(0.39.0, [ADMIN-DESIGN §32](ADMIN-DESIGN.md))**: `mail/mail.ts` 어댑터(Resend REST, 새 의존성 없음). 환경변수 `RESEND_API_KEY`·`MAIL_FROM`, 받는 주소는 사이트 설정. 키·발신 도메인 인증이 끝나기 전에는 보내지 않는다(신청 저장에는 영향 없음). **규강이 Resend 가입·키 발급·도메인 인증·Vercel 환경변수 입력을 해야 켜진다.**
@@ -106,22 +107,22 @@ Vercel 서버리스 환경에서는 서버 디스크에 업로드 파일을 둘 
 2. `MEDIA_STORE=blob`을 추가하고 재배포한다.
 3. 어드민 > 미디어에서 시험 이미지를 올려 주소(`...public.blob.vercel-storage.com/media/...`)가 열리는지 확인한다. 시험 이미지는 삭제한다.
 
-미확인(실제 Blob 스토어 없이 구현·시험함): Blob 업로드 동작, Hobby 플랜의 Blob 무료 한도와 상업 사용 조건, 요금. **공개 전에 확인한다.**
+**연결 완료(2026-11-16)**: 공개 스토어 `kyu-media` 를 Production·Preview 에 연결하고 운영에서 업로드·표시를 확인했다([운영 기록 2026-11-17](../operations/2026-11-17-content-publishing-handoff.md)). Production·Preview 가 **같은 스토어**를 쓰므로 프리뷰 시험 이미지는 시험 뒤 지운다. 미확인: Preview 실제 업로드, Hobby 플랜의 Blob 무료 한도와 상업 사용 조건, 요금 — **공개 전에 확인한다.**
 
 ## 7. 다음 단계에 미치는 영향
 
 | 단계 | 내용 | 막히는 것 |
 | --- | --- | --- |
 | A. DB 연결 | **완료(0.18.1)**: 신청 저장을 실제 Neon에서 확인. 남은 것: 개발·프리뷰 브랜치 분리, Neon 약관 확인, 콘텐츠 테이블·읽기 전환(어드민 단계) | 계정 생성은 **소유자가 직접** (비밀번호·카드 정보는 코드·대화에 넣지 않는다) |
-| B. 메일 | Resend 어댑터, 접수 알림, 실패 표시 | 발신 도메인 (도메인 확정 후) |
-| C. 어드민 | **AD-1~AD-4(0.22.0~0.25.0), AD-5a(0.26.0) 구현**: Better Auth + TOTP, 로그인·2차 인증·보호 레이아웃·계정 스크립트, 신청·문의 관리·활동 기록, 사이트 설정·동의 문구, 미디어 라이브러리. 다음: AD-5~6 ([ADMIN-DESIGN §11](ADMIN-DESIGN.md)) | A 완료. 배포 환경에 `BETTER_AUTH_SECRET`·`DATABASE_URL`이 있어야 로그인 가능 |
-| D. 첫 배포(R1) | Vercel(Hobby) 프로젝트 연결, Root Directory `app/`, 프리뷰 URL 검수 | 계정 소유자·권한 (PRD §12.5) |
-| E. 공개 게시(R5) 전 | **Pro 전환**, Neon 약관 확인, 도메인·`SITE_URL`, 개인정보 처리방침 전문가 확인 | — |
+| B. 메일 | **구현(0.39.0)**: Resend 어댑터, 접수 알림, 실패 표시. 발송은 꺼져 있음 | 규강의 Resend 가입·`diverkyu.com` 발신 인증·환경변수 입력 |
+| C. 어드민 | **AD-1~AD-9 구현 완료**(0.22.0~0.46.0, 이후 기능 추가는 [ADMIN-DESIGN §11](ADMIN-DESIGN.md)·CHANGELOG). 운영·프리뷰 로그인·2차 인증 확인(2026-11-14) | 자동 입력(`/api/ingest`)은 설계만(ADMIN-DESIGN §33) |
+| D. 첫 배포(R1) | **완료**: 규강 계정의 Vercel 프로젝트 `personal-branding-l1sr`(Hobby), Root Directory `app/`, 프리뷰 배포 동작 | — |
+| E. 공개 게시(R5) 전 | **Pro 전환**, Neon 약관 확인, ~~도메인 연결~~(완료 2026-11-24)·Production `SITE_URL` 변경, 개인정보 처리방침 전문가 확인·게시 | 규강 |
 
 ## 8. 열린 질문
 
 1. Neon 무료 플랜의 상업 사용 가능 여부 (약관 확인 — **소유자가 공개 운영 전에 다시 확인하기로 함**)
-2. Vercel 팀(계정) 소유자와 Pro 결제 주체
+2. ~~Vercel 팀(계정) 소유자~~ → **규강 계정**(`diverkyu`). Pro 결제 주체·전환 시점은 남음
 3. ~~이미지 스토리지 선택~~ → **Vercel Blob(0.20.0)**
 4. ~~개발·프리뷰·운영 환경의 DB 분리 방식~~ → **정함(0.18.2)**: Neon 브랜치 `dev` / `production`
 
@@ -198,7 +199,7 @@ Vercel 서버리스 환경에서는 서버 디스크에 업로드 파일을 둘 
 | `MEDIA_STORE` | `blob` (이미지 저장소를 연결한 뒤) | Production, Preview | §6.1. 비워 두면 어드민 이미지 업로드가 닫혀 있다 |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob 연결 시 자동 | Production, Preview | §6.1. 비밀 값 |
 | `CRON_SECRET` | 16자 이상 임의 문자열 | Production | 예약 발행 크론 인증. 비밀 값이라 **규강이 직접** 만들어 입력한다(BETTER_AUTH_SECRET과 같은 방법). 없으면 예약 시각이 지나도 자동 발행되지 않는다. Vercel이 이 값을 `Authorization` 헤더로 크론 호출에 자동으로 붙인다 |
-| `SITE_URL` | 첫 배포 뒤 확정되는 프로젝트 주소(`https://….vercel.app`) | Production, Preview | 첫 배포 때는 비워 두고, 주소가 정해진 뒤 입력하고 **다시 배포**한다(주소는 빌드 때 반영된다 — app/README) |
+| `SITE_URL` | Production: **`https://www.diverkyu.com`**(도메인 연결 후, 2026-11-24~). 그 전에는 `https://….vercel.app` | Production, Preview | 주소는 빌드 때 반영되므로 바꾼 뒤 **다시 배포**한다(app/README). 정규 주소·사이트맵·로그인 출처 확인이 이 값을 따른다. Preview 는 운영 주소를 넣지 않는다(운영 기록 2026-11-14 후속) |
 | `SITE_INDEXING` | **설정하지 않는다** | — | 비어 있으면 검색 색인 금지(noindex)다 |
 | `ENABLE_COMPONENT_SHOWCASE` | **설정하지 않는다** | — | 개발용 쇼케이스가 열리지 않게 |
 
@@ -230,8 +231,9 @@ npm run db:cleanup-smoke   # 시험이 남긴 가짜 문의(smoke-*@example.com)
 
 ### 10.4 공개 운영 전에 바꿔야 하는 것 (이 단계의 임시 설정 되돌리기)
 
-- [ ] Production의 `DATABASE_URL`을 `production` 브랜치 문자열로 교체하고 Preview는 `dev` 유지
-- [ ] `SITE_INDEXING=on`(공개 시점에만), 실제 도메인으로 `SITE_URL`
+- [x] Production의 `DATABASE_URL`을 `production` 브랜치 문자열로 교체하고 Preview는 `dev` 유지 (2026-11-14, [운영 기록](../operations/2026-11-14-admin-setup-handoff.md))
+- [ ] 실제 도메인으로 `SITE_URL` (도메인은 2026-11-24 연결, 값 변경·재배포는 규강)
+- [ ] `SITE_INDEXING=on`(공개 시점에만)
 - [ ] Hobby → Pro, Neon 이전 (§9.3)
 
 ### 10.5 배포 전 마이그레이션 점검 (0.43.0)
@@ -242,3 +244,14 @@ npm run db:cleanup-smoke   # 시험이 남긴 가짜 문의(smoke-*@example.com)
 2. **병합 전에** 두 DB 에 적용한다: dev 먼저, 그다음 운영(운영은 무엇이 바뀌는지 설명하고 확인 후 — AGENTS §8).
 3. 각 DB 에서 `npm run db:status` 를 실행해 `OK: 빠진 마이그레이션이 없습니다.` 가 나오는지 본다. 빠진 게 있으면 이름이 나온다. 읽기 전용이라 안전하다.
 4. 프리뷰 배포가 `column … does not exist`(Postgres `42703`) 로 실패하면 먼저 개발 DB 의 `db:status` 를 본다.
+
+## 11. 도메인 (2026-11-24 연결)
+
+| 항목 | 상태 (2026-11-25 확인) |
+| --- | --- |
+| 등록 | `diverkyu.com`, 가비아(Gabia) 등록, 2026-11-24 생성 · **만료 2027-11-24**. 이전 잠금(transfer prohibited) 켜짐. 자동 갱신 여부는 규강이 가비아에서 확인 |
+| DNS | 네임서버 가비아(`ns.gabia.co.kr` 등). 루트 A 레코드 → Vercel, `www` CNAME → Vercel(`*.vercel-dns-017.com`). MX 없음(메일 수신·발신 설정 전) |
+| 주소 | `http://`·루트 `diverkyu.com` → **`https://www.diverkyu.com`** 로 308. HTTPS 인증서 Let's Encrypt(자동 갱신), HSTS 2년 |
+| 남은 일 (규강) | ① Production `SITE_URL=https://www.diverkyu.com` 후 재배포 — 그 전에는 사이트맵·정규 주소가 옛 주소이고 새 주소의 어드민 로그인이 출처 확인에 막힐 수 있다 ② Vercel Domains 에서 옛 `personal-branding-l1sr.vercel.app` 을 새 주소로 리다이렉트(같은 내용이 두 주소에 있지 않게) ③ 가비아 자동 갱신 ④ 메일 발신 인증(§4) |
+
+어드민의 공개 전 점검 카드(ADMIN-DESIGN §35)의 "사이트 주소" 항목은 `SITE_URL` 값을 보고 판단하므로, ①을 하고 다시 배포하면 스스로 완료로 바뀐다.
