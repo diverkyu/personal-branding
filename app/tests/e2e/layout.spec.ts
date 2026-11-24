@@ -68,14 +68,16 @@ test.describe("공통 레이아웃", () => {
   for (const path of ["/freediving/tours", "/freediving/reviews", "/privacy"]) {
     test(`제목 바로 아래에 내용이 이어진다: ${path}`, async ({ page }) => {
       await page.goto(path);
-      const gap = await page.evaluate(() => {
-        const h1 = document.querySelector("main h1")!.getBoundingClientRect();
-        const below = [...document.querySelectorAll("main button, main p, main article, main li")]
-          .map((e) => e.getBoundingClientRect())
-          .filter((r) => r.height > 0 && r.top > h1.bottom);
-        return Math.min(...below.map((r) => r.top)) - h1.bottom;
-      });
-      expect(gap).toBeLessThanOrEqual(60);
+      // 필터 목록은 주소(?status=)를 읽느라 화면이 뜬 뒤에 그려진다. 그려질 때까지 다시 잰다
+      const gap = () =>
+        page.evaluate(() => {
+          const h1 = document.querySelector("main h1")!.getBoundingClientRect();
+          const below = [...document.querySelectorAll("main button, main p, main article, main li")]
+            .map((e) => e.getBoundingClientRect())
+            .filter((r) => r.height > 0 && r.top > h1.bottom);
+          return below.length ? Math.min(...below.map((r) => r.top)) - h1.bottom : Infinity;
+        });
+      await expect.poll(gap).toBeLessThanOrEqual(60);
     });
   }
 });
