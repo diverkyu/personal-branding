@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.63.1** | 2026-11-22 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude |
+| **0.65.0** | 2026-11-25 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 상위: [PRD.md](PRD.md) · [CONCEPT.md](CONCEPT.md) · 시각: [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) · 화면 시안: [mockup/](mockup/README.md) · 지침: [DEVELOPMENT.md](DEVELOPMENT.md) · [SECURITY.md](SECURITY.md)
 
@@ -72,28 +72,35 @@ PRD 요구사항 ID(S-, T-, E-, R-, A-, W-)를 함께 적는다. 이 문서가 P
 | EQ | 장비 목록 | `/freediving/equipment` | 허브의 장비 영역 | 장비 | 공개 장비 | E-2 |
 | EQ-D | 장비 상세 | `/freediving/equipment/[slug]` | **없음** | 장비 | 공개 장비, 아니면 404 | E-1, E-3 |
 | REV | 수강 후기 전체 | `/freediving/reviews` | **없음** | 후기 | 공개 후기 | R-4 |
-| FILMS | Films 목록 (**제안**) | `/films` | `Films` | 영상(AI 영상 작품) | 공개 작품, 없으면 안내 | A-8 (확장) |
-| TRAVEL | 여행 추천 목록 (**제안**) | `/freediving/travel` | `Travel` | 여행 추천 | 공개 글, 없으면 안내 | A-8 (확장) |
-| TRAVEL-D | 여행 추천 상세 (**제안**) | `/freediving/travel/[slug]` | `TravelDetail` | 여행 추천 | 공개 글, 아니면 404 | A-8 (확장) |
-| FILMS-D | Films 작품 상세 (**제안**) | `/films/[slug]` | `FilmDetail` | 영상, 제작 노트 | 공개 작품, 아니면 404 | A-8 (확장) |
+| FILMS | Films 목록 (구현 0.37.0) | `/films` | `Films` | 영상(AI 영상 작품) | 공개 작품, 없으면 안내 | A-8 (확장) |
+| TRAVEL | 여행 추천 목록 (구현 0.44.0) | `/freediving/travel` | `Travel` | 여행 추천 | 공개 글, 없으면 안내 | A-8 (확장) |
+| TRAVEL-D | 여행 추천 상세 (구현 0.44.0) | `/freediving/travel/[slug]` | `TravelDetail` | 여행 추천 | 공개 글, 아니면 404 | A-8 (확장) |
+| FILMS-D | Films 작품 상세 (구현 0.37.0) | `/films/[slug]` | `FilmDetail` | 영상, 제작 노트 | 공개 작품, 아니면 404 | A-8 (확장) |
 | CONTACT | Contact | `/contact` (§12 결정 3 확정) | 홈의 Contact 영역 | 사이트 설정 | 항상 | W-1 |
-| LEGAL | 개인정보 처리방침 | `/privacy` | **없음** | 사이트 콘텐츠(법률 확인 후) | 항상 | SECURITY §9 |
+| LEGAL | 개인정보 처리방침 | `/privacy` | **없음** | 어드민 > 동의·방침에서 게시한 방침(없으면 "준비 중") | 항상 | SECURITY §9 |
 | ERR | 404 / 오류 / 완료 | — | **없음** | — | — | — |
 
 ### 3.2 어드민 화면
 
-| 코드 | 화면 | 주소 | 시안 | PRD |
-| --- | --- | --- | --- | --- |
-| ADM-LOGIN | 로그인 | `/admin/login` | **없음** | A-1 |
-| ADM-DASH | 대시보드 | `/admin` | `Admin` | A-2 |
-| ADM-STORY | 스토리 목록 / 편집 | `/admin/stories` | `Admin` 일부 | S-2~S-7 |
-| ADM-TOUR | 투어 목록 / 편집 | `/admin/tours` | **없음** | T-1, T-2, T-9 |
-| ADM-INQ | 신청·문의 목록 / 상세 | `/admin/inquiries` | `Admin` 일부 | T-7 |
-| ADM-EQ | 장비 목록 / 편집 | `/admin/equipment` | **없음** | E-1~E-6 |
-| ADM-REV | 후기 목록 / 편집 | `/admin/reviews` | **없음** | R-1, R-2 |
-| ADM-MEDIA | 미디어 | `/admin/media` | **없음** | A-4 |
-| ADM-SET | 사이트 설정 | `/admin/settings` | **없음** | W-7 |
-| ADM-ABOUT | About 편집 | `/admin/about` | **없음** | — |
+처음 설계(유형별 주소 `/admin/stories`·`/admin/tours`·`/admin/equipment`)와 달리, 스토리·투어·장비·영상·여행 추천은 **통합 콘텐츠 화면**(`/admin/contents`, 유형 필터)에서 관리한다(ADMIN-DESIGN §5.0·§14). 아래는 2026-11-25 기준 실제 메뉴다(`app/admin/(console)/AdminNav.tsx`).
+
+| 코드 | 화면 | 주소 | 메뉴 그룹 | 시안 | PRD |
+| --- | --- | --- | --- | --- | --- |
+| ADM-LOGIN | 로그인 · 2차 인증 등록 | `/admin/login`, `/admin/setup-2fa` | — | **없음** | A-1 |
+| ADM-DASH | 대시보드 (공개 전 점검 카드 포함) | `/admin` | 홈 | `Admin` | A-2 |
+| ADM-STORY · ADM-TOUR · ADM-EQ | 전체 콘텐츠 목록 / 편집 / 미리보기 (스토리·투어·장비·영상·여행 추천) | `/admin/contents`, `/admin/contents/[id]`, `…/preview` | 콘텐츠 | `Admin` 일부 | S-2~S-7, T-1·T-2·T-9, E-1~E-6 |
+| ADM-SCHED | 발행 일정 (예약 발행) | `/admin/schedule` | 콘텐츠 | **없음** | S-6 |
+| ADM-TAX | 태그·카테고리 | `/admin/taxonomy` | 콘텐츠 | **없음** | S-5, E-2 |
+| ADM-INQ | 신청·문의 목록 / 상세 | `/admin/inquiries` | 운영 | `Admin` 일부 | T-7 |
+| ADM-REV | 수강 후기 목록 / 편집 | `/admin/reviews` | 운영 | **없음** | R-1, R-2 |
+| ADM-MEDIA | 미디어 | `/admin/media` | 자산 | **없음** | A-4 |
+| ADM-TRASH | 휴지통 | `/admin/trash` | 자산 | **없음** | — |
+| ADM-ABOUT | About 편집 / 미리보기 | `/admin/about` | 사이트 | **없음** | — |
+| ADM-HERO | 홈 히어로 이미지 / 미리보기 | `/admin/home-hero` | 사이트 | **없음** | — (0.59.0) |
+| ADM-SET | 사이트 설정 | `/admin/settings` | 사이트 | **없음** | W-7 |
+| ADM-LEGAL | 동의·방침 (동의 문구·처리방침 버전) | `/admin/legal` | 사이트 | **없음** | SECURITY §9 |
+| ADM-AUDIT | 활동 기록 | `/admin/audit` | 시스템 | **없음** | — |
+| ADM-USER | 사용자·보안 | `/admin/users` | 시스템 | **없음** | A-1 |
 
 ## 4. 전역 요소 (모든 공개 화면)
 
@@ -475,7 +482,7 @@ AI 영상 섹션이다(0.35.0 제안). 규강의 구상([PRODUCT-CONCEPT](../PRO
 | INT-09 | 영상 재생 | 영상 썸네일 클릭 | 허용 도메인 임베드가 재생된다 | 클릭 전에는 외부 스크립트를 불러오지 않는다 (개인정보·성능). 재생 불가 시 원본 링크 제공 |
 | INT-10 | 이메일 복사 | 복사 버튼 | 클립보드 복사 → 성공 안내 | 실패 시 주소를 직접 선택해 복사하도록 안내. `role="status"` |
 | INT-11 | 모바일 고정 CTA | 스크롤 | 투어 상세에서 폼이 화면에 없을 때 하단에 "예약 문의하기" 고정 | 폼이 보이면 사라짐. 푸터와 겹치지 않음 |
-| INT-12 | 미리보기 | 어드민에서 "미리보기" | 공개 화면과 같은 모습으로 새 탭에 열림. 상단에 "미리보기 – 공개되지 않음" 띠 | 관리자 세션이 없으면 열리지 않음(404). 검색 색인 제외 |
+| INT-12 | 미리보기 | 어드민에서 "미리보기" | 공개 화면과 같은 모습으로 새 탭에 열림. 상단에 "미리보기 – 공개되지 않음" 띠 | 관리자 세션이 없으면 열리지 않음. 검색 색인 제외. **구현(AD-5b~)**: 공개 주소가 아니라 어드민 안(`/admin/contents/[id]/preview`, About·홈 히어로 미리보기)에서 열리고, 위쪽에 "미리보기입니다. 공개되지 않은 화면" 안내가 있다. 로그인하지 않으면 로그인 화면으로 간다 |
 | INT-13 | 앵커·스크롤 | 허브 칩, BACK TO TOP | 부드러운 스크롤. 동작 줄이기 설정에서는 즉시 이동 | 헤더에 가리지 않게 스크롤 여백 |
 | INT-14 | 외부 링크 | 클릭 | 새 탭에서 열림 | `rel="noopener noreferrer"`, 화살표 아이콘 |
 | INT-15 | 이미지 지연 로딩 | 스크롤 | 화면 밖 이미지는 나중에 로드 | 자리 높이를 미리 확보해 레이아웃이 밀리지 않게 |

@@ -31,6 +31,7 @@ npm run dev                  # http://localhost:3000
 | `npm run test:remote` | 배포된 주소 스모크 시험 (`REMOTE_URL=… npm run test:remote`, 절차는 INFRASTRUCTURE §10) |
 | `npm run db:cleanup-smoke` | 원격 스모크 시험이 남긴 가짜 문의 삭제 |
 | `npm run dev:seed` · `dev:seed-clean` | **개발 DB 전용** 전체 시험 데이터(Story·Films·장비·여행·투어·신청·후기·About·처리방침·이미지)를 넣고/지움. 개발 서버가 이미지를 보여 주려면 `.env.local`에 `MEDIA_STORE=local`. 시험이 아닌 발행 콘텐츠가 있으면 멈춤 |
+| `node scripts/make-app-icons.mjs` | 홈 화면 추가 아이콘(192·512·maskable·iPhone 180) 다시 만들기. 로고가 바뀔 때만 |
 | `npm run test:e2e` | 운영 빌드를 3100 포트(`E2E_PORT`로 변경 가능)로 띄워 Chrome에서 390 / 768 / 1440 폭으로 시험. 캡처는 `artifacts/`에 저장 |
 
 E2E는 설치된 Chrome을 쓴다. 번들 Chromium을 쓰려면 `PW_CHANNEL= npx playwright install chromium` 후 `PW_CHANNEL= npm run test:e2e`.
@@ -39,13 +40,22 @@ E2E는 설치된 Chrome을 쓴다. 번들 Chromium을 쓰려면 `PW_CHANNEL= npx
 
 ```text
 src/
-├── app/          # 라우트 (얇게 유지)
+├── app/          # 라우트 (얇게 유지) — 공개 화면, admin/ (어드민), api/ (auth, cron/publish, cron/cleanup), manifest.ts
 ├── components/   # ui/ (기본 요소), site/ (카드 등), layout/ (헤더·푸터) — 쇼케이스: /dev/components
 ├── config/       # 상수·환경변수 해석 (단일 출처)
+├── data/         # 콘텐츠를 읽는 유일한 입구 — 공개 조회(*.ts·*Queries.ts), 어드민 조회·변경(admin/)
+├── content/      # 콘텐츠 유형 정의·본문 검사기·렌더러·발행 규칙
+├── editor/       # Tiptap 편집기
 ├── db/           # 스키마(Drizzle), 운영 DB 연결 (마이그레이션은 ../drizzle)
-├── lib/          # 비즈니스 로직·로거·오류 (순수 함수)
+├── settings/     # 사이트 설정 목록·읽기·연락처/SNS·동의 문구
+├── about/ home/ reviews/ media/   # 영역별 순수 규칙 (About 필드, 홈 히어로, 후기, 이미지 처리)
+├── mail/         # 접수 알림 메일 어댑터 (Resend)
+├── lib/          # 공통 로직·로거·오류·인증·구조화 데이터 (순수 함수 위주)
 ├── styles/       # 디자인 토큰 (DESIGN-SYSTEM.md §2)
+├── types/        # 콘텐츠 스키마
 └── instrumentation.ts   # 서버 시작 시 설정 점검 로그
+public/icons/     # 홈 화면 추가 아이콘 (scripts/make-app-icons.mjs 로 생성)
+scripts/          # 계정·시드·마이그레이션 점검·아이콘 생성 스크립트
 tests/e2e/        # Playwright 시나리오
 ```
 

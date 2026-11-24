@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.63.1** | 2026-11-22 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.65.0** | 2026-11-25 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [SECURITY.md](SECURITY.md) · [PRD.md](PRD.md) · [SCREEN-SPEC.md](SCREEN-SPEC.md) · [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md)
 
@@ -135,7 +135,7 @@ tests/             # 단위·E2E
 | `info` | 핵심 조작의 기록 |
 | `debug` | 진단용. 운영에서는 끈다 |
 
-**구조화 필드** (채택 기준이며, 구현 전에는 대기 상태다)
+**구조화 필드** (채택 기준. `src/lib/logger.ts` 의 `operation()` 래퍼가 `operation`·`operationId`·`outcome`·`durationMs`·`errorKind` 를 남긴다 — 0.18.0~)
 
 | 필드 | 설명 |
 | --- | --- |
@@ -246,13 +246,13 @@ tests/             # 단위·E2E
 
 ## 12. 스택 확정 후 채울 항목
 
-스택과 호스팅이 정해지면 이 절을 채우고 버전을 올린다.
+스택과 호스팅이 정해져 이 절을 채웠다(2026-11-08~, 2026-11-25 점검).
 
 | 항목 | 값 |
 | --- | --- |
 | 런타임·프레임워크·언어 | Node.js 24 LTS 이상(개발 PC 24.19), Next.js 16.4.5(App Router), React 19.3.1, TypeScript 5 strict |
-| 데이터베이스·이미지 스토리지·메일 서비스 | 미정 (호스팅 결정 후) |
-| 호스팅·로그 확인 방법 | 미정 ([PRD §12](PRD.md)) |
+| 데이터베이스·이미지 스토리지·메일 서비스 | Neon Postgres + Drizzle, Vercel Blob, Resend(구현, 발송 꺼짐) — [INFRASTRUCTURE](INFRASTRUCTURE.md) |
+| 호스팅·로그 확인 방법 | Vercel(프로젝트 `personal-branding-l1sr`, 함수 지역 `sin1`). 로그는 Vercel 프로젝트 > Logs 에서 한 줄 JSON 으로 본다(`msg`·`operation` 으로 검색). 도메인 `https://www.diverkyu.com`(2026-11-24) |
 | 검증 명령 (타입, 린트, 테스트, 빌드, E2E) | `app/`에서 `npm run typecheck`, `npm run lint`, `npm run test`, `npm run build` (= `npm run check`), `npm run test:e2e` (Playwright, 설치된 Chrome, 390/768/1440) |
 | 로거 구현 | 의존성 없는 자체 구조화 로거 `src/lib/logger.ts` (한 줄 JSON, 민감 키 마스킹, `operation()` 래퍼). 호스팅의 로그 수집 방식이 정해지면 출력 sink만 교체 |
 | 패키지 매니저 | npm (`package-lock.json` 고정) |
@@ -274,7 +274,7 @@ tests/             # 단위·E2E
 | 날짜 | 결정 | 근거 | 검토한 대안 |
 | --- | --- | --- | --- |
 | 2026-11-08 | 증거 우선 변경 루프, 로그와 실제 브라우저 검증을 기본으로 채택 | 바이브 코딩에서 추측 수정을 막기 위함 (사용자 요청) | 코드 읽기만으로 수정 |
-| 2026-11-08 | 호스팅·스택은 열린 결정으로 유지, 이 지침은 스택 중립 | PRD §12 | 스택을 먼저 고정 |
+| 2026-11-08 | 호스팅·스택은 열린 결정으로 유지, 이 지침은 스택 중립 (→ 같은 날 아래 행에서 Vercel·Next.js 로 정함) | PRD §12 | 스택을 먼저 고정 |
 | 2026-11-08 | 프레임워크 — Next.js 16.4.5 (App Router) + React 19.3.1 | 공개 사이트와 어드민을 한 코드베이스로. 16.0.0이 2025-10-22에 나와 §10 유예를 충분히 지났고, NexusPM에서 같은 계열 조합을 이미 검증했다. Vercel 외 Node 서버에도 올릴 수 있어 호스팅 결정을 막지 않는다 | Astro + 별도 어드민 (코드베이스가 둘로 나뉨) |
 | 2026-11-08 | 스타일 — CSS 변수 + CSS Modules, 스타일 라이브러리 없음 | 디자인 시스템 토큰이 그대로 CSS 변수가 되고 의존성이 늘지 않는다. 시안의 flex-wrap 레이아웃을 옮기기 쉽다 | Tailwind CSS v4 |
 | 2026-11-08 | TypeScript 5 (5.9.x) 유지, 7.x는 채택하지 않음 | 7.0.2가 2026-07-08 릴리스로 최신이지만 NexusPM에서 검증한 5.x 조합을 우선한다. 7.x는 린트·빌드 도구 호환을 확인한 뒤 `chore:`로 별도 검토 | TypeScript 7 |
@@ -292,3 +292,5 @@ tests/             # 단위·E2E
 | 2026-11-08 | 호스팅 Vercel(Hobby로 시작, 공개 운영 전 Pro), DB Neon(잠정), 메일 Resend, 인증 라이브러리+TOTP. 상세와 조건은 INFRASTRUCTURE.md | Next.js와의 궁합, 1인 운영 부담, PR별 미리보기. Hobby는 비상업 용도 전용이라 공개 운영 전 전환을 조건으로 건다 | Cloudflare(OpenNext), 자체 서버(Docker), Supabase |
 | 2026-11-08 | DB 접근은 Drizzle + Neon HTTP 드라이버(운영), 저장 어댑터 시험은 PGlite(실제 Postgres 엔진, 메모리)에 실제 마이그레이션을 적용해 실행 | Neon 계정 없이도 SQL·제약·마이그레이션을 매번 검증할 수 있다. 네트워크·인증은 범위 밖이라 소유자의 실제 연결 확인이 따로 필요하다 | 목(mock) 객체로만 시험, 시험마다 외부 DB 사용 |
 | 2026-11-08 | 로그의 오류 필드는 `errorType`(클래스 이름)만 남기고 메시지는 남기지 않는다 | 메시지에 연결 문자열·입력값이 섞일 수 있다. 로거의 가림 규칙이 `name`으로 끝나는 키를 가리므로 `errorName`은 쓸 수 없다 | 오류 메시지 전체 기록 |
+| 2026-11-08 → 2026-11-25 | 화면은 처음에 `data/index.ts`(가상 데이터)만 읽었고, AD-5c(0.28.0)부터 유형별 입구(`data/stories.ts` 등)가 `DATABASE_URL` 이 있으면 DB 를 읽는다. 가상 데이터는 DB 없는 로컬·자동 시험 전용이며 배포 환경에서는 보이지 않는다 | 위 2026-11-08 "가상 데이터" 결정의 후속 | — |
+| 2026-11-22 | 홈 화면 추가(PWA)는 manifest·아이콘만, service worker(오프라인 캐시)는 두지 않는다 (0.63.0) | 내용이 자주 바뀌는 사이트라 예전 화면이 남는 문제를 피한다 | 오프라인 캐시 |
