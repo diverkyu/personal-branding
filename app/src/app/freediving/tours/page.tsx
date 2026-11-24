@@ -5,7 +5,6 @@ import { TourArchiveCard } from "@/components/site/TourArchiveCard";
 import { TourCard } from "@/components/site/TourCard";
 import { tourArchiveCard, tourCard } from "@/components/site/mappers";
 import { PageIntro } from "@/components/layout/PageIntro";
-import { Section } from "@/components/ui/Section";
 import { listPastTours, listUpcomingTours } from "@/data/tours";
 import pages from "../../pages.module.css";
 import { pageMeta } from "@/lib/seo";
@@ -24,23 +23,24 @@ export default async function ToursPage() {
   ];
   return (
     <>
-      <PageIntro tone="light" title="투어" />
-      <Section tone="light" sub>
-        <Suspense fallback={null}>
-          <FilteredList
-            label="투어 상태"
-            param="status"
-            options={[
-              { value: "upcoming", label: "진행 예정" },
-              { value: "past", label: "지난 투어" },
-            ]}
-            items={items}
-            surface="light"
-            listClassName={pages.grid3}
-            empty={<p className={pages.emptyLight}>다음 투어를 준비하고 있습니다. 소식이 궁금하시면 문의를 남겨주세요.</p>}
-          />
-        </Suspense>
-      </Section>
+      <PageIntro tone="light" title="투어">
+        <div className={pages.after}>
+          <Suspense fallback={null}>
+            <FilteredList
+              label="투어 상태"
+              param="status"
+              options={[
+                { value: "upcoming", label: "진행 예정" },
+                { value: "past", label: "지난 투어" },
+              ]}
+              items={items}
+              surface="light"
+              listClassName={pages.grid3}
+              empty={<p className={pages.emptyLight}>다음 투어를 준비하고 있습니다. 소식이 궁금하시면 문의를 남겨주세요.</p>}
+            />
+          </Suspense>
+        </div>
+      </PageIntro>
     </>
   );
 }

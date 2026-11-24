@@ -63,6 +63,21 @@ test.describe("공통 레이아웃", () => {
     await page.goto("/");
     await expect(page.getByRole("banner").getByRole("link", { name: "KYU 홈" })).toHaveAttribute("href", "/");
   });
+
+  // 제목만 있는 PageIntro 아래에 같은 색 섹션을 하나 더 두면 위아래 여백이 겹쳐 200px(휴대폰 140px)이 비었다 (0.63.1)
+  for (const path of ["/freediving/tours", "/freediving/reviews", "/privacy"]) {
+    test(`제목 바로 아래에 내용이 이어진다: ${path}`, async ({ page }) => {
+      await page.goto(path);
+      const gap = await page.evaluate(() => {
+        const h1 = document.querySelector("main h1")!.getBoundingClientRect();
+        const below = [...document.querySelectorAll("main button, main p, main article, main li")]
+          .map((e) => e.getBoundingClientRect())
+          .filter((r) => r.height > 0 && r.top > h1.bottom);
+        return Math.min(...below.map((r) => r.top)) - h1.bottom;
+      });
+      expect(gap).toBeLessThanOrEqual(60);
+    });
+  }
 });
 
 test.describe("데스크톱 메뉴", () => {

@@ -5,7 +5,6 @@ import { ReviewCard } from "@/components/site/ReviewCard";
 import { reviewCard, tourHref } from "@/components/site/mappers";
 import { PageIntro } from "@/components/layout/PageIntro";
 import { Button } from "@/components/ui/Button";
-import { Section } from "@/components/ui/Section";
 import { listReviews, reviewTourOptions } from "@/data/reviews";
 import { listOpenTours } from "@/data/tours";
 import pages from "../../pages.module.css";
@@ -23,26 +22,27 @@ export default async function ReviewsPage() {
   const next = (await listOpenTours())[0];
   return (
     <>
-      <PageIntro tone="light" title="함께 물에 들어간 사람들의 이야기." />
-      <Section tone="light" sub>
-        <Suspense fallback={null}>
-          <FilteredList
-            label="투어별 후기"
-            param="tour"
-            options={tours.map((t) => ({ value: t.slug, label: t.title }))}
-            items={reviews.map((r) => ({ id: r.id, values: r.tourSlug ? [r.tourSlug] : [], node: <ReviewCard {...reviewCard(r, tours)} /> }))}
-            surface="light"
-            listClassName={pages.grid3}
-            pagination={{ mode: "more", size: 12 }}
-            empty={<p className={pages.emptyLight}>아직 등록된 후기가 없습니다.</p>}
-          />
-        </Suspense>
-        <div className={pages.chips}>
-          <Button href={next ? tourHref(next) : "/contact"} size="M" icon="arrow-up-right">
-            {next ? "진행 예정 투어 보기" : "문의하기"}
-          </Button>
+      <PageIntro tone="light" title="함께 물에 들어간 사람들의 이야기.">
+        <div className={pages.after}>
+          <Suspense fallback={null}>
+            <FilteredList
+              label="투어별 후기"
+              param="tour"
+              options={tours.map((t) => ({ value: t.slug, label: t.title }))}
+              items={reviews.map((r) => ({ id: r.id, values: r.tourSlug ? [r.tourSlug] : [], node: <ReviewCard {...reviewCard(r, tours)} /> }))}
+              surface="light"
+              listClassName={pages.grid3}
+              pagination={{ mode: "more", size: 12 }}
+              empty={<p className={pages.emptyLight}>아직 등록된 후기가 없습니다.</p>}
+            />
+          </Suspense>
+          <div className={pages.chips}>
+            <Button href={next ? tourHref(next) : "/contact"} size="M" icon="arrow-up-right">
+              {next ? "진행 예정 투어 보기" : "문의하기"}
+            </Button>
+          </div>
         </div>
-      </Section>
+      </PageIntro>
     </>
   );
 }
