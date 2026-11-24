@@ -8,8 +8,9 @@ import { PageIntro } from "@/components/layout/PageIntro";
 import { Section } from "@/components/ui/Section";
 import { listPastTours, listUpcomingTours } from "@/data/tours";
 import pages from "../../pages.module.css";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "투어" };
+export const metadata: Metadata = pageMeta("/freediving/tours", { title: "투어" });
 
 /** 투어는 어드민에서 발행·취소·마감할 때 바로 갱신되고, 종료 여부는 최대 5분 안에 반영된다 */
 export const revalidate = 300;

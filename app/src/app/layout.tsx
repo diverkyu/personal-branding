@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, Lora, Noto_Sans_KR } from "next/font/google";
 import { isIndexingAllowed, resolveSiteUrl } from "@/config/env";
 import { siteConfig } from "@/config/site";
+import { BASE_OPEN_GRAPH, verificationOf } from "@/lib/seo";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { listFilms } from "@/data/films";
 import { listTravel } from "@/data/travel";
@@ -48,6 +49,10 @@ export async function generateMetadata(): Promise<Metadata> {
   description: settings["seo.description"] ?? siteConfig.description,
   // 공개 전에는 색인되지 않게 한다. 게시 때 SITE_INDEXING=on 으로 켠다.
   robots: isIndexingAllowed(process.env) ? { index: true, follow: true } : { index: false, follow: false },
+  // 공유 미리보기 기본값. canonical 은 페이지마다 pageMeta 로 단다 (lib/seo.ts)
+  openGraph: { ...BASE_OPEN_GRAPH, title: settings["seo.title"] ?? siteConfig.defaultTitle, description: settings["seo.description"] ?? siteConfig.description },
+  twitter: { card: "summary" },
+  verification: verificationOf(process.env),
   // iPhone 사파리 "홈 화면에 추가": 아이콘 이름과 주소창 없는 화면 (아이콘은 app/apple-icon.png, 안드로이드는 manifest.ts)
   appleWebApp: { capable: true, title: siteConfig.name, statusBarStyle: "black" },
   };

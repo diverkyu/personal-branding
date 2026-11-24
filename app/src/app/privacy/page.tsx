@@ -4,8 +4,9 @@ import { Section } from "@/components/ui/Section";
 import { formatDateTimeKst } from "@/lib/format";
 import { getPrivacyPolicy } from "@/settings/read";
 import pages from "../pages.module.css";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "개인정보 처리방침" };
+export const metadata: Metadata = pageMeta("/privacy", { title: "개인정보 처리방침" });
 
 /** LEGAL (SCREEN-SPEC §5.12). 본문은 어드민(동의·방침)에서 새 버전으로 게시한다. 공개 전 전문가 확인이 필요하다(SECURITY §9). 게시된 버전이 없으면 준비 중 안내를 보여 준다. */
 export default async function PrivacyPage() {

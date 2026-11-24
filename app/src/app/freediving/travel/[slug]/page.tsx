@@ -10,6 +10,7 @@ import { isStaleCheck } from "@/data/travelQueries";
 import { kstDate } from "@/data/storyQueries";
 import { breadcrumbLd } from "@/lib/structured";
 import { getSiteSettings } from "@/settings/read";
+import { pageMeta } from "@/lib/seo";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -25,7 +26,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const item = await getTravel((await params).slug);
   if (!item) return {};
-  return { title: item.seoTitle || item.title, description: item.seoDescription || item.summary || undefined };
+  return pageMeta(`/freediving/travel/${item.slug}`, { title: item.seoTitle || item.title, description: item.seoDescription || item.summary || undefined, openGraph: { type: "article" } });
 }
 
 /** TRAVEL-D 상세 (SCREEN-SPEC §5.17). 존재하지 않거나 공개 전인 글은 404. */

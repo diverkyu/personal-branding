@@ -13,6 +13,7 @@ import { getEquipment, listEquipment } from "@/data/equipment";
 import { formatDate } from "@/lib/format";
 import pages from "../../../pages.module.css";
 import styles from "../../tours/[slug]/page.module.css";
+import { pageMeta } from "@/lib/seo";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -27,7 +28,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const item = await getEquipment((await params).slug);
-  return item ? { title: item.seoTitle || item.name, description: item.seoDescription || item.reason } : {};
+  return item ? pageMeta(`/freediving/equipment/${item.slug}`, { title: item.seoTitle || item.name, description: item.seoDescription || item.reason }) : {};
 }
 
 /** EQ 상세 (SCREEN-SPEC §5.9). 행동 버튼은 장비 데이터의 행동 유형에 따른다. */

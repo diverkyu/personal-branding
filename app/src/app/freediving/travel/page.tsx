@@ -12,8 +12,9 @@ import { isStaleCheck, levelsOf, regionsOf } from "@/data/travelQueries";
 import { kstDate } from "@/data/storyQueries";
 import { getSiteSettings } from "@/settings/read";
 import pages from "../../pages.module.css";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "여행 추천" };
+export const metadata: Metadata = pageMeta("/freediving/travel", { title: "여행 추천" });
 
 /** 발행·취소·삭제 때 바로 갱신되고, 예약 시각은 최대 5분 안에 반영된다 */
 export const revalidate = 300;

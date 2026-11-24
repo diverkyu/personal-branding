@@ -23,6 +23,7 @@ import { getTour, listPastTours, listUpcomingTours } from "@/data/tours";
 import { formatPeriod } from "@/lib/format";
 import pages from "../../../pages.module.css";
 import styles from "./page.module.css";
+import { pageMeta } from "@/lib/seo";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -37,7 +38,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tour = await getTour((await params).slug);
-  return tour ? { title: tour.seoTitle || tour.title, description: tour.seoDescription || tour.summary } : {};
+  return tour ? pageMeta(`/freediving/tours/${tour.slug}`, { title: tour.seoTitle || tour.title, description: tour.seoDescription || tour.summary }) : {};
 }
 
 /** TOUR 상세 + 예약 문의 (SCREEN-SPEC §5.7). 상태에 따라 문의 카드가 달라진다. */
