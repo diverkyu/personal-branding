@@ -50,7 +50,7 @@ src/
 ├── settings/     # 사이트 설정 목록·읽기·연락처/SNS·동의 문구
 ├── about/ home/ reviews/ media/   # 영역별 순수 규칙 (About 필드, 홈 히어로, 후기, 이미지 처리)
 ├── mail/         # 접수 알림 메일 어댑터 (Resend)
-├── lib/          # 공통 로직·로거·오류·인증·구조화 데이터 (순수 함수 위주)
+├── lib/          # 공통 로직·로거·오류·인증·구조화 데이터·SEO 메타(seo.ts) (순수 함수 위주)
 ├── styles/       # 디자인 토큰 (DESIGN-SYSTEM.md §2)
 ├── types/        # 콘텐츠 스키마
 └── instrumentation.ts   # 서버 시작 시 설정 점검 로그

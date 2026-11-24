@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { JsonLd } from "@/components/site/JsonLd";
 import { resolveSiteUrl } from "@/config/env";
-import { websiteLd } from "@/lib/structured";
+import { personLd, websiteLd } from "@/lib/structured";
+import type { Metadata } from "next";
+import { siteConfig } from "@/config/site";
+import { pageMeta } from "@/lib/seo";
+import { socialLinksOf } from "@/settings/social";
 import { HomeHeroSection } from "@/components/site/HomeHeroSection";
 import { getPublicHeroImage } from "@/data/homeHero";
 import { ContactSection } from "@/components/site/ContactSection";
@@ -27,6 +31,14 @@ import pages from "./pages.module.css";
 /** 발행·취소·삭제 때 바로 갱신되고, 예약 시각은 최대 5분 안에 반영된다 */
 export const revalidate = 300;
 
+/** 홈 제목·설명은 사이트 설정(검색·공유)에서 온다. layout 의 title.default 를 그대로 쓰고 정규 주소만 단다 */
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const title = settings["seo.title"] ?? siteConfig.defaultTitle;
+  const description = settings["seo.description"] ?? siteConfig.description;
+  return { ...pageMeta("/", { description, openGraph: { title, description } }) };
+}
+
 /** 홈 (SCREEN-SPEC §5.1). 섹션 순서: 히어로 → 구분 띠 → About 요약 → Story → Freediving → Films(작품이 있을 때만) → Contact. Story·투어는 어드민 콘텐츠, 후기는 아직 가상 데이터. */
 export default async function HomePage() {
   const settings = await getSiteSettings();
@@ -41,6 +53,7 @@ export default async function HomePage() {
   return (
     <>
       <JsonLd data={websiteLd(resolveSiteUrl(process.env).url.origin)} />
+      <JsonLd data={personLd(resolveSiteUrl(process.env).url.origin, socialLinksOf(settings).map((l) => l.href))} />
       <HomeHeroSection settings={settings} image={heroImage} />
 
       <div className={styles.band} aria-hidden="true">

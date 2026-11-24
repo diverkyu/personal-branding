@@ -20,8 +20,9 @@ import { isStaleCheck } from "@/data/travelQueries";
 import { kstDate } from "@/data/storyQueries";
 import { travelConfig } from "@/config/travel";
 import pages from "../pages.module.css";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Freediving" };
+export const metadata: Metadata = pageMeta("/freediving", { title: "Freediving" });
 
 /** 투어·장비는 어드민에서 발행·취소·마감할 때 바로 갱신되고, 종료 여부와 예약 시각은 최대 5분 안에 반영된다 */
 export const revalidate = 300;

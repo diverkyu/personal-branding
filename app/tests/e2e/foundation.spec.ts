@@ -64,6 +64,28 @@ test.describe("보안 기본값", () => {
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
   });
 
+  // 같은 내용이 여러 주소(임시 주소, www 유무, ?필터)로 열려도 검색엔진이 한 주소로 모으도록 (SEO-GEO §3)
+  for (const path of ["/", "/about", "/story", "/freediving", "/freediving/tours", "/freediving/reviews", "/contact", "/privacy"]) {
+    test(`정규 주소는 자기 주소이고 공유 미리보기에 사이트 이름이 있다: ${path}`, async ({ page }) => {
+      await page.goto(`${path}${path === "/" ? "" : "?status=past"}`);
+      const href = await page.locator('link[rel="canonical"]').getAttribute("href");
+      expect(new URL(href!).pathname).toBe(path);
+      expect(href).not.toContain("?");
+      await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute("content", "KYU");
+      await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute("content", "ko_KR");
+    });
+  }
+
+  test("About 과 홈에 인물 구조화 데이터가 있고 이메일은 없다", async ({ page }) => {
+    for (const path of ["/", "/about"]) {
+      await page.goto(path);
+      const blocks = await page.locator('script[type="application/ld+json"]').allTextContents();
+      const person = blocks.map((b) => JSON.parse(b) as Record<string, unknown>).find((d) => d["@type"] === "Person");
+      expect(person, path).toMatchObject({ name: "이동규", alternateName: "KYU" });
+      expect(JSON.stringify(person)).not.toMatch(/[\w.+-]+@[\w-]+\.[\w.]+/);
+    }
+  });
+
   test("파비콘이 있어 브라우저가 404 를 내지 않는다", async ({ page, request }) => {
     await page.goto("/");
     const href = await page.locator('link[rel~="icon"]').first().getAttribute("href");

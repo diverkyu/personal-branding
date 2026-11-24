@@ -6,6 +6,8 @@ export const siteConfig = {
   titleTemplate: "%s — KYU",
   description: "이동규 KYU — 프리다이빙 강사이자 AI 크리에이터. 바다의 깊이와 상상의 가능성을 탐험합니다.",
   locale: "ko_KR",
+  /** 인물 구조화 데이터의 하는 일 (description 과 같은 표현) */
+  jobTitles: ["프리다이빙 강사", "AI 크리에이터"],
   /** 브라우저 주소창 색 (docs/COPY.md theme-color) */
   themeColor: "#071e29",
 } as const;

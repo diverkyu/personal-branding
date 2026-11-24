@@ -10,7 +10,8 @@
 4. [docs/phase1/SCREEN-SPEC.md](docs/phase1/SCREEN-SPEC.md) — 화면 요소(ID), 인터랙션, 어드민 필드
 5. [docs/phase1/DESIGN-SYSTEM.md](docs/phase1/DESIGN-SYSTEM.md) — 토큰과 컴포넌트 (화면 작업 전 필독)
 6. [docs/phase1/CONCEPT.md](docs/phase1/CONCEPT.md) — 톤·카피 (§7). 확정 카피는 [docs/COPY.md](docs/COPY.md)
-7. 어드민·운영 작업 전: [docs/phase1/ADMIN-DESIGN.md](docs/phase1/ADMIN-DESIGN.md)(구조와 단계별 구현 기록), [docs/phase1/INFRASTRUCTURE.md](docs/phase1/INFRASTRUCTURE.md)(호스팅·DB·저장소 결정)
+7. 검색 노출 작업 전: [docs/phase1/SEO-GEO.md](docs/phase1/SEO-GEO.md)(정규 주소 규칙 `pageMeta`, 단계별 계획)
+8. 어드민·운영 작업 전: [docs/phase1/ADMIN-DESIGN.md](docs/phase1/ADMIN-DESIGN.md)(구조와 단계별 구현 기록), [docs/phase1/INFRASTRUCTURE.md](docs/phase1/INFRASTRUCTURE.md)(호스팅·DB·저장소 결정)
 
 `docs/*.md`(DESIGN, COPY, BASELINE, PRODUCT-CONCEPT 등)는 규강의 기존 시안 문서이며 **수정하지 않는다.**
 

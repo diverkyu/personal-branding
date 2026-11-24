@@ -127,7 +127,7 @@ npm run admin:reset-2fa        # 2차 인증 초기화
 3. [보안 설계 지침](docs/phase1/SECURITY.md) — 인증·입력·업로드·개인정보
 4. [화면 설계서](docs/phase1/SCREEN-SPEC.md) · [디자인 시스템](docs/phase1/DESIGN-SYSTEM.md) · [컨셉·카피](docs/phase1/CONCEPT.md)
 5. [어드민 설계](docs/phase1/ADMIN-DESIGN.md) — 어드민 구조와 단계별 구현 기록
-6. [인프라 결정](docs/phase1/INFRASTRUCTURE.md)(호스팅·DB·도메인) · [사용자 테스트](docs/phase1/USER-TEST.md) · [상표 확인](docs/phase1/TRADEMARK-CHECK.md)
+6. [인프라 결정](docs/phase1/INFRASTRUCTURE.md)(호스팅·DB·도메인) · [사용자 테스트](docs/phase1/USER-TEST.md) · [상표 확인](docs/phase1/TRADEMARK-CHECK.md) · [검색 노출 계획](docs/phase1/SEO-GEO.md)
 7. [법무 초안](docs/legal/README.md) — 개인정보 처리 현황·처리방침 초안·법무 검토 의뢰서 (먼저 [PRIVACY-OVERVIEW](docs/legal/PRIVACY-OVERVIEW.md))
 8. [운영 기록](docs/operations/README.md) · [콘텐츠 원고](docs/content/ai-video-guide/README.md)
 
