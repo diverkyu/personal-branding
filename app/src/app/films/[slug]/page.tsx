@@ -8,6 +8,7 @@ import { contactConfig } from "@/config/site";
 import { getFilm, getFilmNeighbors, listFilms } from "@/data/films";
 import { breadcrumbLd, videoLd } from "@/lib/structured";
 import { getSiteSettings } from "@/settings/read";
+import { pageMeta } from "@/lib/seo";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -23,11 +24,11 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const film = await getFilm((await params).slug);
   if (!film) return {};
-  return {
+  return pageMeta(`/films/${film.slug}`, {
     title: film.seoTitle || film.title,
     description: film.seoDescription || film.summary || undefined,
-    ...(film.poster.src ? { openGraph: { images: [{ url: film.poster.src, alt: film.poster.alt }] } } : {}),
-  };
+    ...(film.poster.src ? { openGraph: { type: "video.other", images: [{ url: film.poster.src, alt: film.poster.alt }] } } : {}),
+  });
 }
 
 /** FILMS-D 작품 상세 (SCREEN-SPEC §5.15). 존재하지 않거나 공개 전인 작품은 404. */

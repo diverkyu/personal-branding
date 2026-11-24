@@ -5,8 +5,12 @@ import { ContentBody } from "@/content/ContentBody";
 import { getPublicAbout } from "@/data/about";
 import { getSiteSettings } from "@/settings/read";
 import { contactPropsOf } from "@/settings/social";
+import { JsonLd } from "@/components/site/JsonLd";
+import { resolveSiteUrl } from "@/config/env";
+import { personLd } from "@/lib/structured";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "About" };
+export const metadata: Metadata = pageMeta("/about", { title: "About" });
 
 /** 새 내용이 공개 반영되면 캐시가 갱신되고, 최대 5분 안에는 반드시 새 내용을 읽는다 */
 export const revalidate = 300;
@@ -18,18 +22,26 @@ export const revalidate = 300;
 export default async function AboutPage() {
   const about = await getPublicAbout();
   const contact = contactPropsOf(await getSiteSettings());
+  // 이 화면이 인물 정보(@id …/about#person)의 기준 주소다. 홈의 WebSite 가 이것을 가리킨다
+  const person = <JsonLd data={personLd(resolveSiteUrl(process.env).url.origin, contact.social.map((l) => l.href))} />;
   if (!about) {
     return (
-      <AboutView headline={DEFAULT_ABOUT.headline} signature={DEFAULT_ABOUT.signature} photo={null} contact={contact}>
-        {DEFAULT_ABOUT.paragraphs.map((p) => (
-          <p key={p}>{p}</p>
-        ))}
-      </AboutView>
+      <>
+        {person}
+        <AboutView headline={DEFAULT_ABOUT.headline} signature={DEFAULT_ABOUT.signature} photo={null} contact={contact}>
+          {DEFAULT_ABOUT.paragraphs.map((p) => (
+            <p key={p}>{p}</p>
+          ))}
+        </AboutView>
+      </>
     );
   }
   return (
-    <AboutView headline={about.headline} signature={about.signature} photo={about.photo} contact={contact}>
-      <ContentBody doc={about.doc} media={new Map(about.media.map((m) => [m.id, m]))} />
-    </AboutView>
+    <>
+      {person}
+      <AboutView headline={about.headline} signature={about.signature} photo={about.photo} contact={contact}>
+        <ContentBody doc={about.doc} media={new Map(about.media.map((m) => [m.id, m]))} />
+      </AboutView>
+    </>
   );
 }

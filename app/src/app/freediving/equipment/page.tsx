@@ -7,8 +7,9 @@ import { PageIntro } from "@/components/layout/PageIntro";
 import { Section } from "@/components/ui/Section";
 import { listEquipment, listEquipmentCategories } from "@/data/equipment";
 import pages from "../../pages.module.css";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "장비 추천" };
+export const metadata: Metadata = pageMeta("/freediving/equipment", { title: "장비 추천" });
 
 /** 장비는 어드민에서 발행·취소·삭제할 때 바로 갱신되고, 예약 시각은 최대 5분 안에 반영된다 */
 export const revalidate = 300;

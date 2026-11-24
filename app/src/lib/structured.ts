@@ -18,7 +18,25 @@ export function websiteLd(origin: string): Json {
     url: abs(origin, "/"),
     description: siteConfig.description,
     inLanguage: "ko",
-    publisher: { "@type": "Person", name: siteConfig.ownerName, alternateName: "KYU" },
+    publisher: { "@type": "Person", "@id": abs(origin, "/about#person"), name: siteConfig.ownerName, alternateName: siteConfig.name },
+  };
+}
+
+/**
+ * 운영자 한 사람(이동규 · KYU)을 알리는 인물 정보 (GEO: 생성형 검색이 "누구인가"를 정확히 답하게).
+ * 화면(About·푸터)에 있는 내용만: 이름·활동명·하는 일·SNS 주소. 이메일·연락처는 넣지 않는다.
+ */
+export function personLd(origin: string, sameAs: string[]): Json {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": abs(origin, "/about#person"),
+    name: siteConfig.ownerName,
+    alternateName: siteConfig.name,
+    url: abs(origin, "/about"),
+    jobTitle: [...siteConfig.jobTitles],
+    description: siteConfig.description,
+    ...(sameAs.length > 0 ? { sameAs } : {}),
   };
 }
 

@@ -7,11 +7,12 @@ import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { listStories, listStoryTags } from "@/data/stories";
 import pages from "../pages.module.css";
+import { pageMeta } from "@/lib/seo";
 
 /** 한 페이지에 보이는 글 수 (큰 카드 제외, SCREEN-SPEC STORY-05 제안값) */
 const STORY_PAGE_SIZE = 9;
 
-export const metadata: Metadata = { title: "Story" };
+export const metadata: Metadata = pageMeta("/story", { title: "Story" });
 
 /** 발행·취소·삭제 때 바로 갱신되고, 예약 시각은 최대 5분 안에 반영된다 */
 export const revalidate = 300;

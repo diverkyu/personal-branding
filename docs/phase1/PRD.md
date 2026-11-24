@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.63.1** | 2026-11-22 | 검토 중 (규강 확인 대기) | 규강 + Claude |
+| **0.64.0** | 2026-11-24 | 검토 중 (규강 확인 대기) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [CONCEPT.md](CONCEPT.md)
 
@@ -117,8 +117,8 @@
 | W-1 | 내비게이션 순서: About, Story, Freediving(투어·장비·후기), Contact. 기존 시안의 브랜드(딥블루/라임/페이퍼, DM Sans/Noto Sans KR) 계승 | P0 |
 | W-2 | 홈: 슬로건, 진행 예정 투어, 대표 후기, 최신 스토리 | P0 |
 | W-3 | 반응형(모바일 우선), 키보드 접근성, 동작 줄이기 대응(기존 시안 수준 유지) | P0 |
-| W-4 | SEO: 페이지별 title/description/OG 이미지, sitemap, 구조화 데이터 | P0 |
-| W-5 | GEO(생성형 검색 노출) 최적화 | P1 — 스타터 키트 확인 후 구체화 |
+| W-4 | SEO: 페이지별 title/description/OG 이미지, sitemap, 구조화 데이터 (작업 계획: [SEO-GEO.md](SEO-GEO.md), 0.64.0) | P0 |
+| W-5 | GEO(생성형 검색 노출) 최적화 | P1 — [SEO-GEO.md](SEO-GEO.md) §4 C·D로 구체화(0.64.0) |
 | W-6 | 방문 통계(투어 신청 전환 확인용) | P1 |
 | W-7 | 공개 페이지의 고정 문구(헤드라인, 버튼, 안내·오류 문구)는 [CONCEPT §7](CONCEPT.md) 톤 가이드를 따르며, 코드에 하드코딩하지 않고 SiteSetting(공통 카피)에서 관리. 기존 확정 카피(`docs/COPY.md`)는 변경 없이 이관 | P1 |
 
