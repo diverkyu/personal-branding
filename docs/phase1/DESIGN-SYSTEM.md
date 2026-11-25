@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.66.0** | 2026-11-25 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.67.0** | 2026-11-25 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [CONCEPT.md](CONCEPT.md) · 화면 시안: [mockup/](mockup/README.md) · 시각 보기: 캔버스의 "디자인 시스템" 보드
 
@@ -58,6 +58,10 @@
 | Logo | 34px | 700 | 1 | -2px | `KYU` (상표 등록 전에는 `®` 없음) |
 
 모바일은 Display 46px, H2 32px, Contact Display 55px를 기준으로 줄인다. 한 줄 제목은 `nowrap`을 피한다 (모바일에서 글자가 잘리는 원인).
+
+**한글 조판** (0.67.0)
+- 줄바꿈은 어절 단위다. 문서 전체(`body`)에 `word-break: keep-all`, 어절이 칸보다 길 때만 쪼개도록 `overflow-wrap: break-word`. "문장입니/다"처럼 음절 중간에서 끊기지 않는다.
+- 자간을 넓히는 것(Label 2px 등)은 **영문 대문자에만** 쓴다. 한글이 들어가는 라벨·메타(정보 줄 라벨, 장비 카테고리, 여행 지역, 영상 메타)는 자간 0. 한글에 자간을 넣으면 "모 집 상 태"처럼 띄어 쓴 것으로 읽힌다. 영문과 한글이 섞인 보조 라벨(`UPCOMING · 진행 예정` 등)은 [디자인 점검 D3](design-review/2026-11-design-audit.md)에서 정리한다.
 
 ### 2.3 간격·모양
 
@@ -218,7 +222,7 @@
 | 어드민 화면 (`AdminSidebar`·`StatCard`·`DataTable`·`EditorPanel` 후보) | `app/admin/admin.module.css` + 화면별 컴포넌트(`app/admin/(console)/…`) | 구현 (AD-1~AD-9). 별도 공용 컴포넌트로 빼지 않고 어드민 공통 스타일 한 파일과 화면별 컴포넌트로 만들었다 (§3.5 톤 분리 유지) |
 | `HeroVisual`(홈 히어로 그림·이미지), `HomeHeroSection` | `components/site/` | 구현 (0.59.0, 0.62.0) |
 | `SocialIcon`·`SocialLinks`(인스타그램·유튜브 로고 링크) | `components/site/SocialIcon` | 구현 (0.61.0) |
-| `PageIntro`(하위 페이지 제목 영역) | `components/layout/PageIntro` | 구현. 같은 색 내용은 children 으로 (0.63.1, §3.1) |
+| `PageIntro`(하위 페이지 제목 영역) | `components/layout/PageIntro` | 구현. 같은 색 내용은 children 으로 (0.63.1, §3.1). About·장비 목록도 같은 방식으로 고침 (0.67.0) |
 
 **구현하면서 정한 것**
 - 카드는 제목 링크를 카드 전체로 넓힌다 (stretched link). 카드 전체를 `<a>`로 감싸지 않아 스크린리더가 제목만 링크 이름으로 읽는다. 장비 카드의 행동 버튼은 카드 링크 위에 떠서 따로 눌린다.

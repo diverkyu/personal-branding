@@ -117,11 +117,14 @@ export default async function FreedivingPage() {
             />
           </Suspense>
         </div>
-        <div className={pages.after}>
-          <TextLink href="/freediving/equipment" surface="dark">
-            장비 전체 보기
-          </TextLink>
-        </div>
+        {/* 장비가 없으면 빈 목록으로 보내지 않는다 (FD-10) */}
+        {equipment.length > 0 ? (
+          <div className={pages.after}>
+            <TextLink href="/freediving/equipment" surface="dark">
+              장비 전체 보기
+            </TextLink>
+          </div>
+        ) : null}
       </Section>
 
       {reviews.length > 0 ? (

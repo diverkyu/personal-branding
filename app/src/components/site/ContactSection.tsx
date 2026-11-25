@@ -23,21 +23,20 @@ export function ContactSection({ asPage = false, email = contactConfig.email, in
         <br />
         <span className={styles.accent}>함께.</span>
       </Title>
-      <div className={styles.row}>
-        <div>
-          <p className={styles.intro}>
-            {intro.map((line, i) => (
-              <span key={i}>
-                {line}
-                {i < intro.length - 1 ? <br /> : null}
-              </span>
-            ))}
-          </p>
-          <a className={styles.email} href={`mailto:${email}`}>
-            {email}
-            <Icon name="arrow-up-right" size={24} />
-          </a>
-        </div>
+      <p className={styles.intro}>
+        {intro.map((line, i) => (
+          <span key={i}>
+            {line}
+            {i < intro.length - 1 ? <br /> : null}
+          </span>
+        ))}
+      </p>
+      {/* 복사 버튼은 이메일 바로 옆에 둔다 — 무엇을 복사하는지 짝으로 보이게 (CONTACT-04) */}
+      <div className={styles.emailRow}>
+        <a className={styles.email} href={`mailto:${email}`}>
+          {email}
+          <Icon name="arrow-up-right" size={24} />
+        </a>
         <CopyEmailButton email={email} />
       </div>
       <ul className={styles.subjects}>
