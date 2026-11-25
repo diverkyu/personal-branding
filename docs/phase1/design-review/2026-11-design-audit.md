@@ -2,13 +2,16 @@
 
 | 문서 버전 | 작성일 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.66.0** | 2026-11-25 | 제안 (규강 결정 전) | Claude (frontend-design 스킬 관점) |
+| **0.66.0** | 2026-11-25 | 제안 (P1·P2 구현됨) | Claude (frontend-design 스킬 관점) |
 
 짝 문서: [DESIGN-SYSTEM](../DESIGN-SYSTEM.md) · [CONCEPT §7](../CONCEPT.md) · [SCREEN-SPEC](../SCREEN-SPEC.md) · [SEO-GEO §4 B](../SEO-GEO.md)
 
 이 문서는 **제안서**다. 작성 시점(0.66.0)에는 앱 코드를 바꾸지 않았다.
 
-**진행 상황**: 2026-11-25 Lucia 결정 — P1 부터 구현하고, 규강 결정이 필요한 안은 Lucia 결정으로 진행해 구현 PR 에 "규강 확인 대기"로 적는다. **P1(D1·D2·D10·D11·D12)은 0.67.0 에서 구현**했다(전후 캡처 [2026-11-p1-captures/](2026-11-p1-captures/)). 아래 개선안은 규강의 결정을 받은 뒤 안마다 PR 하나로 구현한다(AGENTS §7·§10).
+**진행 상황**: 2026-11-25 Lucia 결정 — P1 부터 구현하고, 규강 결정이 필요한 안은 Lucia 결정으로 진행해 구현 PR 에 "규강 확인 대기"로 적는다. **P1(D1·D2·D10·D11·D12)은 0.67.0 에서 구현**했다(전후 캡처 [2026-11-p1-captures/](2026-11-p1-captures/)). **P2(D3·D4·D9)는 0.68.0 에서 구현**했다(Lucia 결정, 규강 확인 대기. 전후 캡처 [2026-11-p2-captures/](2026-11-p2-captures/)):
+- D4 섹션 라벨: 홈에서만 메뉴 이름(About·Story·Freediving·Films·Contact)으로, 번호·대문자·넓은 자간 없이. 하위 페이지 라벨(Story·Freediving·Films·여행 추천 제목 위, 여행 상세 "여행 문의", Films 특강 "AI 영상 특강", `/contact`·About 하단 Contact)은 삭제.
+- D3 보조 라벨: 삭제 — `SCROLL TO EXPLORE`, `UPCOMING · 진행 예정`, `RESERVATION`, 기본 일러스트의 `01 /`·`CONCEPT VISUAL`. 한글로 — "수강 후기", "지난 투어". 유지 — `FREEDIVING INSTRUCTOR & AI CREATOR`, `LEE DONG KYU · 이동규`, `ABOUT THIS FILM`, `MAKING OF · 제작 노트`, `INTO THE BLUE`.
+- D9 화살표: 다른 사이트(새 탭)·메일 링크에만. 헤더 Contact, 히어로 버튼, "전체 보기" 링크, 투어 카드, 404·오류 버튼 등 사이트 안 이동에서는 뺌. 아래 개선안은 규강의 결정을 받은 뒤 안마다 PR 하나로 구현한다(AGENTS §7·§10).
 
 ## 0. 점검 조건
 

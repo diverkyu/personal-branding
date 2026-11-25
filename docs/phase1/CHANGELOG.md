@@ -10,6 +10,16 @@
 - PATCH: 오탈자, 표현 다듬기, 링크 수정
 - 상태: 초안 → 검토 중 → 확정
 
+## [0.68.0] — 2026-11-25 · 검토 중 (Lucia 결정, 규강 확인 대기)
+
+디자인 점검 P2 템플릿 장식 덜기([2026-11-design-audit](design-review/2026-11-design-audit.md) D3·D4·D9). DB 변경 없음, 새 의존성 없음. 카피·규칙 개정이라 규강 결정이 필요한 안이며, 이번에는 Lucia 가 결정했다.
+
+- **변경 D4 섹션 라벨** `01 / ABOUT KYU`~`05 / LET'S CONNECT` 번호 라벨을 없앰. 홈에서만 메뉴 이름(About·Story·Freediving·Films·Contact)을 14px·자간 0 으로 두고, 하위 페이지(About·Story·Freediving·Films·여행 추천·여행 상세·Films 특강 띠·`/contact`·About 하단 Contact)에서는 뺌. 화면마다 달랐던 번호(About 의 Contact `04` ↔ 홈 `05`) 문제도 사라짐 (DESIGN-SYSTEM §2.2 Label·§3.1 `SectionLabel`, CONCEPT §7.2·7.3).
+- **변경 D3 보조 라벨** 삭제: 히어로 `SCROLL TO EXPLORE`, Freediving `UPCOMING · 진행 예정`, 투어 상세 `RESERVATION`, 기본 일러스트의 `01 /` 번호·`CONCEPT VISUAL`. 한글로: 홈 `REVIEWS · 수강 후기` → "수강 후기", Freediving `ARCHIVE · 지난 투어` → "지난 투어". 유지: `FREEDIVING INSTRUCTOR & AI CREATOR`, `LEE DONG KYU · 이동규`, Films 상세 `ABOUT THIS FILM`·`MAKING OF · 제작 노트`, `INTO THE BLUE` (SCREEN-SPEC HOME-06·07·20, FD-03·05).
+- **변경 D9 화살표** `arrow-up-right` 를 다른 사이트(새 탭)와 메일 링크에만. `TextLink` 는 주소를 보고 자동으로 정하고, 헤더 Contact·히어로 "나의 세계 둘러보기"·투어 카드·"다음 투어 문의하기"·후기 페이지 버튼·404·오류 버튼에서 뺌 (DESIGN-SYSTEM §2.4·§3.2, CONCEPT §7.2·7.4).
+- **정리** 쓰지 않게 된 설정값(`filmsConfig.label`·`callout.label`, `travelConfig.label`·`inquiry.label`) 삭제, 어드민 홈 히어로 안내 문구를 새 표시에 맞춤.
+- **캡처** 수정 전후 [design-review/2026-11-p2-captures/](design-review/2026-11-p2-captures/).
+
 ## [0.67.0] — 2026-11-25 · 검토 중 (규강 확인 대기)
 
 디자인 점검 P1 바로잡기([2026-11-design-audit](design-review/2026-11-design-audit.md) D1·D2·D10·D11·D12). DB 변경 없음, 새 의존성 없음. 결정 없이 고칠 수 있는 버그성 화면 수정만 담았다.
