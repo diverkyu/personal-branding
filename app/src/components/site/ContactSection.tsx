@@ -12,12 +12,12 @@ import styles from "./ContactSection.module.css";
  * 홈 하단·/contact·About 하단이 함께 쓰는 Contact 영역 (SCREEN-SPEC §5.11). 페이지의 h1 이 아니므로 기본은 h2.
  * 이메일·안내문·SNS 는 사이트 설정에서 온다(`contactPropsOf`). 기본값은 화면 시험용이다.
  */
-export function ContactSection({ asPage = false, email = contactConfig.email, intro = contactConfig.intro, social = [], withFilms = false }: { asPage?: boolean; email?: string; intro?: readonly string[]; social?: SocialLink[]; withFilms?: boolean }) {
+export function ContactSection({ asPage = false, label, email = contactConfig.email, intro = contactConfig.intro, social = [], withFilms = false }: { asPage?: boolean; /** 홈에서만 넘기는 영역 이름 라벨 */ label?: string; email?: string; intro?: readonly string[]; social?: SocialLink[]; withFilms?: boolean }) {
   const { subjects } = contactConfig;
   const Title = asPage ? "h1" : "h2";
   return (
     <Section tone="teal" id="contact" labelledBy="contact-title">
-      <SectionLabel>{withFilms ? "05" : "04"} / LET’S CONNECT</SectionLabel>
+      {label ? <SectionLabel>{label}</SectionLabel> : null}
       <Title id="contact-title" className={styles.title}>
         다음 탐험은,
         <br />

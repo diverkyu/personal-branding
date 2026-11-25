@@ -33,7 +33,6 @@ export default async function StoryPage() {
       <Section tone="light" sub>
         <SectionHeader
           surface="light"
-          label="02 / STORY"
           as="h1"
           size="h1"
           title={

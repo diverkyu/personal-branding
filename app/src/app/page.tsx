@@ -62,7 +62,7 @@ export default async function HomePage() {
 
       <Section tone="light" labelledBy="home-about">
         <div className={styles.aboutGrid}>
-          <SectionLabel surface="light">01 / ABOUT KYU</SectionLabel>
+          <SectionLabel surface="light">About</SectionLabel>
           <div>
             <h2 id="home-about" className={styles.aboutTitle}>
               서로 다른 두 세계.
@@ -89,7 +89,7 @@ export default async function HomePage() {
               <span className={pages.signature} style={{ color: "var(--kyu-navy)", fontSize: 26 }}>
                 이동규 aka. KYU
               </span>
-              <TextLink href="/about" surface="light" icon="arrow-up-right">
+              <TextLink href="/about" surface="light">
                 About 더 보기
               </TextLink>
             </div>
@@ -98,7 +98,7 @@ export default async function HomePage() {
       </Section>
 
       <Section tone="dark" labelledBy="home-story">
-        <SectionHeader label="02 / STORY" titleId="home-story" title={<>한 호흡 사이에<br />떠오른 생각들.</>} description="바다와 창작 사이에서 기록합니다." />
+        <SectionHeader label="Story" titleId="home-story" title={<>한 호흡 사이에<br />떠오른 생각들.</>} description="바다와 창작 사이에서 기록합니다." />
         {stories.length === 0 ? (
           <p className={pages.empty}>아직 올린 글이 없습니다. 곧 첫 이야기를 올리겠습니다.</p>
         ) : (
@@ -120,7 +120,7 @@ export default async function HomePage() {
       </Section>
 
       <Section tone="light" labelledBy="home-freediving">
-        <SectionHeader surface="light" label="03 / FREEDIVING" titleId="home-freediving" title="처음 물에 들어가는 날." description="바다를 만나고, 호흡에 집중하고, 물속에서 새로운 감각을 발견하는 시간." />
+        <SectionHeader surface="light" label="Freediving" titleId="home-freediving" title="처음 물에 들어가는 날." description="바다를 만나고, 호흡에 집중하고, 물속에서 새로운 감각을 발견하는 시간." />
         <div className={styles.fdGrid}>
           <div>
             {tour ? (
@@ -133,7 +133,7 @@ export default async function HomePage() {
           </div>
           {reviews.length > 0 ? (
             <div>
-              <p className={styles.sideLabel}>REVIEWS · 수강 후기</p>
+              <p className={styles.sideLabel}>수강 후기</p>
               <ul className={styles.reviewList}>
                 {reviews.slice(0, 2).map((r) => (
                   <li key={r.id}>
@@ -164,7 +164,7 @@ export default async function HomePage() {
 
       {featuredFilm ? <HomeFilms film={featuredFilm} copy={filmsCopy(settings)} /> : null}
 
-      <ContactSection withFilms={featuredFilm !== null} {...contactPropsOf(settings)} />
+      <ContactSection label="Contact" withFilms={featuredFilm !== null} {...contactPropsOf(settings)} />
     </>
   );
 }

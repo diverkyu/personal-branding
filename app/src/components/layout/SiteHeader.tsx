@@ -97,7 +97,6 @@ export function SiteHeader({ showFilms = false, showTravel = false }: { showFilm
         </nav>
         <Link href={CONTACT_ITEM.href} className={cx(styles.link, styles.contact, styles.contactWrap, styles.desktopOnly)} aria-current={isCurrentPath(pathname, CONTACT_ITEM.href) ? "page" : undefined}>
           {CONTACT_ITEM.label}
-          <Icon name="arrow-up-right" size={16} />
         </Link>
 
         <button
@@ -138,7 +137,6 @@ export function SiteHeader({ showFilms = false, showTravel = false }: { showFilm
             <li>
               <Link href={CONTACT_ITEM.href} className={styles.panelContact} aria-current={isCurrentPath(pathname, CONTACT_ITEM.href) ? "page" : undefined} onClick={() => closeMenu(false)}>
                 {CONTACT_ITEM.label}
-                <Icon name="arrow-up-right" size={20} />
               </Link>
             </li>
           </ul>

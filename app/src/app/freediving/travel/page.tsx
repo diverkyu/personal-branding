@@ -52,7 +52,6 @@ export default async function TravelPage() {
       <Section tone="dark" sub>
         <FreedivingTabs current="/freediving/travel" />
         <SectionHeader
-          label={travelConfig.label}
           as="h1"
           size="h1"
           title={

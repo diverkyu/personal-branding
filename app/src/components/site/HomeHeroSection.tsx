@@ -31,12 +31,11 @@ export function HomeHeroSection({ settings, image }: { settings: ResolvedSetting
           </h1>
           <p className={styles.headline}>{lines(headline)}</p>
           <p className={styles.lead}>{lines(lead)}</p>
-          <Button href="/story" size="L" icon="arrow-up-right">
+          <Button href="/story" size="L">
             나의 세계 둘러보기
           </Button>
           <p className={styles.explore} aria-hidden="true">
             <span>LEE DONG KYU · 이동규</span>
-            <span>SCROLL TO EXPLORE</span>
           </p>
         </div>
         <div className={styles.art}>

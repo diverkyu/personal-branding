@@ -205,7 +205,8 @@ describe("홈 Films 구역·Contact 특강 링크 (7c)", () => {
     expect(out).toContain("작품 보기");
     expect(out).not.toContain("제작 노트 보기");
     expect(out).toContain("Films 전체 보기");
-    expect(out).toContain("04 / FILMS");
+    expect(out).toContain(">Films</p>");
+    expect(out).not.toContain("04 /");
   });
 
   it("제작 노트가 있으면 첫 버튼이 #making-of 로 간다", () => {
@@ -220,12 +221,14 @@ describe("홈 Films 구역·Contact 특강 링크 (7c)", () => {
     expect(filmsCopy({ "films.title": "한 줄\n두 줄" }).titleLines).toEqual(["한 줄", "두 줄"]);
   });
 
-  it("Contact 는 Films 가 보일 때만 05 번호와 특강 링크를 가진다", () => {
+  it("Contact 는 번호 라벨이 없고(홈에서만 이름 라벨), Films 가 보일 때만 특강 링크를 가진다", () => {
     const off = html(<ContactSection email="a@b.co" />).replace(/<!-- -->/g, "");
     const on = html(<ContactSection email="a@b.co" withFilms />).replace(/<!-- -->/g, "");
-    expect(off).toContain("04 / LET");
+    const home = html(<ContactSection email="a@b.co" label="Contact" />).replace(/<!-- -->/g, "");
+    expect(off).not.toContain("LET’S CONNECT");
+    expect(off).not.toContain(">Contact</p>");
+    expect(home).toContain(">Contact</p>");
     expect(off).not.toContain("AI 영상 특강");
-    expect(on).toContain("05 / LET");
     expect(on).toContain("AI 영상 특강 소식 요청하기");
     expect(on).toContain("mailto:a@b.co?subject=");
   });

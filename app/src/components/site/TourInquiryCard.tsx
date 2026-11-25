@@ -14,12 +14,11 @@ export function TourInquiryCard({ status, slug, capacity, consents }: { status: 
   if (status === "closed") {
     return (
       <section id="inquiry" className={styles.card} aria-labelledby="inquiry-title">
-        <p className={styles.label}>RESERVATION</p>
-      <h2 id="inquiry-title" className={styles.title}>
+        <h2 id="inquiry-title" className={styles.title}>
           예약 문의
         </h2>
         <p>이번 투어는 마감되었습니다.</p>
-        <Button href="/contact" variant="outline" size="M" icon="arrow-up-right">
+        <Button href="/contact" variant="outline" size="M">
           다음 투어 문의하기
         </Button>
       </section>
@@ -29,8 +28,7 @@ export function TourInquiryCard({ status, slug, capacity, consents }: { status: 
   if (status === "upcoming") {
     return (
       <section id="inquiry" className={styles.card} aria-labelledby="inquiry-title">
-        <p className={styles.label}>RESERVATION</p>
-      <h2 id="inquiry-title" className={styles.title}>
+        <h2 id="inquiry-title" className={styles.title}>
           예약 문의
         </h2>
         <p>모집이 시작되면 안내해 드립니다.</p>
@@ -41,7 +39,6 @@ export function TourInquiryCard({ status, slug, capacity, consents }: { status: 
 
   return (
     <section id="inquiry" className={styles.card} aria-labelledby="inquiry-title">
-      <p className={styles.label}>RESERVATION</p>
       <h2 id="inquiry-title" className={styles.title}>
         예약 문의
       </h2>

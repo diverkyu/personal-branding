@@ -30,15 +30,12 @@ export function HeroArt() {
         <path d="M60 8 L150 52" stroke="#031a24" strokeWidth="12" strokeLinecap="round" />
       </g>
       <text x="320" y="110" textAnchor="middle" fill="#f4f4ec" fontSize="15" letterSpacing="3" fontFamily="var(--kyu-font-sans)">
-        01 / INTO THE BLUE
+        INTO THE BLUE
       </text>
       <text x="40" y="680" fill="#f4f4ec" fontSize="22" fontFamily="var(--kyu-font-sans)">
         한 호흡, 무한한 가능성.
       </text>
       <path d="M40 696v18M34 708l6 6l6-6" stroke="#d6f48a" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <text x="600" y="725" fill="#ffffff" fillOpacity=".7" fontSize="11" letterSpacing="2" textAnchor="end" fontFamily="var(--kyu-font-sans)">
-        CONCEPT VISUAL
-      </text>
     </svg>
   );
 }
