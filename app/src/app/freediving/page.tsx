@@ -47,7 +47,6 @@ export default async function FreedivingPage() {
   return (
     <>
       <PageIntro
-        label="03 / FREEDIVING"
         title="처음 물에 들어가는 날."
         lead={
           <>
@@ -68,7 +67,7 @@ export default async function FreedivingPage() {
       </PageIntro>
 
       <Section tone="light" id="tours" labelledBy="fd-tours">
-        <SectionHeader surface="light" titleId="fd-tours" title="투어" action={<span className={pages.eyebrow}>UPCOMING · 진행 예정</span>} />
+        <SectionHeader surface="light" titleId="fd-tours" title="투어" />
         {upcoming.length === 0 ? (
           <p className={pages.emptyLight}>다음 투어를 준비하고 있습니다. 소식이 궁금하시면 문의를 남겨주세요.</p>
         ) : (
@@ -83,7 +82,7 @@ export default async function FreedivingPage() {
         {past.length > 0 ? (
           <>
             <p className={pages.eyebrow} style={{ marginTop: 64 }}>
-              ARCHIVE · 지난 투어
+              지난 투어
             </p>
           <ul className={pages.grid3} style={{ listStyle: "none", padding: 0 }}>
             {past.slice(0, PAST_LIMIT).map((t) => (

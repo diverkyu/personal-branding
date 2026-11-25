@@ -37,7 +37,7 @@ export default async function ReviewsPage() {
             />
           </Suspense>
           <div className={pages.chips}>
-            <Button href={next ? tourHref(next) : "/contact"} size="M" icon="arrow-up-right">
+            <Button href={next ? tourHref(next) : "/contact"} size="M">
               {next ? "진행 예정 투어 보기" : "문의하기"}
             </Button>
           </div>

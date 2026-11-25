@@ -1,8 +1,8 @@
+/* 홈에서 어느 영역인지 알려 주는 짧은 이름(메뉴 이름 그대로). 번호·대문자·넓은 자간을 쓰지 않는다 (디자인 점검 D4, 0.68.0) */
 .label {
   margin-bottom: 24px;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 2px;
   line-height: 1.4;
 }
 

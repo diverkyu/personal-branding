@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
-import { SectionLabel } from "@/components/ui/SectionHeader";
 import { filmsConfig, filmsMailto } from "@/config/films";
 import styles from "./FilmsCallout.module.css";
 
@@ -11,7 +10,6 @@ export function FilmsCallout({ email, title = filmsConfig.callout.title, body = 
     <Section tone="teal" sub labelledBy="films-callout-title">
       <div className={styles.row}>
         <div className={styles.text}>
-          <SectionLabel>{c.label}</SectionLabel>
           <h2 id="films-callout-title" className={styles.title}>
             {title}
           </h2>

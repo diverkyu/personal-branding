@@ -2,7 +2,6 @@ import Link from "next/link";
 import { InfoRow } from "@/components/site/InfoRow";
 import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
-import { SectionLabel } from "@/components/ui/SectionHeader";
 import { SmartLink } from "@/components/ui/SmartLink";
 import { travelConfig, travelMailto } from "@/config/travel";
 import { ContentBody } from "@/content/ContentBody";
@@ -68,7 +67,6 @@ export function TravelDetailView({ item, stale, newer, older, email }: { item: T
       <Section tone="teal" sub labelledBy="travel-inquiry-title">
         <div className={styles.inquiry}>
           <div className={styles.inquiryText}>
-            <SectionLabel>{c.label}</SectionLabel>
             <h2 id="travel-inquiry-title" className={styles.inquiryTitle}>
               {c.title}
             </h2>

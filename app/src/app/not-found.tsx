@@ -11,7 +11,7 @@ export default function NotFound() {
       <p className={styles.code}>404</p>
       <h1 className={styles.title}>찾을 수 없는 페이지입니다.</h1>
       <div className={styles.actions}>
-        <Button href="/" variant="outline" icon="arrow-up-right">
+        <Button href="/" variant="outline">
           홈으로
         </Button>
       </div>

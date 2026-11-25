@@ -52,10 +52,10 @@
   color: var(--kyu-paper);
 }
 
+/* 영역 안의 작은 한글 소제목 (예: 지난 투어) */
 .eyebrow {
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 2px;
   color: var(--kyu-ink-sub);
 }
 

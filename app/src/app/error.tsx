@@ -13,7 +13,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
         <Button type="button" variant="outline" onClick={reset}>
           다시 시도
         </Button>
-        <Button href="/" variant="outline" icon="arrow-up-right">
+        <Button href="/" variant="outline">
           홈으로
         </Button>
       </div>

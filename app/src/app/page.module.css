@@ -125,9 +125,8 @@
 
 .sideLabel {
   margin-bottom: 16px;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 2px;
   color: var(--kyu-ink-sub);
 }
 

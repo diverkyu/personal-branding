@@ -48,7 +48,6 @@ export default async function FilmsPage() {
     <>
       <Section tone="dark" sub>
         <SectionHeader
-          label={filmsConfig.label}
           as="h1"
           size="h1"
           title={

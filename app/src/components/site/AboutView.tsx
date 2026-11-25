@@ -35,7 +35,7 @@ export function AboutView({ headline, signature, photo, children, contact }: Abo
   return (
     <>
       {/* 같은 색 Section 을 따로 두면 위아래 여백이 겹쳐 제목 아래가 크게 빈다 → PageIntro 안에 넣는다 (DESIGN-SYSTEM §3.1) */}
-      <PageIntro label="01 / ABOUT KYU" tone="light" title={<Headline text={headline} />}>
+      <PageIntro tone="light" title={<Headline text={headline} />}>
         <div className={pages.after}>
           {photo ? (
             <p style={{ margin: "0 0 32px" }}>

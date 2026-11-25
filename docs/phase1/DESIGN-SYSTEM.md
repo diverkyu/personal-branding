@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.67.0** | 2026-11-25 | 초안 (규강 검토 전) | 규강 + Claude |
+| **0.68.0** | 2026-11-25 | 초안 (규강 검토 전) | 규강 + Claude |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [CONCEPT.md](CONCEPT.md) · 화면 시안: [mockup/](mockup/README.md) · 시각 보기: 캔버스의 "디자인 시스템" 보드
 
@@ -54,14 +54,14 @@
 | Body | 16px | 400 | 1.9 | 0 | 본문 |
 | Body S | 14px | 400 | 1.75 | 0 | 카드 요약, 보조 설명 |
 | Caption | 12–13px | 400 | 1.7 | 0 | 메타 정보, 안내 |
-| Label | 11px | 600 | 1.4 | 2px | 섹션 라벨 `01 / ABOUT KYU` (대문자) |
+| Label | 14px | 600 | 1.4 | 0 | 홈 영역 이름 라벨 `Story`, 작은 한글 소제목 `지난 투어` (0.68.0. 이전: 11px·2px·대문자 `01 / ABOUT KYU`) |
 | Logo | 34px | 700 | 1 | -2px | `KYU` (상표 등록 전에는 `®` 없음) |
 
 모바일은 Display 46px, H2 32px, Contact Display 55px를 기준으로 줄인다. 한 줄 제목은 `nowrap`을 피한다 (모바일에서 글자가 잘리는 원인).
 
 **한글 조판** (0.67.0)
 - 줄바꿈은 어절 단위다. 문서 전체(`body`)에 `word-break: keep-all`, 어절이 칸보다 길 때만 쪼개도록 `overflow-wrap: break-word`. "문장입니/다"처럼 음절 중간에서 끊기지 않는다.
-- 자간을 넓히는 것(Label 2px 등)은 **영문 대문자에만** 쓴다. 한글이 들어가는 라벨·메타(정보 줄 라벨, 장비 카테고리, 여행 지역, 영상 메타)는 자간 0. 한글에 자간을 넣으면 "모 집 상 태"처럼 띄어 쓴 것으로 읽힌다. 영문과 한글이 섞인 보조 라벨(`UPCOMING · 진행 예정` 등)은 [디자인 점검 D3](design-review/2026-11-design-audit.md)에서 정리한다.
+- 자간을 넓히는 것(Label 2px 등)은 **영문 대문자에만** 쓴다. 한글이 들어가는 라벨·메타(정보 줄 라벨, 장비 카테고리, 여행 지역, 영상 메타)는 자간 0. 한글에 자간을 넣으면 "모 집 상 태"처럼 띄어 쓴 것으로 읽힌다. 영문과 한글이 섞인 보조 라벨은 0.68.0([디자인 점검 D3](design-review/2026-11-design-audit.md))에서 정리했다. 남긴 영문 대문자 라벨: 히어로 `FREEDIVING INSTRUCTOR & AI CREATOR`·`LEE DONG KYU · 이동규`, Films 상세 `ABOUT THIS FILM`·`MAKING OF · 제작 노트`, 기본 일러스트 `INTO THE BLUE`, 구분 띠, `MENU`·`BACK TO TOP`.
 
 ### 2.3 간격·모양
 
@@ -89,6 +89,8 @@
 | 접근성 | 장식용은 `aria-hidden="true"`, 아이콘만 있는 버튼은 `aria-label` |
 | 금지 | 글자 기호(`↗ ⧉ ☰ ↑ ↓`)로 아이콘을 대신하지 않는다 |
 
+**화살표 규칙** (0.68.0, [디자인 점검 D9](design-review/2026-11-design-audit.md)): `arrow-up-right` 는 새 탭으로 여는 다른 사이트와 메일 앱을 여는 링크에만 쓴다. 사이트 안 이동(헤더 Contact, "나의 세계 둘러보기", "전체 보기" 링크, 투어 카드 등)에는 붙이지 않는다.
+
 글자 기호 → 아이콘 대응: `↗` → `arrow-up-right`, `⧉` → `copy`, `☰` → `menu`, `↑` → `arrow-up`, `↓` → `arrow-down`. 기존 v0.1.0의 분야 아이콘 `≈`, `✳`은 `anchor`, `sparkles`로 대체할 것을 제안한다 (미확정).
 
 시안에서 쓴 아이콘: `arrow-up-right`, `arrow-up`, `arrow-down`, `menu`, `x`, `chevron-right`, `external-link`, `copy`, `mail`, `check`, `calendar`, `map-pin`, `play`, `shopping-bag`, `tag`, `search`, `user`, `pencil`, `trash`, `image`. 어드민용으로 `eye`, `eye-off`(비밀번호 보기/숨기기, 0.56.0)를 더했다. 캔버스 "디자인 시스템" 보드 5번에서 볼 수 있다.
@@ -105,7 +107,7 @@
 | `SiteFooter` | 로고, 저작권, 링크, BACK TO TOP ↑ | 어두운 배경 고정 |
 | `Section` | 배경, 위아래·좌우 여백, 컨테이너 | `dark`(navy), `light`(paper), `teal` |
 | `SectionHeader` | `SectionLabel` + 제목 + 보조 문구(선택) + 우측 링크(선택) | 제목 단계 H2 / H3 |
-| `SectionLabel` | `01 / ABOUT KYU` 형식. 번호는 메뉴 순서 | 어두운/밝은 배경 색 자동 |
+| `SectionLabel` | 홈 섹션의 영역 이름(메뉴 이름 그대로: About·Story·Freediving·Films·Contact). **번호를 붙이지 않고 하위 페이지에서는 쓰지 않는다** (0.68.0, [디자인 점검 D4](design-review/2026-11-design-audit.md)) | 어두운/밝은 배경 색 자동 |
 | `PageIntro` | 하위 페이지 맨 위 제목(h1). 같은 색 내용은 **children 으로 넣고** 제목과 40px(`pages.after`) 띄운다 | 같은 색 `Section`을 바로 아래에 따로 두지 않는다 — 위아래 여백이 겹쳐 200px(모바일 140px)이 빈다 (0.63.1) |
 
 ### 3.2 행동·상태
@@ -113,7 +115,7 @@
 | 컴포넌트 | 설명 | 변형·상태 |
 | --- | --- | --- |
 | `Button` | 주요 행동 | `primary`(라임 채움), `outline`(라임 테두리), `dark`(navy 채움, 어드민), `ghost-underline`(밑줄 링크). 크기 L(높이 52) / M(높이 48) / S(높이 44). hover 시 투명도 .78, focus 시 `--kyu-focus` |
-| `TextLink` | 문장 끝 이동 링크 (끝에 `arrow-up-right` 아이콘) | 밑줄 1px, 굵기 700 |
+| `TextLink` | 문장 끝 이동 링크. `arrow-up-right` 아이콘은 **사이트 밖으로 나가는 링크(다른 사이트·메일 열기)에만** 자동으로 붙는다 (0.68.0, D9) | 밑줄 1px, 굵기 700 |
 | `FilterChip` | 카테고리·상태 필터 | `active`(라임 또는 navy 채움) / `inactive`(테두리). 어두운/밝은 배경 변형 |
 | `StatusBadge` | 상태 표시 | 투어 `모집 중`(라임 채움) · `모집 예정`(테두리) · `마감` · `종료`(회색), 어드민 `발행`(라임) · `임시저장`(테두리) · `신규`(라임) |
 

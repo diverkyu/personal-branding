@@ -3,7 +3,7 @@ import { cx } from "@/lib/cx";
 import type { Surface } from "./types";
 import styles from "./SectionHeader.module.css";
 
-/** 섹션 번호 라벨. 예: "01 / ABOUT KYU". 번호는 메뉴 순서와 맞춘다. */
+/** 홈 섹션의 영역 이름 라벨. 예: "Story". 메뉴 이름을 그대로 쓰고 번호를 붙이지 않는다 (하위 페이지에서는 쓰지 않는다). */
 export function SectionLabel({ children, surface = "dark", className }: { children: ReactNode; surface?: Surface; className?: string }) {
   return (
     <p className={cx(styles.label, className)} data-surface={surface}>

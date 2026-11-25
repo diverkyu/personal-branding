@@ -2,7 +2,6 @@ import { cx } from "@/lib/cx";
 import { SmartLink } from "@/components/ui/SmartLink";
 import { StatusBadge, type StatusKind } from "@/components/ui/StatusBadge";
 import { Thumb, type ThumbVariant } from "@/components/ui/Thumb";
-import { Icon } from "@/components/ui/Icon";
 import styles from "./TourCard.module.css";
 
 export interface TourCardData {
@@ -64,7 +63,6 @@ export function TourCard({ href, title, status, scheduleLabel, place, capacityLa
         {cta ? (
           <span className={styles.cta} aria-hidden="true">
             {cta}
-            <Icon name="arrow-up-right" size={16} />
           </span>
         ) : null}
       </div>

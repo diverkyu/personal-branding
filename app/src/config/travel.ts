@@ -3,7 +3,6 @@
  * 제목·부제·빈 상태 문구는 사이트 설정(사이트 설정 > 여행 추천)에서 고친다. 여기 값은 설정이 비었을 때의 기본값이다.
  */
 export const travelConfig = {
-  label: "FREEDIVING / TRAVEL",
   title: ["바다를 만나러", "가는 길."],
   subtitle: "프리다이빙하기 좋은 곳과, 가기 전에 알아 둘 것을 정리했습니다.",
   empty: "곧 첫 여행 추천을 올리겠습니다.",
@@ -18,7 +17,6 @@ export const travelConfig = {
   noCheckedAt: "정보 확인일이 적혀 있지 않습니다.",
   pageSize: 9,
   inquiry: {
-    label: "여행 문의",
     title: "이 곳이 궁금하다면, 편하게 물어보세요.",
     button: "메일로 문의하기",
     subject: "[KYU] 여행 문의",

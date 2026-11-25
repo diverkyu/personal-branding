@@ -41,7 +41,7 @@ export default async function HomeHeroAdminPage({ searchParams }: { searchParams
         </Link>
       </p>
       <p className={styles.note}>
-        홈 첫 화면 오른쪽의 아치 모양 그림입니다. 이미지를 고르면 아래쪽에 &ldquo;한 호흡, 무한한 가능성.&rdquo;만 얹히고, 위쪽 &ldquo;01 / INTO THE BLUE&rdquo;와 &ldquo;CONCEPT VISUAL&rdquo; 표시는 기본 일러스트에서만 보입니다. 저장해도 홈은 바뀌지 않고 <strong>&ldquo;공개 반영&rdquo;</strong>을 눌러야 바뀝니다.
+        홈 첫 화면 오른쪽의 아치 모양 그림입니다. 이미지를 고르면 아래쪽에 &ldquo;한 호흡, 무한한 가능성.&rdquo;만 얹히고, 위쪽 &ldquo;INTO THE BLUE&rdquo; 표시는 기본 일러스트에서만 보입니다. 저장해도 홈은 바뀌지 않고 <strong>&ldquo;공개 반영&rdquo;</strong>을 눌러야 바뀝니다.
       </p>
       <p className={styles.note}>
         권장: <strong>세로 이미지</strong>, {HERO_RECOMMENDED.width}×{HERO_RECOMMENDED.height}px 안팎(가로:세로 약 4:5). 비율이 다르면 가운데를 기준으로 잘립니다. 글자가 얹히는 아래쪽은 살짝 어둡게 처리됩니다. 이미지는 먼저 어드민 &gt; 미디어에 올리고 대체 텍스트를 써 주세요.

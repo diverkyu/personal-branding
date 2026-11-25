@@ -19,7 +19,7 @@ export function HomeFilms({ film, copy }: { film: FilmItem; copy: FilmsCopy }) {
   return (
     <Section tone="dark" labelledBy="home-films">
       <SectionHeader
-        label="04 / FILMS"
+        label="Films"
         titleId="home-films"
         title={copy.titleLines.map((line, i) => (
           <span key={i}>

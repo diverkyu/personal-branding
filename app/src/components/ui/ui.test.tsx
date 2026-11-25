@@ -90,9 +90,12 @@ describe("Button", () => {
 });
 
 describe("TextLink", () => {
-  it("기본으로 화살표 아이콘을 붙이고 null 이면 없앤다", () => {
-    expect(html(<TextLink href="/a">더 보기</TextLink>)).toContain("<svg");
-    expect(html(<TextLink href="/a" icon={null}>더 보기</TextLink>)).not.toContain("<svg");
+  it("화살표는 사이트 밖으로 나가는 링크(http(s)·mailto)에만 기본으로 붙고, 직접 정하면 그대로 따른다 (D9)", () => {
+    expect(html(<TextLink href="/a">더 보기</TextLink>)).not.toContain("<svg");
+    expect(html(<TextLink href="https://example.com">더 보기</TextLink>)).toContain("<svg");
+    expect(html(<TextLink href="mailto:a@b.co">메일</TextLink>)).toContain("<svg");
+    expect(html(<TextLink href="https://example.com" icon={null}>더 보기</TextLink>)).not.toContain("<svg");
+    expect(html(<TextLink href="/a" icon="arrow-up-right">더 보기</TextLink>)).toContain("<svg");
   });
 });
 
@@ -132,8 +135,8 @@ describe("Section / SectionHeader", () => {
   });
 
   it("라벨·설명·행동을 선택적으로 보여 준다", () => {
-    const out = html(<SectionHeader label="01 / ABOUT KYU" title="t" description="설명" action={<a href="/x">더</a>} />);
-    expect(out).toContain("01 / ABOUT KYU");
+    const out = html(<SectionHeader label="Story" title="t" description="설명" action={<a href="/x">더</a>} />);
+    expect(out).toContain(">Story</p>");
     expect(out).toContain("설명");
     expect(out).toContain('href="/x"');
     expect(html(<SectionHeader title="t" />)).not.toContain("<p");
