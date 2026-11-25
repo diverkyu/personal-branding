@@ -196,11 +196,14 @@ test.describe("Films 메뉴·홈 구역·Contact 특강 링크 (7c)", () => {
     expect(external).toEqual([]);
   });
 
-  test("Contact 는 05 번호와 특강 소식 메일 링크를 가진다", async ({ page }) => {
+  test("Contact 는 번호 라벨 없이 특강 소식 메일 링크를 가지고, 홈에서만 영역 이름 라벨이 있다 (디자인 점검 D4)", async ({ page }) => {
     await page.goto("/contact");
-    await expect(page.getByText(/05 \/ LET/)).toBeVisible();
+    await expect(page.getByText(/LET.S CONNECT/)).toHaveCount(0);
+    await expect(page.locator("#contact").getByText("Contact", { exact: true })).toHaveCount(0);
     const link = page.getByRole("link", { name: /AI 영상 특강 소식 요청하기/ });
     expect(decodeURIComponent((await link.getAttribute("href")) ?? "")).toContain("subject=[KYU] AI 특강 소식 요청");
+    await page.goto("/");
+    await expect(page.locator("#contact").getByText("Contact", { exact: true })).toBeVisible();
   });
 });
 
