@@ -4,7 +4,6 @@ import { EquipmentCard } from "@/components/site/EquipmentCard";
 import { FilteredList } from "@/components/site/FilteredList";
 import { AFFILIATE_NOTICE, equipmentCard } from "@/components/site/mappers";
 import { PageIntro } from "@/components/layout/PageIntro";
-import { Section } from "@/components/ui/Section";
 import { listEquipment, listEquipmentCategories } from "@/data/equipment";
 import pages from "../../pages.module.css";
 import { pageMeta } from "@/lib/seo";
@@ -19,19 +18,20 @@ export default async function EquipmentPage() {
   const [equipment, categories] = await Promise.all([listEquipment(), listEquipmentCategories()]);
   return (
     <>
-      <PageIntro title="제가 추천하는 장비." />
-      <Section tone="dark" sub>
-        <Suspense fallback={null}>
-          <FilteredList
-            label="장비 카테고리"
-            param="category"
-            options={categories.map((c) => ({ value: c, label: c }))}
-            items={equipment.map((e) => ({ id: e.slug, values: [e.category], node: <EquipmentCard {...equipmentCard(e)} affiliateNotice={AFFILIATE_NOTICE} headingLevel={2} /> }))}
-            listClassName={pages.grid4}
-            empty={<p className={pages.empty}>준비 중입니다.</p>}
-          />
-        </Suspense>
-      </Section>
+      <PageIntro title="제가 추천하는 장비.">
+        <div className={pages.after}>
+          <Suspense fallback={null}>
+            <FilteredList
+              label="장비 카테고리"
+              param="category"
+              options={categories.map((c) => ({ value: c, label: c }))}
+              items={equipment.map((e) => ({ id: e.slug, values: [e.category], node: <EquipmentCard {...equipmentCard(e)} affiliateNotice={AFFILIATE_NOTICE} headingLevel={2} /> }))}
+              listClassName={pages.grid4}
+              empty={<p className={pages.empty}>준비 중입니다.</p>}
+            />
+          </Suspense>
+        </div>
+      </PageIntro>
     </>
   );
 }

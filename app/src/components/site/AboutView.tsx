@@ -2,7 +2,6 @@ import { Fragment, type ReactNode } from "react";
 import { ContactSection } from "@/components/site/ContactSection";
 import { PageIntro } from "@/components/layout/PageIntro";
 import { Button } from "@/components/ui/Button";
-import { Section } from "@/components/ui/Section";
 import type { ContactProps } from "@/settings/social";
 import pages from "@/app/pages.module.css";
 
@@ -35,31 +34,33 @@ export interface AboutViewProps {
 export function AboutView({ headline, signature, photo, children, contact }: AboutViewProps) {
   return (
     <>
-      <PageIntro label="01 / ABOUT KYU" tone="light" title={<Headline text={headline} />} />
-      <Section tone="light" sub>
-        {photo ? (
-          <p style={{ margin: "0 0 32px" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={photo.url} alt={photo.alt} width={photo.width} height={photo.height} style={{ maxWidth: 320, width: "100%", height: "auto" }} />
-          </p>
-        ) : null}
-        <div className={pages.prose}>
-          {children}
-          {signature ? (
-            <p className={pages.signature} style={{ color: "var(--kyu-navy)" }}>
-              {signature}
+      {/* 같은 색 Section 을 따로 두면 위아래 여백이 겹쳐 제목 아래가 크게 빈다 → PageIntro 안에 넣는다 (DESIGN-SYSTEM §3.1) */}
+      <PageIntro label="01 / ABOUT KYU" tone="light" title={<Headline text={headline} />}>
+        <div className={pages.after}>
+          {photo ? (
+            <p style={{ margin: "0 0 32px" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={photo.url} alt={photo.alt} width={photo.width} height={photo.height} style={{ maxWidth: 320, width: "100%", height: "auto" }} />
             </p>
           ) : null}
+          <div className={pages.prose}>
+            {children}
+            {signature ? (
+              <p className={pages.signature} style={{ color: "var(--kyu-navy)" }}>
+                {signature}
+              </p>
+            ) : null}
+          </div>
+          <div className={pages.chips}>
+            <Button href="/story" variant="outline" surface="light" size="S">
+              Story 보기
+            </Button>
+            <Button href="/freediving" variant="outline" surface="light" size="S">
+              Freediving 보기
+            </Button>
+          </div>
         </div>
-        <div className={pages.chips}>
-          <Button href="/story" variant="outline" surface="light" size="S">
-            Story 보기
-          </Button>
-          <Button href="/freediving" variant="outline" surface="light" size="S">
-            Freediving 보기
-          </Button>
-        </div>
-      </Section>
+      </PageIntro>
       <ContactSection {...contact} />
     </>
   );

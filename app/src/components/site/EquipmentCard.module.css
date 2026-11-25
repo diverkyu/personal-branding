@@ -9,7 +9,6 @@
 .category {
   margin: 16px 0 4px;
   font-size: 11px;
-  letter-spacing: 1px;
   line-height: 1.5;
   color: var(--kyu-muted);
 }

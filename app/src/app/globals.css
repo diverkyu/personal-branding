@@ -20,6 +20,10 @@ body {
   font-size: 16px;
   line-height: 1.9;
   -webkit-font-smoothing: antialiased;
+  /* 한글이 음절 중간("문장입니/다")에서 끊기지 않게 어절 단위로 줄을 바꾼다.
+     어절 하나가 칸보다 길면(긴 주소 등) 그때만 쪼갠다 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 h1,
