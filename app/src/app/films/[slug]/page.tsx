@@ -8,7 +8,8 @@ import { contactConfig } from "@/config/site";
 import { getFilm, getFilmNeighbors, listFilms } from "@/data/films";
 import { breadcrumbLd, videoLd } from "@/lib/structured";
 import { getSiteSettings } from "@/settings/read";
-import { pageMeta } from "@/lib/seo";
+import { PAGE_AUTHORS, pageMeta } from "@/lib/seo";
+import { filmSearchCopy } from "@/config/filmSeo";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -25,9 +26,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const film = await getFilm((await params).slug);
   if (!film) return {};
   return pageMeta(`/films/${film.slug}`, {
-    title: film.seoTitle || film.title,
-    description: film.seoDescription || film.summary || undefined,
-    ...(film.poster.src ? { openGraph: { type: "video.other", images: [{ url: film.poster.src, alt: film.poster.alt }] } } : {}),
+    ...filmSearchCopy(film),
+    authors: PAGE_AUTHORS,
+    openGraph: { type: "video.other", ...(film.poster.src ? { images: [{ url: film.poster.src, alt: film.poster.alt, width: film.poster.width, height: film.poster.height }] } : {}) },
   });
 }
 

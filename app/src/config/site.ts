@@ -2,9 +2,9 @@
 export const siteConfig = {
   name: "KYU",
   ownerName: "이동규",
-  defaultTitle: "KYU — Dive deeper. Create beyond.",
+  defaultTitle: "이동규 KYU | 프리다이빙 강사·AI 영상 크리에이터",
   titleTemplate: "%s — KYU",
-  description: "이동규 KYU — 프리다이빙 강사이자 AI 크리에이터. 바다의 깊이와 상상의 가능성을 탐험합니다.",
+  description: "프리다이빙 강사이자 AI 영상 크리에이터 이동규(KYU)의 공간입니다. 함께 떠나는 바다 여행과 AI 영상 작품을 만나고, 프리다이빙 강습·투어 또는 영상 협업을 문의해 보세요.",
   locale: "ko_KR",
   /** 인물 구조화 데이터의 하는 일 (description 과 같은 표현) */
   jobTitles: ["프리다이빙 강사", "AI 크리에이터"],

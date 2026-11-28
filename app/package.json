@@ -25,6 +25,7 @@
     "admin:reset-2fa": "tsx --env-file-if-exists=.env.local scripts/admin-account.ts reset-2fa",
     "dev:seed": "tsx --env-file-if-exists=.env.local scripts/dev-seed.ts seed",
     "dev:seed-clean": "tsx --env-file-if-exists=.env.local scripts/dev-seed.ts clean",
+    "seo:audit": "node scripts/seo-audit.mjs",
     "seo:lhci": "tsx scripts/seo-lighthouse.mjs",
     "test:seo-tools": "vitest run src/seo/diagnostics"
   },

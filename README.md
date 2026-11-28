@@ -5,8 +5,12 @@
 프리다이빙 강사이자 AI 크리에이터 **이동규 · KYU**의 개인 브랜딩 사이트(diverkyu.com)와, 규강이 코드 없이 글과 신청을 관리하는 **CMS 어드민**을 만드는 저장소입니다.
 
 - **GitHub:** [diverkyu/personal-branding](https://github.com/diverkyu/personal-branding)
-- **현재 단계:** Phase 1 구현 완료에 가깝고 정식 공개(게시) 이전입니다. 도메인 **[www.diverkyu.com](https://www.diverkyu.com)** 이 연결되어 있고(2026-11-24), 검색엔진에는 아직 노출되지 않습니다(noindex). 남은 공개 조건은 Vercel Pro 전환, 개인정보 처리방침 법무 확인·게시, `SITE_URL` 변경입니다. 진행 현황과 결정은 [문서 변경 이력](docs/phase1/CHANGELOG.md), 운영 기록은 [docs/operations](docs/operations/)에 있습니다.
+- **현재 단계:** **[www.diverkyu.com](https://www.diverkyu.com)** 운영 중입니다. 2026-11-28 운영 응답에서 검색 수집 허용을 확인했으며, 검색엔진의 실제 색인 완료 여부는 별도로 확인합니다. 페이지별 SEO 보완은 아래 검토 기록을 참고하세요. 진행 현황은 [문서 변경 이력](docs/phase1/CHANGELOG.md), 운영 기록은 [docs/operations](docs/operations/)에 있습니다.
 - **도메인:** `diverkyu.com`(가비아 등록, 규강 소유). 사이트 주소는 `SITE_URL` 설정 하나로 정하므로 바뀌어도 코드 수정이 필요 없습니다. 상태와 남은 일은 [INFRASTRUCTURE §11](docs/phase1/INFRASTRUCTURE.md).
+
+## 전체 페이지 SEO 보완 (2026-11-28)
+
+[18개 URL의 제목·설명과 항목별 처리 결과](docs/operations/2026-11-28-seo-content-review.md)를 정리했습니다. 기존 영문 메뉴를 유지하면서 목적별 검색 문구, 공유 이미지, 작성자·확인된 자격, 빈 목록 검색 정책을 보완했습니다. 이 변경의 운영 반영은 PR 병합·배포 후 확인합니다.
 
 ## 전체 홈페이지 새 시안 검토 (2026-11-28)
 

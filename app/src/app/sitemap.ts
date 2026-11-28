@@ -13,10 +13,13 @@ export const revalidate = 300;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const origin = resolveSiteUrl(process.env).url.origin;
-  const fixed = ["/", "/about", "/story", "/freediving", "/freediving/tours", "/contact", "/privacy"];
-  const [films, travel, equipment, reviews] = await Promise.all([listFilms(), listTravel(), listEquipment(), listReviews()]);
+  const fixed = ["/", "/about", "/freediving", "/contact", "/privacy"];
+  const [films, travel, equipment, reviews, stories, upcoming, past] = await Promise.all([listFilms(), listTravel(), listEquipment(), listReviews(), listStories(), listUpcomingTours(), listPastTours()]);
+  const tours = [...upcoming, ...past];
   return [
-    ...fixed.map((path) => ({ url: `${origin}${path}` })),
+    ...fixed.map((path) => ({ url: path === "/" ? origin : `${origin}${path}` })),
+    ...(stories.length > 0 ? [{ url: `${origin}/story` }] : []),
+    ...(tours.length > 0 ? [{ url: `${origin}/freediving/tours` }] : []),
     // 장비·후기 목록은 공개된 것이 있을 때만 — 빈 목록("준비 중")을 검색엔진에 알리지 않는다
     ...(equipment.length > 0 ? [{ url: `${origin}/freediving/equipment` }] : []),
     ...(reviews.length > 0 ? [{ url: `${origin}/freediving/reviews` }] : []),
@@ -26,8 +29,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 여행 추천도 공개된 글이 있을 때만 (메뉴와 같은 규칙 — 결정 T-2)
     ...(travel.length > 0 ? [{ url: `${origin}/freediving/travel` }] : []),
     ...travel.map((t) => ({ url: `${origin}/freediving/travel/${t.slug}`, lastModified: t.publishedAtIso })),
-    ...(await listStories()).map((s) => ({ url: `${origin}/story/${s.slug}`, lastModified: s.publishedAtIso })),
-    ...[...(await listUpcomingTours()), ...(await listPastTours())].map((t) => ({ url: `${origin}/freediving/tours/${t.slug}` })),
-    ...equipment.map((e) => ({ url: `${origin}/freediving/equipment/${e.slug}` })),
+    ...stories.map((s) => ({ url: `${origin}/story/${s.slug}`, lastModified: s.publishedAtIso })),
+    ...tours.map((t) => ({ url: `${origin}/freediving/tours/${t.slug}`, ...(t.publishedAtIso ? { lastModified: t.publishedAtIso } : {}) })),
+    ...equipment.map((e) => ({ url: `${origin}/freediving/equipment/${e.slug}`, ...(e.publishedAtIso ? { lastModified: e.publishedAtIso } : {}) })),
   ];
 }

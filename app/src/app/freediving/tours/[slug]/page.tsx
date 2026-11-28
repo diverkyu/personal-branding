@@ -24,6 +24,7 @@ import { formatPeriod } from "@/lib/format";
 import pages from "../../../pages.module.css";
 import styles from "./page.module.css";
 import { pageMeta } from "@/lib/seo";
+import { tourLocations } from "@/config/tourLocations";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -38,7 +39,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tour = await getTour((await params).slug);
-  return tour ? pageMeta(`/freediving/tours/${tour.slug}`, { title: tour.seoTitle || tour.title, description: tour.seoDescription || tour.summary }) : {};
+  return tour ? pageMeta(`/freediving/tours/${tour.slug}`, { title: tour.seoTitle || tour.title, description: tour.seoDescription || tour.summary, ...(tour.cover?.src ? { openGraph: { images: [{ url: tour.cover.src, alt: tour.cover.alt }] } } : {}) }) : {};
 }
 
 /** TOUR 상세 + 예약 문의 (SCREEN-SPEC §5.7). 상태에 따라 문의 카드가 달라진다. */
@@ -84,7 +85,15 @@ export default async function TourDetailPage({ params }: Props) {
             {tour.doc ? <ContentBody doc={tour.doc} media={new Map((tour.media ?? []).map((m) => [m.id, m]))} /> : tour.description.map((p, i) => <p key={i}>{p}</p>)}
             {tour.feeNote ? <p style={{ whiteSpace: "pre-line" }}>{tour.feeNote}</p> : null}
           </div>
-
+          {tourLocations[tour.slug]?.length ? (
+            <section aria-labelledby="tour-places">
+              <h2 id="tour-places" className={styles.h2}>방문 장소</h2>
+              <ul className={pages.prose}>
+                {tourLocations[tour.slug]?.map((place) => <li key={place.name}>{place.name} · {place.locality}, {place.region}, Philippines</li>)}
+              </ul>
+              <p className={pages.prose}>방문 지역을 안내한 것으로 별도의 집결 장소나 도로명 주소가 아닙니다. 실제 방문 일정은 현지 상황과 기상에 따라 달라질 수 있습니다.</p>
+            </section>
+          ) : null}
           {tour.gallery && tour.gallery.length > 0 ? (
             <>
               <h2 className={styles.h2}>갤러리</h2>

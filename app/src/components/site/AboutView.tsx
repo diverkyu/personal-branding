@@ -4,6 +4,7 @@ import { PageIntro } from "@/components/layout/PageIntro";
 import { Button } from "@/components/ui/Button";
 import type { ContactProps } from "@/settings/social";
 import pages from "@/app/pages.module.css";
+import { profile } from "@/config/profile";
 
 /** 헤드라인의 줄바꿈(최대 2줄)을 화면의 줄바꿈으로 */
 function Headline({ text }: { text: string }) {
@@ -45,6 +46,11 @@ export function AboutView({ headline, signature, photo, children, contact }: Abo
           ) : null}
           <div className={pages.prose}>
             {children}
+            <section aria-labelledby="about-credentials">
+              <h2 id="about-credentials">프리다이빙 강사로서</h2>
+              <p>{profile.teachingSince}년부터 프리다이빙을 가르치고 있습니다.</p>
+              <ul>{profile.credentials.map((credential) => <li key={credential}>{credential}</li>)}</ul>
+            </section>
             {signature ? (
               <p className={pages.signature} style={{ color: "var(--kyu-navy)" }}>
                 {signature}

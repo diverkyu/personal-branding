@@ -27,6 +27,7 @@ export interface TourItem extends Tour {
 }
 
 const SUMMARY_FALLBACK_CHARS = 160;
+const liveAt = sql<Date>`coalesce(${contents.publishedAt}, ${contents.publishAt})`;
 
 function liveTours(now: Date) {
   return and(
@@ -47,11 +48,12 @@ function extrasOf(f: TourFields): string[] | undefined {
   return out.length > 0 ? out : undefined;
 }
 
-function toItem(row: { slug: string; title: string; summary: string; fields: unknown }, today: string, summary: string): Tour {
+function toItem(row: { slug: string; title: string; summary: string; fields: unknown; liveAt: Date | string }, today: string, summary: string): Tour {
   const f = readTourFields(row.fields);
   return {
     slug: row.slug,
     title: row.title,
+    publishedAtIso: new Date(row.liveAt).toISOString(),
     status: tourStatusOf(f, today),
     startDate: f.startDate,
     endDate: f.endDate,
@@ -74,6 +76,7 @@ export async function queryLiveTours(db: AdminDb, now: Date = new Date()): Promi
       title: contents.title,
       summary: contents.summary,
       fields: contents.fields,
+      liveAt,
       body: sql<unknown>`case when ${contents.summary} = '' then ${contents.body} else null end`,
     })
     .from(contents)
@@ -102,6 +105,7 @@ export async function queryLiveTour(db: AdminDb, slug: string, now: Date = new D
       summary: contents.summary,
       fields: contents.fields,
       body: contents.body,
+      liveAt,
       seoTitle: contents.seoTitle,
       seoDescription: contents.seoDescription,
     })

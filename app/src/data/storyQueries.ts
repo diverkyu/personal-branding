@@ -115,6 +115,7 @@ export async function queryLiveStory(db: AdminDb, slug: string, now: Date = new 
       summary: contents.summary,
       tags: contents.tags,
       answers: contents.answers,
+      fields: contents.fields,
       seoTitle: contents.seoTitle,
       seoDescription: contents.seoDescription,
       body: contents.body,
@@ -128,8 +129,10 @@ export async function queryLiveStory(db: AdminDb, slug: string, now: Date = new 
   const body = sanitizeBody(row.body);
   if (!body.ok) return null;
 
-  const ids = collectMediaIds(body.doc);
+  const coverId = readStoryFields(row.fields).coverMediaId;
+  const ids = [...new Set([...collectMediaIds(body.doc), ...(coverId ? [coverId] : [])])];
   const mediaRows = ids.length > 0 ? await db.select().from(media).where(and(inArray(media.id, ids), isNull(media.deletedAt))) : [];
+  const cover = mediaRows.find((m) => m.id === coverId);
   const when = at(row.liveAt);
   return {
     slug: row.slug,
@@ -144,6 +147,7 @@ export async function queryLiveStory(db: AdminDb, slug: string, now: Date = new 
     questions: row.answers,
     seoTitle: row.seoTitle,
     seoDescription: row.seoDescription,
+    ...(cover ? { cover: { src: cover.url, alt: cover.alt ?? "" } } : {}),
   };
 }
 

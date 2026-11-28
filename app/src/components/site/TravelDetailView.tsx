@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthorByline } from "./AuthorByline";
 import { InfoRow } from "@/components/site/InfoRow";
 import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
@@ -36,6 +37,7 @@ export function TravelDetailView({ item, stale, newer, older, email }: { item: T
         </nav>
         <p className={styles.place}>{`${item.region} · ${item.place}`}</p>
         <h1 className={styles.title}>{item.title}</h1>
+        <AuthorByline />
         {item.summary ? <p className={styles.summary}>{item.summary}</p> : null}
         {warning ? (
           <p className={styles.warn} role="note">

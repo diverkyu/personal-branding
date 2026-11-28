@@ -4,6 +4,7 @@
 
 | 날짜 | 기록 | 내용 |
 | --- | --- | --- |
+| 2026-11-28 | [전체 페이지 SEO 보완·문구 검토표](2026-11-28-seo-content-review.md) | 18개 URL 설명·제목, AIDA 자격·작성자·공유 이미지, 감사 항목별 처리와 남은 사실 확인 |
 | 2026-11-28 | [전체 홈페이지 리디자인 시안 인수인계](2026-11-28-editorial-redesign-handoff.md) | 18개 화면의 독립 시안, 검증 결과, 공동 검토·운영 적용 시 남은 작업 |
 | 2026-11-28 | [검색엔진 등록 안내](2026-11-28-search-engine-registration.md) | 구글·네이버·빙 등록과 어드민 검색 노출·소유 확인 설정 (규강용) |
 | 2026-11-24 | (문서 없음) [INFRASTRUCTURE §11](../phase1/INFRASTRUCTURE.md) | 도메인 `diverkyu.com` 구매(가비아)·Vercel 연결, `https://www.diverkyu.com` |

@@ -8,9 +8,9 @@ import { contactPropsOf } from "@/settings/social";
 import { JsonLd } from "@/components/site/JsonLd";
 import { resolveSiteUrl } from "@/config/env";
 import { personLd } from "@/lib/structured";
-import { pageMeta } from "@/lib/seo";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = pageMeta("/about", { title: "About" });
+export const metadata: Metadata = sectionMeta("/about");
 
 /** 새 내용이 공개 반영되면 캐시가 갱신되고, 최대 5분 안에는 반드시 새 내용을 읽는다 */
 export const revalidate = 300;
