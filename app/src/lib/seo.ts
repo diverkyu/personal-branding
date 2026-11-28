@@ -7,21 +7,41 @@
  */
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
+import { resolveSiteUrl } from "@/config/env";
+import { pageSeo, type SeoPagePath } from "@/config/pageSeo";
 
 type OpenGraph = NonNullable<Metadata["openGraph"]>;
 
 export const BASE_OPEN_GRAPH = { siteName: siteConfig.name, locale: siteConfig.locale, type: "website" } as const;
+export const DEFAULT_SHARE_IMAGE = { url: "/images/kyu-share.png", width: 1200, height: 630, alt: "KYU 이동규 · 프리다이빙과 AI 영상" };
+export const PAGE_AUTHORS = [{ name: siteConfig.ownerName, url: "/about" }];
+
+/** 빈 목록만 개별 noindex. 항목이 있으면 layout 의 운영/프리뷰 검색 정책을 그대로 상속한다. */
+export function sectionMeta(path: SeoPagePath, count?: number): Metadata {
+  const copy = pageSeo[path];
+  const empty = count === 0;
+  return pageMeta(path, {
+    title: copy.title,
+    description: empty && "emptyDescription" in copy ? copy.emptyDescription : copy.description,
+    ...(empty ? { robots: { index: false, follow: false } } : {}),
+  });
+}
 
 /** path 는 "/"로 시작하는 경로. 주소 앞부분은 layout 의 metadataBase(SITE_URL)가 붙인다 */
 export function pageMeta(path: string, meta: Omit<Metadata, "alternates"> & { openGraph?: OpenGraph } = {}): Metadata {
   const { openGraph, ...rest } = meta;
   // 공유 미리보기 제목·설명은 페이지 제목·설명과 같게 (Next 는 title 을 og:title 로 자동으로 옮기지 않는다)
-  const title = typeof meta.title === "string" ? siteConfig.titleTemplate.replace("%s", meta.title) : undefined;
+  const title = typeof meta.title === "string" ? siteConfig.titleTemplate.replace("%s", meta.title)
+    : meta.title && "absolute" in meta.title ? meta.title.absolute : undefined;
   const description = typeof meta.description === "string" ? meta.description : undefined;
+  // Next가 루트 URL을 origin으로 직렬화하므로 sitemap도 같은 표기를 쓴다.
+  const canonical = path === "/" ? resolveSiteUrl(process.env).url.origin : path;
+  const images = openGraph?.images ?? [DEFAULT_SHARE_IMAGE];
   return {
     ...rest,
-    alternates: { canonical: path },
-    openGraph: { ...BASE_OPEN_GRAPH, url: path, ...(title ? { title } : {}), ...(description ? { description } : {}), ...(openGraph ?? {}) } as OpenGraph,
+    alternates: { canonical },
+    openGraph: { ...BASE_OPEN_GRAPH, url: canonical, ...(title ? { title } : {}), ...(description ? { description } : {}), ...openGraph, images } as OpenGraph,
+    twitter: { card: "summary_large_image", ...(title ? { title } : {}), ...(description ? { description } : {}), images, ...meta.twitter } as Metadata["twitter"],
   };
 }
 

@@ -8,9 +8,17 @@ import { travelConfig } from "@/config/travel";
 import { getTravel, getTravelNeighbors, listTravel } from "@/data/travel";
 import { isStaleCheck } from "@/data/travelQueries";
 import { kstDate } from "@/data/storyQueries";
-import { breadcrumbLd } from "@/lib/structured";
+import { articleLd, breadcrumbLd } from "@/lib/structured";
 import { getSiteSettings } from "@/settings/read";
-import { pageMeta } from "@/lib/seo";
+import { PAGE_AUTHORS, pageMeta } from "@/lib/seo";
+import { collectMediaIds } from "@/content/body";
+import type { TravelDetail } from "@/data/travelQueries";
+
+function coverOf(item: TravelDetail) {
+  const firstId = item.doc ? collectMediaIds(item.doc)[0] : undefined;
+  const image = item.media.find((m) => m.id === firstId);
+  return image ? { src: image.url, alt: image.alt } : undefined;
+}
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -26,7 +34,13 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const item = await getTravel((await params).slug);
   if (!item) return {};
-  return pageMeta(`/freediving/travel/${item.slug}`, { title: item.seoTitle || item.title, description: item.seoDescription || item.summary || undefined, openGraph: { type: "article" } });
+  const cover = coverOf(item);
+  return pageMeta(`/freediving/travel/${item.slug}`, {
+    title: item.seoTitle || `${item.title} | 프리다이빙 여행`,
+    description: item.seoDescription || item.summary || `${item.region} ${item.place}의 프리다이빙 여행 정보를 소개합니다.${item.season ? ` 추천 시기는 ${item.season}입니다.` : ""} 공개된 준비 정보와 확인일을 살펴보세요.`,
+    authors: PAGE_AUTHORS,
+    openGraph: { type: "article", publishedTime: item.publishedAtIso, modifiedTime: item.publishedAtIso, authors: ["/about"], ...(cover ? { images: [{ url: cover.src, alt: cover.alt }] } : {}) },
+  });
 }
 
 /** TRAVEL-D 상세 (SCREEN-SPEC §5.17). 존재하지 않거나 공개 전인 글은 404. */
@@ -39,6 +53,7 @@ export default async function TravelDetailPage({ params }: Props) {
   const stale = isStaleCheck(item.checkedAt, kstDate(new Date()), travelConfig.staleMonths);
   return (
     <>
+      <JsonLd data={articleLd(origin, { ...item, tags: [], cover: coverOf(item) }, `/freediving/travel/${item.slug}`)} />
       <JsonLd
         data={breadcrumbLd(origin, [
           { name: "Freediving", path: "/freediving" },

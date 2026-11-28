@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, Lora, Noto_Sans_KR } from "next/font/google";
 import { indexingDecision, resolveSiteUrl } from "@/config/env";
 import { siteConfig } from "@/config/site";
-import { BASE_OPEN_GRAPH, verificationOf } from "@/lib/seo";
+import { BASE_OPEN_GRAPH, DEFAULT_SHARE_IMAGE, verificationOf } from "@/lib/seo";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { listFilms } from "@/data/films";
 import { listTravel } from "@/data/travel";
@@ -50,8 +50,8 @@ export async function generateMetadata(): Promise<Metadata> {
   // 검색 노출은 어드민 사이트 설정 > 검색·공유에서 켠다. 운영 배포·실제 주소에서만 허용된다 (config/env.ts indexingDecision)
   robots: indexingDecision(process.env, settings["seo.indexing"]).allowed ? { index: true, follow: true } : { index: false, follow: false },
   // 공유 미리보기 기본값. canonical 은 페이지마다 pageMeta 로 단다 (lib/seo.ts)
-  openGraph: { ...BASE_OPEN_GRAPH, title: settings["seo.title"] ?? siteConfig.defaultTitle, description: settings["seo.description"] ?? siteConfig.description },
-  twitter: { card: "summary" },
+  openGraph: { ...BASE_OPEN_GRAPH, title: settings["seo.title"] ?? siteConfig.defaultTitle, description: settings["seo.description"] ?? siteConfig.description, images: [DEFAULT_SHARE_IMAGE] },
+  twitter: { card: "summary_large_image", images: [DEFAULT_SHARE_IMAGE] },
   verification: verificationOf(process.env, settings),
   // iPhone 사파리 "홈 화면에 추가": 아이콘 이름과 주소창 없는 화면 (아이콘은 app/apple-icon.png, 안드로이드는 manifest.ts)
   appleWebApp: { capable: true, title: siteConfig.name, statusBarStyle: "black" },

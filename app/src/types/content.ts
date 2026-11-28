@@ -26,6 +26,8 @@ export interface Story {
 }
 
 export interface Tour {
+  /** 마지막 공개 반영 시각. 임시 저장 시각이 아니다. 로컬 예제에는 없을 수 있다. */
+  publishedAtIso?: string;
   slug: string;
   title: string;
   status: TourStatus;
@@ -49,6 +51,8 @@ export interface Tour {
 export type EquipmentActionType = "external" | "inquiry" | "none";
 
 export interface Equipment {
+  /** 마지막 공개 반영 시각. 임시 저장 시각이 아니다. */
+  publishedAtIso?: string;
   slug: string;
   name: string;
   category: string;

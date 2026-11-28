@@ -12,7 +12,8 @@ import { getStory, getStoryNeighbors, listStories } from "@/data/stories";
 import { formatDate } from "@/lib/format";
 import pages from "../../pages.module.css";
 import styles from "./page.module.css";
-import { pageMeta } from "@/lib/seo";
+import { PAGE_AUTHORS, pageMeta } from "@/lib/seo";
+import { AuthorByline } from "@/components/site/AuthorByline";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -27,7 +28,11 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const story = await getStory((await params).slug);
-  return story ? pageMeta(`/story/${story.slug}`, { title: story.seoTitle || story.title, description: story.seoDescription || story.summary, openGraph: { type: "article" } }) : {};
+  return story ? pageMeta(`/story/${story.slug}`, {
+    title: story.seoTitle || story.title, description: story.seoDescription || story.summary,
+    authors: PAGE_AUTHORS,
+    openGraph: { type: "article", publishedTime: story.publishedAtIso, modifiedTime: story.publishedAtIso, authors: ["/about"], ...(story.cover?.src ? { images: [{ url: story.cover.src, alt: story.cover.alt }] } : {}) },
+  }) : {};
 }
 
 /** STORY 상세 (SCREEN-SPEC §5.4). 존재하지 않거나 비공개인 글은 404. 글 안에 투어·후기 광고를 넣지 않는다. */
@@ -55,6 +60,7 @@ export default async function StoryDetailPage({ params }: Props) {
         </ul>
       </div>
       <h1 className={styles.title}>{story.title}</h1>
+      <AuthorByline />
       <div className={pages.prose}>
         <ContentBody doc={story.doc} media={new Map(story.media.map((m) => [m.id, m]))} />
       </div>

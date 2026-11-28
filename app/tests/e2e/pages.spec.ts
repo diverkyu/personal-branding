@@ -320,6 +320,7 @@ test.describe("본문의 복사 상자와 표 (Films 소개글, 가상 데이터
     await expect(page.getByLabel("복사할 글")).toHaveText(text);
     await page.getByRole("button", { name: "복사", exact: true }).click();
     await expect(page.getByRole("status").filter({ hasText: "복사했습니다" })).toBeVisible();
-    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(text);
+    // Windows 클립보드는 LF를 CRLF로 돌려줄 수 있다. 줄 구분만 정규화하고 내용은 정확히 비교한다.
+    expect((await page.evaluate(() => navigator.clipboard.readText())).replace(/\r\n/g, "\n")).toBe(text);
   });
 });

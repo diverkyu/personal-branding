@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthorByline } from "./AuthorByline";
 import { FilmPlayer } from "@/components/site/FilmPlayer";
 import { FilmsCallout } from "@/components/site/FilmsCallout";
 import { MakingOf } from "@/components/site/MakingOf";
@@ -42,6 +43,7 @@ export function FilmDetailView({ film, newer, older, email, copy = filmsCopy() }
             </ul>
           ) : null}
         </div>
+        <AuthorByline role="제작" />
       </Section>
 
       {hasIntro || hasNotes ? (

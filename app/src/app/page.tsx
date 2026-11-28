@@ -36,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   const title = settings["seo.title"] ?? siteConfig.defaultTitle;
   const description = settings["seo.description"] ?? siteConfig.description;
-  return { ...pageMeta("/", { description, openGraph: { title, description } }) };
+  return pageMeta("/", { title: { absolute: title }, description });
 }
 
 /** 홈 (SCREEN-SPEC §5.1). 섹션 순서: 히어로 → 구분 띠 → About 요약 → Story → Freediving → Films(작품이 있을 때만) → Contact. Story·투어는 어드민 콘텐츠, 후기는 아직 가상 데이터. */
