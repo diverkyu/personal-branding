@@ -1,0 +1,14 @@
+# Project-only, Windows. Does not replace the user's ~/.codex/config.toml.
+# Version updates require review. No existing browser profile / login is attached.
+[mcp_servers.chrome_devtools_seo]
+command = "cmd.exe"
+args = ["/d", "/c", "npx", "--yes", "--ignore-scripts", "chrome-devtools-mcp@1.14.0", "--headless", "--isolated", "--no-usage-statistics", "--no-performance-crux"]
+startup_timeout_sec = 60
+tool_timeout_sec = 90
+
+[mcp_servers.playwright_seo]
+enabled = false # User decision 2026-11-28: bundled alpha engine; use existing Playwright tests.
+command = "cmd.exe"
+args = ["/d", "/c", "npx", "--yes", "--ignore-scripts", "@playwright/mcp@0.0.86", "--headless", "--isolated", "--browser", "chrome"]
+startup_timeout_sec = 60
+tool_timeout_sec = 90

@@ -1,0 +1,6 @@
+interface:
+  display_name: "DIVERKYU SEO Audit"
+  short_description: "DIVERKYU 공개 페이지와 검색 성과를 근거로 진단하고 개선 우선순위를 정리"
+  default_prompt: "$diverkyu-seo-audit로 현재 브랜치와 운영 사이트의 SEO 상태를 구분해 점검하고 한국어 리포트를 작성해 줘."
+policy:
+  allow_implicit_invocation: true

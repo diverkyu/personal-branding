@@ -25,7 +25,9 @@
     "admin:reset-2fa": "tsx --env-file-if-exists=.env.local scripts/admin-account.ts reset-2fa",
     "dev:seed": "tsx --env-file-if-exists=.env.local scripts/dev-seed.ts seed",
     "dev:seed-clean": "tsx --env-file-if-exists=.env.local scripts/dev-seed.ts clean",
-    "seo:audit": "node scripts/seo-audit.mjs"
+    "seo:audit": "node scripts/seo-audit.mjs",
+    "seo:lhci": "tsx scripts/seo-lighthouse.mjs",
+    "test:seo-tools": "vitest run src/seo/diagnostics"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
@@ -45,6 +47,7 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.15",
+    "@lhci/cli": "0.16.1",
     "@playwright/test": "1.65.0",
     "@types/node": "^24",
     "@types/qrcode": "1.5.6",

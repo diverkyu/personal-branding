@@ -20,4 +20,6 @@ artifacts/
 # 로컬 개발용 이미지 저장소 (MEDIA_STORE=local)
 /.media-dev
 /.next-dev
+/.next-lhci/
+/.lighthouseci/
 /AGENTS.md

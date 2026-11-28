@@ -38,6 +38,13 @@ OFL에 따라 글꼴 자체를 단독으로 판매하지 않으며, 수정본을
 
 `@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit`, `@tiptap/extension-table`(Tiptap, MIT)과 그 하위 확장·ProseMirror(MIT)를 어드민 본문 편집기에 쓴다. 시험용으로 `jsdom`(MIT)을 쓴다. 각 패키지의 `license` 필드로 2026-11-08에 확인했다(`@tiptap/extension-table`은 2026-11-16에 `npm view`로 MIT 확인). Tiptap의 유료 확장(클라우드·AI·협업 등)은 쓰지 않는다.
 
-## 확인 방법
+## SEO 개발 도구 (2026-11-28)
+
+- `@lhci/cli` 0.16.1 및 Lighthouse 13.6.0: Apache-2.0, GoogleChrome. 개발 의존성, 파일 리포트만 저장. `app/package-lock.json`으로 하위 의존성을 고정한다. 기존 top-level 패키지는 갱신하지 않았다. 새 Lighthouse 의존성의 공유 `tldts-core`는 npm 해석에 따라 7.4.20→7.6.2로 갱신됐다.
+- Chrome DevTools MCP 1.14.0: Apache-2.0. 공식 npm 배포본을 고정 실행, 격리 프로필, 사용 통계 및 자동 CrUX 전송 비활성화. 앱 런타임에는 포함되지 않는다.
+- Playwright MCP 0.0.86: Apache-2.0. 내부 alpha 엔진 때문에 사용자 결정으로 기본 비활성화. 기존 `@playwright/test` 1.65.0은 유지한다.
+- `.agents/skills/`의 seo-audit, schema, site-architecture, ai-seo, analytics: Copyright (c) 2025 Corey Haines, MIT. 커밋 `2bf95edb4ebd37198ab7fd18b99ba95c2145ec64`, 원본 40개 파일을 수정 없이 도입. 라이선스 전문은 `../.agents/skills/MARKETINGSKILLS-LICENSE`, 파일 해시는 `upstream-lock.json`. 하위 외부 도구는 설치하지 않는다.
+
+## 기존 리소스 확인 방법
 
 글꼴은 Google Fonts 저장소의 `METADATA.pb`·`OFL.txt`, 아이콘은 Lucide 저장소의 `LICENSE`로 2026-11-08에 확인했다 ([CONCEPT §7.8](../docs/phase1/CONCEPT.md)).
