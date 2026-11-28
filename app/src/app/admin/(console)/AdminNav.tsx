@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Fragment } from "react";
 import { usePathname } from "next/navigation";
 import styles from "../admin.module.css";
 
@@ -15,6 +16,16 @@ const GROUPS = [
       { href: "/admin/contents", label: "전체 콘텐츠" },
       { href: "/admin/schedule", label: "발행 일정" },
       { href: "/admin/taxonomy", label: "태그·카테고리" },
+    ],
+  },
+  {
+    title: "SEO 현황", items: [
+      { href: "/admin/seo/overview", label: "종합 대시보드" },
+      { href: "/admin/seo/performance", label: "검색 성과" },
+      { href: "/admin/seo/indexing", label: "수집 및 색인 관리" },
+      { href: "/admin/seo/diagnostics", label: "SEO 기술 진단" },
+      { href: "/admin/seo/journal", label: "SEO 점검 일지" },
+      { href: "/admin/seo/connections", label: "검색엔진 연동 설정" },
     ],
   },
   {
@@ -55,7 +66,9 @@ export function AdminNav({ showInquiries = true }: { showInquiries?: boolean }) 
   return (
     <>
       {GROUPS.map((group) => (
-        <div key={group.title}>
+        <Fragment key={group.title}>
+        {group.title === "SEO 현황" && <details className={styles.seoMobileNav}><summary>SEO 현황</summary>{group.items.map(item => <Link key={item.href} href={item.href} className={styles.navLink} aria-current={pathname === item.href ? "page" : undefined}>{item.label}</Link>)}</details>}
+        <div className={group.title === "SEO 현황" ? styles.seoDesktopNav : undefined}>
           <p className={styles.navGroup}>{group.title}</p>
           {group.items
             .filter((item) => showInquiries || item.href !== "/admin/inquiries")
@@ -65,6 +78,7 @@ export function AdminNav({ showInquiries = true }: { showInquiries?: boolean }) 
             </Link>
           ))}
         </div>
+        </Fragment>
       ))}
     </>
   );

@@ -113,6 +113,12 @@
   font-size: 11px;
   color: var(--kyu-muted);
 }
+.seoMobileNav { display: none; }
+@media (max-width: 760px) {
+  .seoDesktopNav { display: none; }
+  .seoMobileNav { display: block; }
+  .seoMobileNav summary { padding: 12px; min-height: var(--kyu-touch); cursor: pointer; }
+}
 .navLink {
   display: block;
   padding: 12px;

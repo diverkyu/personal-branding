@@ -4,7 +4,36 @@
  * 투어는 아직 DB 테이블이 아니므로 tour_slug 는 외래키 없이 문자열로만 둔다 (투어 테이블이 생기면 연결한다).
  */
 import { sql } from "drizzle-orm";
+import type { Snapshot } from "@/seo/model";
 import { boolean, check, date, index, integer, jsonb, pgTable, text, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+
+/** 엔진·속성별 마지막 성공 자료. API 수집 완료 후 한 행으로 교체하여 부분 실패를 격리한다. */
+export const seoSync = pgTable("seo_sync", {
+  scope: text("scope").primaryKey(),
+  engine: text("engine").notNull(),
+  snapshot: jsonb("snapshot").$type<Snapshot>(),
+  attemptedAt: timestamp("attempted_at", { withTimezone: true }),
+  succeededAt: timestamp("succeeded_at", { withTimezone: true }),
+  errorCode: text("error_code"),
+  lease: uuid("lease"),
+  leaseUntil: timestamp("lease_until", { withTimezone: true }),
+}, t => [check("seo_sync_engine", sql`${t.engine} in ('google','bing')`)]);
+
+export const seoJournal = pgTable("seo_journal", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  title: text("title").notNull(), engine: text("engine").notNull(), url: text("url").notNull(),
+  observedOn: date("observed_on").notNull(), sourceUrl: text("source_url"), note: text("note").notNull().default(""),
+  status: text("status").notNull().default("needed"), version: integer("version").notNull().default(1),
+  periodStart: date("period_start"), periodEnd: date("period_end"),
+  // JSONB numbers retain safe JS integers rather than overflowing PostgreSQL int4.
+  clicks: jsonb("clicks").$type<number>(), impressions: jsonb("impressions").$type<number>(),
+  updatedBy: text("updated_by").notNull(), updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+}, t => [check("seo_journal_engine", sql`${t.engine} in ('google','bing','naver')`), check("seo_journal_status", sql`${t.status} in ('needed','fixed','retest','resolved','further')`), index("seo_journal_updated").on(t.updatedAt)]);
+
+export const seoFields = pgTable("seo_fields", {
+  path: text("path").primaryKey(), field: text("field").notNull(), updatedBy: text("updated_by").notNull(),
+}, t => [check("seo_fields_field", sql`${t.field} in ('freediving','ai','brand','unknown')`)]);
 
 export const inquiries = pgTable(
   "inquiries",

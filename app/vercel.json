@@ -4,6 +4,7 @@
     "sin1"
   ],
   "crons": [
+    { "path": "/api/cron/seo", "schedule": "0 4 * * *" },
     {
       "path": "/api/cron/publish",
       "schedule": "0 0 * * *"

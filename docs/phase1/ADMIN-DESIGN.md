@@ -1,6 +1,6 @@
 # 어드민 기술 설계
 
-> 문서 버전 **0.70.0** (PRD·CONCEPT·SCREEN-SPEC 등과 같은 세트 버전, [CHANGELOG](CHANGELOG.md)) · 상태: 검토 중
+> 문서 버전 **0.73.1** (PRD·CONCEPT·SCREEN-SPEC 등과 같은 세트 버전, [CHANGELOG](CHANGELOG.md)) · 상태: 검토 중
 
 [SCREEN-SPEC §7](SCREEN-SPEC.md)이 어드민 **화면·필드**를 정했다면, 이 문서는 그것을 **어떻게 만들지**를 정한다. 인증, 권한, 데이터 모델, 편집기, 이미지, 저장·충돌 처리, 구현 순서를 다룬다. 화면 필드와 제약은 SCREEN-SPEC을 따르고 여기서 반복하지 않는다.
 
@@ -862,3 +862,7 @@ Phase 1 범위 밖이던 AI 영상 섹션을 앞당겨 구현하는 계획이다
 - **시험**: 주소 검사(허용·거부·정리), 저장값 재검사, 순서, 연락 이메일 반영, Contact 영역·푸터 렌더(`social.test.tsx`).
 - **미검증(대기)** 로그인한 어드민 설정 화면, 규강 님의 실제 계정 주소 입력.
 
+
+## SEO 관리자 Phase 1/2 (0.73.0)
+
+[SEO-ADMIN.md](SEO-ADMIN.md)의 A-10/ADM-SEO 계약에 따라 seo_sync, seo_journal, seo_fields를 추가한다. 기존 requireAdmin과 data 계층, 활동 기록을 재사용한다. 엔진별 원자적 스냅샷과 DB 임대 잠금으로 마지막 성공 자료를 보존하며 크론은 기존 CRON_SECRET으로 보호한다. 운영 적용 상태는 [인수인계](../operations/2026-11-28-seo-admin-phase12.md)에서 별도 확인한다.

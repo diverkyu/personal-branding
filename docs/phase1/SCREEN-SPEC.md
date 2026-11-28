@@ -2,7 +2,7 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.72.0** | 2026-11-28 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude + Codex |
+| **0.73.1** | 2026-11-28 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude + Codex |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 상위: [PRD.md](PRD.md) · [CONCEPT.md](CONCEPT.md) · 시각: [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) · 화면 시안: [mockup/](mockup/README.md) · 지침: [DEVELOPMENT.md](DEVELOPMENT.md) · [SECURITY.md](SECURITY.md)
 
@@ -832,3 +832,7 @@ Lucia가 2026-11-10에 **9개 모두 제안대로 확정**했다(구조: 목록 
 | 후기 평점 사용하지 않음 | R-1 |
 | 신청 데이터에 문의 유형(예약 문의 / 소식 받기) | PRD §6 Inquiry |
 | 휴지통(30일), 신청자 개인정보는 즉시 파기 | A-7 |
+
+## ADM-SEO — SEO 통합 관리 (0.73.0)
+
+6개 메뉴·조회 조건·빈 상태·점검 입력과 상태 전이는 [SEO-ADMIN.md](SEO-ADMIN.md), 실제 구현/검증은 [인수인계](../operations/2026-11-28-seo-admin-phase12.md)를 따른다. 기존 관리자 CSS 토큰을 재사용하고 모바일 SEO 메뉴만 접는다. 입력 실패 시 초안 보존, 삭제 확인, 서버 버전 충돌 검사. 자동 미구현 기능에는 예정/미확인을 표시한다.

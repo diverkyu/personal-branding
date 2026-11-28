@@ -8,6 +8,10 @@
 - **현재 단계:** **[www.diverkyu.com](https://www.diverkyu.com)** 운영 중입니다. 2026-11-28 운영 응답에서 검색 수집 허용을 확인했으며, 검색엔진의 실제 색인 완료 여부는 별도로 확인합니다. 페이지별 SEO 보완은 아래 검토 기록을 참고하세요. 진행 현황은 [문서 변경 이력](docs/phase1/CHANGELOG.md), 운영 기록은 [docs/operations](docs/operations/)에 있습니다.
 - **도메인:** `diverkyu.com`(가비아 등록, 규강 소유). 사이트 주소는 `SITE_URL` 설정 하나로 정하므로 바뀌어도 코드 수정이 필요 없습니다. 상태와 남은 일은 [INFRASTRUCTURE §11](docs/phase1/INFRASTRUCTURE.md).
 
+## SEO 어드민 통합 (2026-11-28)
+
+[SEO Intelligence 1-1 통합 기록](docs/operations/2026-11-28-seo-admin-integration.md): 기존 6개 SEO 메뉴·일지·성과 동기화를 최신 main과 통합했습니다. dev 검증과 실제 로그인·API 연동·운영 배포 상태를 구분합니다. [후속 구현 순서](docs/phase1/SEO-INTELLIGENCE.md)는 진단 보고서 → 저장 → 일지 연결 → 정기 자동화입니다.
+
 ## 전체 페이지 SEO 보완 (2026-11-28)
 
 [18개 URL의 제목·설명과 항목별 처리 결과](docs/operations/2026-11-28-seo-content-review.md)를 정리했습니다. 기존 영문 메뉴를 유지하면서 목적별 검색 문구, 공유 이미지, 작성자·확인된 자격, 빈 목록 검색 정책을 보완했습니다. 이 변경의 운영 반영은 PR 병합·배포 후 확인합니다.
@@ -166,3 +170,7 @@ npm run dev        # 저장소 루트에서 시안 실행 (http://127.0.0.1:5173
 ## 이용 및 권리
 
 별도의 오픈소스 라이선스는 지정하지 않았습니다. 브랜드·콘텐츠의 재사용 조건은 소유자가 정합니다. 화면의 `KYU®`는 초기 시안에 포함된 표기를 그대로 보존한 것으로, 상표 등록 여부를 검증한 표시는 아닙니다. 공개 배포 전에 [상표 확인](docs/phase1/TRADEMARK-CHECK.md)에서 적절성을 검토합니다.
+
+## SEO 통합 관리자 (Phase 1/2, 로컬 구현)
+
+6개 관리 메뉴, 점검 일지, Google/Bing 성과 수집과 네이버 수동 기록을 추가했습니다. 실제 연결·DB 적용·운영 배포는 별도입니다. [설계 및 검증 기준](docs/phase1/SEO-ADMIN.md) · [설정과 검증 인수인계](docs/operations/2026-11-28-seo-admin-phase12.md).
