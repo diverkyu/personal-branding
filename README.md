@@ -8,6 +8,10 @@
 - **현재 단계:** Phase 1 구현 완료에 가깝고 정식 공개(게시) 이전입니다. 도메인 **[www.diverkyu.com](https://www.diverkyu.com)** 이 연결되어 있고(2026-11-24), 검색엔진에는 아직 노출되지 않습니다(noindex). 남은 공개 조건은 Vercel Pro 전환, 개인정보 처리방침 법무 확인·게시, `SITE_URL` 변경입니다. 진행 현황과 결정은 [문서 변경 이력](docs/phase1/CHANGELOG.md), 운영 기록은 [docs/operations](docs/operations/)에 있습니다.
 - **도메인:** `diverkyu.com`(가비아 등록, 규강 소유). 사이트 주소는 `SITE_URL` 설정 하나로 정하므로 바뀌어도 코드 수정이 필요 없습니다. 상태와 남은 일은 [INFRASTRUCTURE §11](docs/phase1/INFRASTRUCTURE.md).
 
+## 전체 홈페이지 새 시안 검토 (2026-11-28)
+
+홈·Story에서 시작해 Freediving·Tours·Films·About·Contact로 확장한 **18개 화면의 독립 시안**을 [시안 폴더](docs/phase1/mockup/editorial-2026-11-28/README.md)에 보관했습니다. 이미지와 글꼴을 포함하므로 공동개발자가 내려받아 볼 수 있습니다. [완료한 내용·남은 작업·검증 기록](docs/operations/2026-11-28-editorial-redesign-handoff.md)을 함께 확인해 주세요. 운영 앱에 적용하기 전의 검토안입니다.
+
 ## 지금 있는 것
 
 ### 공개 사이트
