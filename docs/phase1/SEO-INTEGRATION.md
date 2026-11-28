@@ -4,6 +4,8 @@
 
 ## 후속 통합 현황
 
+**운영 반영 완료 (2026-11-28):** PR #78 병합 main `671fed2`의 Production Ready 및 운영 0009 적용(10/10)을 확인했다. SEO 6개 화면과 기존 콘텐츠·설정 읽기가 정상이다. Google/Bing 성과 API는 미연동이며 자동 진단 보고서 수신은 아직 구현 전이다. [운영 조치·검증·후속 순서](../operations/2026-11-28-seo-admin-production.md).
+
 사용자가 #77을 병합한 뒤 기존 어드민 통합을 승인했다. `feat/seo-admin-integration`은 main `313d643`을 기준으로 아래 `51eaeb0`을 통합하며, 원래 `concept-review` 작업 트리는 유지한다. 공통 문서 충돌에서는 페이지 SEO와 어드민 요구사항을 모두 보존했다. 0009 세 파일(SQL/스냅샷/저널)은 기준 커밋과 동일하다. 이 문서 아래의 "로컬 공유/미구현"은 최초 기준점 기록이며, 현재 검증과 API 구현 여부는 [후속 기록](../operations/2026-11-28-seo-admin-integration.md)을 확인한다.
 
 ## 현재 구현 — 그대로 재사용할 경계
@@ -16,7 +18,7 @@
 - `app/src/app/admin/(console)/seo/actions.ts`: 기존 관리자 인증을 거치는 브라우저 변경 진입점.
 - `app/src/app/api/cron/seo/route.ts`: Google/Bing 성과 동기화용 크론. 현재 임의 기술 진단이나 외부 보고서 수집 API가 아니다.
 - 메뉴: 홈 → 콘텐츠 → SEO 현황 → 운영. 기존 6개 SEO 화면 안에 연동한다.
-- DB 마이그레이션 `0009_amusing_enchantress`는 **Neon dev에 이미 적용됨**. 해당 SQL/메타 파일을 수정·재생성·이름 변경하지 않는다. 운영에는 미적용이다.
+- DB 마이그레이션 `0009_amusing_enchantress`는 **Neon dev와 운영에 적용됨**(운영은 2026-11-28 후속 반영). 해당 SQL/메타 파일을 수정·재생성·이름 변경하지 않는다.
 
 ## 다른 세션에서 독립적으로 진행할 수 있는 작업
 
