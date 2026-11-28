@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>KYU 여행 추천 목록</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=Noto+Sans+KR:wght@400;500;700&amp;family=Lora:ital,wght@1,400&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'DM Sans','Noto Sans KR',sans-serif;background:#071e29}
+a{color:inherit;text-decoration:none}
+a:hover{opacity:.78}
+details>summary{list-style:none;cursor:pointer}
+details>summary::-webkit-details-marker{display:none}
+details[open] .chev{transform:rotate(180deg)}
+h1,h2,h3{word-break:keep-all}
+</style>
+</helmet>
+<div style="background:#071e29;color:#f4f4ec;font-family:'DM Sans','Noto Sans KR',sans-serif">
+<header style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;min-height:92px;padding:0 5%;max-width:1800px;margin:0 auto;box-sizing:border-box">
+<a href="Main.dc.html" aria-label="KYU 홈" style="font-size:34px;font-weight:700;letter-spacing:-2px;line-height:1">KYU</a>
+<nav aria-label="주요 메뉴" style="display:flex;gap:40px;font-size:15px">
+<a href="Main.dc.html">About</a>
+<a href="Story.dc.html">Story</a>
+<a href="Freediving.dc.html">Freediving</a>
+<a href="Films.dc.html">Films</a>
+</nav>
+<a href="Main.dc.html" style="font-size:15px;color:#d6f48a">Contact<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.15em;margin-left:0.3em"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+</header>
+<div style="background:#10333b;color:#d6f48a;font-size:12px;padding:10px 7%;text-align:center">제안 시안 · 첫 여행 추천을 공개하기 전에는 이 화면과 메뉴의 '여행 추천'이 보이지 않습니다</div>
+<section style="padding:80px 7% 72px">
+<div style="max-width:1296px;margin:0 auto">
+<nav aria-label="Freediving 영역 이동" style="display:flex;flex-wrap:wrap;gap:8px"><a href="Freediving.dc.html" style="padding:10px 18px;border-radius:30px;font-size:13px;border:1px solid #ffffff40">투어</a><a href="Freediving.dc.html" style="padding:10px 18px;border-radius:30px;font-size:13px;border:1px solid #ffffff40">장비 추천</a><a href="Freediving.dc.html" style="padding:10px 18px;border-radius:30px;font-size:13px;border:1px solid #ffffff40">수강 후기</a><a href="Travel.dc.html" style="padding:10px 18px;border-radius:30px;font-size:13px;background:#d6f48a;color:#071e29;font-weight:700">여행 추천</a></nav>
+<div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:space-between;align-items:flex-end;margin-top:56px">
+<div>
+<p style="margin:0 0 24px;font-size:11px;font-weight:600;letter-spacing:2px;color:#b5c8c6">FREEDIVING / TRAVEL</p>
+<h1 style="margin:0;font-size:72px;line-height:1.2;font-weight:500;letter-spacing:-3px">바다를 만나러<br>가는 길.</h1>
+</div>
+<p style="margin:0;max-width:340px;font-size:15px;line-height:1.9;color:#b5c8c6">프리다이빙하기 좋은 곳과, 가기 전에 알아 둘 것을 정리했습니다.</p>
+</div>
+</div>
+</section>
+
+<section style="background:#f4f4ec;color:#071e29;padding:100px 7%">
+<div style="max-width:1296px;margin:0 auto">
+<div style="display:flex;flex-wrap:wrap;gap:24px 48px;align-items:center;font-size:13px">
+<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span style="color:#52666a;margin-right:4px">지역</span><span style="padding:8px 16px;border-radius:30px;background:#071e29;color:#f4f4ec;font-weight:700">전체</span><span style="padding:8px 16px;border-radius:30px;border:1px solid #bdc8c3">제주</span><span style="padding:8px 16px;border-radius:30px;border:1px solid #bdc8c3">필리핀 보홀</span><span style="padding:8px 16px;border-radius:30px;border:1px solid #bdc8c3">이집트 다합</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span style="color:#52666a;margin-right:4px">난이도</span><span style="padding:8px 16px;border-radius:30px;background:#071e29;color:#f4f4ec;font-weight:700">전체</span><span style="padding:8px 16px;border-radius:30px;border:1px solid #bdc8c3">입문</span><span style="padding:8px 16px;border-radius:30px;border:1px solid #bdc8c3">중급</span><span style="padding:8px 16px;border-radius:30px;border:1px solid #bdc8c3">상급</span></div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:24px;margin-top:48px">
+<a href="TravelDetail.dc.html" style="flex:1 1 300px;min-width:0;border:1px solid #bdc8c3;padding:28px;box-sizing:border-box;display:block">
+<p style="margin:0 0 14px;font-size:11px;font-weight:700;letter-spacing:1.5px;color:#267786">제주</p>
+<p style="margin:0;font-size:22px;font-weight:500;letter-spacing:-.8px;line-height:1.4">서귀포 문섬 인근에서 처음 만나는 바다</p>
+<p style="margin:10px 0 0;font-size:14px;line-height:1.8;color:#52666a">한 줄 소개가 카드에 보입니다. (자리표시)</p>
+<p style="margin:18px 0 0;font-size:12px;color:#52666a">추천 시기 5~10월 · 난이도 입문 · 확인 2026.10</p>
+</a>
+<a href="TravelDetail.dc.html" style="flex:1 1 300px;min-width:0;border:1px solid #bdc8c3;padding:28px;box-sizing:border-box;display:block">
+<p style="margin:0 0 14px;font-size:11px;font-weight:700;letter-spacing:1.5px;color:#267786">필리핀 보홀</p>
+<p style="margin:0;font-size:22px;font-weight:500;letter-spacing:-.8px;line-height:1.4">팡라오 해변에서 처음 만나는 바다</p>
+<p style="margin:10px 0 0;font-size:14px;line-height:1.8;color:#52666a">한 줄 소개가 카드에 보입니다. (자리표시)</p>
+<p style="margin:18px 0 0;font-size:12px;color:#52666a">추천 시기 11~5월 · 난이도 중급 · 확인 2026.09</p>
+</a>
+<a href="TravelDetail.dc.html" style="flex:1 1 300px;min-width:0;border:1px solid #bdc8c3;padding:28px;box-sizing:border-box;display:block">
+<p style="margin:0 0 14px;font-size:11px;font-weight:700;letter-spacing:1.5px;color:#267786">이집트 다합</p>
+<p style="margin:0;font-size:22px;font-weight:500;letter-spacing:-.8px;line-height:1.4">블루홀 인근에서 처음 만나는 바다</p>
+<p style="margin:10px 0 0;font-size:14px;line-height:1.8;color:#52666a">한 줄 소개가 카드에 보입니다. (자리표시)</p>
+<p style="margin:18px 0 0;font-size:12px;color:#52666a">추천 시기 연중 · 난이도 상급 · 확인 2025.08</p><p style="margin:10px 0 0;font-size:12px;color:#8a4b00">정보 확인일이 오래되었습니다</p>
+</a>
+</div>
+<p style="margin:64px 0 0;text-align:center;font-size:14px;color:#52666a">이전 · 1 · 2 · 다음</p>
+<p style="margin:40px 0 0;font-size:13px;line-height:1.8;color:#52666a">시기·예산은 작성한 날의 참고 정보이며 달라질 수 있습니다. 가기 전에 꼭 최신 정보를 확인해 주세요.</p>
+</div>
+</section>
+<footer style="display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center;padding:35px 5%;font-size:13px;color:#a0b4ba;max-width:1800px;margin:0 auto;box-sizing:border-box">
+<a href="Main.dc.html" style="font-size:24px;font-weight:700;letter-spacing:-1px;color:#f4f4ec">KYU</a>
+<span>© 2026 KYU · 이동규</span>
+<span>BACK TO TOP<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.15em;margin-left:0.3em"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></span>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2300}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
