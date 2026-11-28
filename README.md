@@ -10,7 +10,7 @@
 
 ## SEO 어드민 통합 (2026-11-28)
 
-[SEO Intelligence 1-1 통합 기록](docs/operations/2026-11-28-seo-admin-integration.md): 기존 6개 SEO 메뉴·일지·성과 동기화를 최신 main과 통합했습니다. dev 검증과 실제 로그인·API 연동·운영 배포 상태를 구분합니다. [후속 구현 순서](docs/phase1/SEO-INTELLIGENCE.md)는 진단 보고서 → 저장 → 일지 연결 → 정기 자동화입니다.
+[SEO Intelligence 1-1 운영 반영](docs/operations/2026-11-28-seo-admin-production.md): PR #78의 운영 배포와 운영 DB 0009 적용을 확인했으며, 6개 SEO 화면이 정상적으로 열립니다. [dev 일지·로그인 검증](docs/operations/2026-11-28-seo-admin-integration.md)과 운영 읽기 검증을 구분합니다. Google/Bing 성과 API는 미연동입니다. [후속 구현 순서](docs/phase1/SEO-INTELLIGENCE.md)는 진단 보고서 → 저장 → 일지 연결 → 정기 자동화입니다.
 
 ## 전체 페이지 SEO 보완 (2026-11-28)
 
@@ -173,4 +173,4 @@ npm run dev        # 저장소 루트에서 시안 실행 (http://127.0.0.1:5173
 
 ## SEO 통합 관리자 (Phase 1/2, 로컬 구현)
 
-6개 관리 메뉴, 점검 일지, Google/Bing 성과 수집과 네이버 수동 기록을 추가했습니다. 실제 연결·DB 적용·운영 배포는 별도입니다. [설계 및 검증 기준](docs/phase1/SEO-ADMIN.md) · [설정과 검증 인수인계](docs/operations/2026-11-28-seo-admin-phase12.md).
+6개 관리 메뉴, 점검 일지, Google/Bing 성과 수집 코드와 네이버 수동 기록을 추가했습니다. 운영 배포·DB 적용은 완료했고, 실제 Google/Bing API 연결은 남아 있습니다. [설계 및 검증 기준](docs/phase1/SEO-ADMIN.md) · [운영 검증 기록](docs/operations/2026-11-28-seo-admin-production.md).
