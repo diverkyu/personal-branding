@@ -23,7 +23,7 @@ describe("공개 준비 점검", () => {
   it("모두 갖춰지면 해야 할 일이 없다", () => {
     const items = readinessChecks(READY);
     expect(todoCount(items)).toBe(0);
-    expect(items.map((i) => i.id)).toEqual(["contact", "privacy", "consent", "mail", "media", "cron", "domain", "indexing"]);
+    expect(items.map((i) => i.id)).toEqual(["contact", "privacy", "consent", "mail", "media", "cron", "domain", "indexing", "verification"]);
   });
 
   it("처음 상태(기본값)에서는 해야 할 일이 모두 보인다", () => {
@@ -72,6 +72,20 @@ describe("공개 준비 점검", () => {
     }
     expect(get({ ...READY, env: { ...READY.env, SITE_URL: "https://x.vercel.app", SITE_INDEXING: "on" } }, "indexing").status).toBe("todo");
     expect(get({ ...READY, env: { ...READY.env, SITE_INDEXING: "off" } }, "indexing").status).toBe("info");
+  });
+
+  it("검색 노출은 어드민 스위치를 따르고, 운영이 아니면 막혀 있다고 알린다", () => {
+    const prod = { ...READY.env, SITE_INDEXING: undefined, VERCEL_ENV: "production" };
+    expect(get({ ...READY, env: prod, settings: { ...READY.settings, "seo.indexing": "on" } }, "indexing")).toMatchObject({ status: "ok", where: "admin" });
+    expect(get({ ...READY, env: prod, settings: { ...READY.settings, "seo.indexing": "off" } }, "indexing")).toMatchObject({ status: "info", href: "/admin/settings" });
+    expect(get({ ...READY, env: { ...prod, VERCEL_ENV: "preview" }, settings: { ...READY.settings, "seo.indexing": "on" } }, "indexing").detail).toContain("운영 배포가 아니라서");
+  });
+
+  it("소유 확인 태그가 빠진 곳을 알려 주고, 셋 다 있으면 정상이다", () => {
+    expect(get(READY, "verification")).toMatchObject({ status: "info" });
+    expect(get(READY, "verification").detail).toContain("구글, 네이버, 빙");
+    const all = { ...READY.settings, "seo.verify.google": "g", "seo.verify.naver": "n" };
+    expect(get({ ...READY, settings: all, env: { ...READY.env, BING_SITE_VERIFICATION: "b" } }, "verification").status).toBe("ok");
   });
 
   it("info 는 해야 할 일 개수에 세지 않는다", () => {

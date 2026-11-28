@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
-import { Checkbox, TextField, Textarea } from "@/components/ui/Field";
+import { Checkbox, Messages, TextField, Textarea, describedBy } from "@/components/ui/Field";
 import { saveSettingsGroupAction, type SettingsState } from "../../siteActions";
 import styles from "../../admin.module.css";
 
@@ -10,11 +10,13 @@ export interface SettingField {
   key: string;
   label: string;
   usedAt: string;
-  type: "text" | "lines" | "email" | "url";
+  type: "text" | "lines" | "email" | "url" | "choice" | "verification";
   maxLength: number;
   maxLines?: number;
   hint?: string;
   brandCore?: boolean;
+  /** choice 일 때 고를 수 있는 값 */
+  options?: readonly { value: string; label: string }[];
   /** 지금 쓰이는 값 (저장된 값 또는 기본값) */
   value: string;
   /** 저장된 항목의 version. 아직 저장된 적 없으면 0 */
@@ -41,11 +43,26 @@ export function SettingsGroupForm({ group, title, fields }: { group: string; tit
         </p>
       ) : null}
       {fields.map((f) => {
-        const hint = `${f.usedAt}${f.hint ? ` · ${f.hint}` : ""}${f.isDefault ? " · 지금은 기본값입니다. 비우면 기본값으로 돌아갑니다." : " · 비우면 기본값으로 돌아갑니다."}`;
+        const reset = f.type === "choice" ? "" : f.isDefault ? " · 지금은 기본값입니다. 비우면 기본값으로 돌아갑니다." : " · 비우면 기본값으로 돌아갑니다.";
+        const hint = `${f.usedAt}${f.hint ? ` · ${f.hint}` : ""}${reset}`;
         return (
           <div key={f.key}>
             <input type="hidden" name={`ver_${f.key}`} value={f.version} />
-            {f.type === "lines" ? (
+            {f.type === "choice" ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <label htmlFor={`s-${f.key}`} className={styles.fieldLabel}>
+                  {f.label}
+                </label>
+                <select key={`${f.key}-${f.version}-${state.values?.[f.key] ?? ""}`} id={`s-${f.key}`} name={`v_${f.key}`} defaultValue={shown(f)} className={styles.select} aria-invalid={errors[f.key] ? true : undefined} aria-describedby={describedBy(`s-${f.key}`, hint, errors[f.key])}>
+                  {(f.options ?? []).map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+                <Messages id={`s-${f.key}`} hint={hint} error={errors[f.key]} />
+              </div>
+            ) : f.type === "lines" ? (
               <Textarea key={`${f.key}-${f.version}-${state.values?.[f.key] ?? ""}`} id={`s-${f.key}`} name={`v_${f.key}`} label={f.label} rows={f.maxLines ?? 2} defaultValue={shown(f)} hint={hint} error={errors[f.key]} surface="light" />
             ) : (
               <TextField key={`${f.key}-${f.version}-${state.values?.[f.key] ?? ""}`} id={`s-${f.key}`} name={`v_${f.key}`} type={f.type === "email" ? "email" : f.type === "url" ? "url" : "text"} label={f.label} defaultValue={shown(f)} maxLength={f.maxLength + 5} hint={hint} error={errors[f.key]} surface="light" />

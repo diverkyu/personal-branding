@@ -24,6 +24,7 @@ export default async function SettingsPage() {
           maxLines: s.maxLines,
           hint: s.hint,
           brandCore: s.brandCore,
+          options: s.options,
           value: stored[s.key]?.value ?? s.default,
           version: stored[s.key]?.version ?? 0,
           isDefault: !stored[s.key],

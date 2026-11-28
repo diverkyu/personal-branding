@@ -4,7 +4,7 @@
  * - 레이아웃·색·글꼴은 설정에 없다 (SCREEN-SPEC §2: 고정 디자인은 개발 요청).
  * - 순수 코드라 서버 액션·화면·시험이 같은 규칙을 쓴다.
  */
-export type SettingType = "text" | "lines" | "email" | "url";
+export type SettingType = "text" | "lines" | "email" | "url" | "choice" | "verification";
 export type SettingGroup = "home" | "films" | "travel" | "contact" | "footer" | "seo";
 
 export interface SettingDef {
@@ -24,6 +24,8 @@ export interface SettingDef {
   hosts?: readonly string[];
   /** 브랜드 핵심 문구: 저장 전 확인을 받는다 (SCREEN-SPEC §12 결정 1) */
   brandCore?: boolean;
+  /** choice 일 때 고를 수 있는 값과 화면 표기 */
+  options?: readonly { value: string; label: string }[];
 }
 
 export const SETTING_GROUPS: { id: SettingGroup; title: string }[] = [
@@ -231,6 +233,50 @@ export const SETTINGS: SettingDef[] = [
     maxLength: 160,
     default: "이동규 KYU — 프리다이빙 강사이자 AI 크리에이터. 바다의 깊이와 상상의 가능성을 탐험합니다.",
   },
+  {
+    key: "seo.indexing",
+    group: "seo",
+    label: "검색엔진에 노출",
+    usedAt: "robots.txt·모든 공개 페이지의 검색 허용 표시",
+    type: "choice",
+    maxLength: 3,
+    default: "off",
+    options: [
+      { value: "off", label: "끄기 — 검색엔진이 사이트를 가져가지 않습니다" },
+      { value: "on", label: "켜기 — 검색엔진이 사이트를 가져가고 사이트맵을 알립니다" },
+    ],
+    hint: "운영 주소(www.diverkyu.com)에서만 동작합니다. 프리뷰·임시 주소는 항상 막혀 있습니다. 바꾸면 몇 분 안에 robots.txt 에 반영됩니다.",
+  },
+  {
+    key: "seo.verify.google",
+    group: "seo",
+    label: "구글 서치콘솔 소유 확인",
+    usedAt: "모든 페이지 head 의 google-site-verification 태그",
+    type: "verification",
+    maxLength: 300,
+    default: "",
+    hint: "서치콘솔이 주는 <meta name=\"google-site-verification\" content=\"…\"> 한 줄을 통째로 붙여 넣어도 됩니다. content 값만 저장합니다.",
+  },
+  {
+    key: "seo.verify.naver",
+    group: "seo",
+    label: "네이버 서치어드바이저 소유 확인",
+    usedAt: "모든 페이지 head 의 naver-site-verification 태그",
+    type: "verification",
+    maxLength: 300,
+    default: "",
+    hint: "서치어드바이저 > 소유확인 > HTML 태그의 한 줄을 통째로 붙여 넣어도 됩니다.",
+  },
+  {
+    key: "seo.verify.bing",
+    group: "seo",
+    label: "빙 웹마스터 소유 확인",
+    usedAt: "모든 페이지 head 의 msvalidate.01 태그",
+    type: "verification",
+    maxLength: 300,
+    default: "",
+    hint: "구글 서치콘솔에서 가져오기로 등록하면 비워 둬도 됩니다. 직접 등록할 때만 HTML 메타 태그 한 줄을 붙여 넣습니다.",
+  },
 ];
 
 export const SETTINGS_BY_KEY: Record<string, SettingDef> = Object.fromEntries(SETTINGS.map((s) => [s.key, s]));
@@ -261,7 +307,22 @@ export function validateSetting(def: SettingDef, raw: string): Validation {
   if (value.length > def.maxLength) return { ok: false, error: `${def.maxLength}자까지 쓸 수 있습니다.` };
   if (def.type === "email" && !EMAIL.test(value)) return { ok: false, error: "이메일 주소 형식이 올바르지 않습니다." };
   if (def.type === "url") return validateUrl(def, value);
+  if (def.type === "choice") return def.options?.some((o) => o.value === value) ? { ok: true, value } : { ok: false, error: "고를 수 있는 값이 아닙니다." };
+  if (def.type === "verification") return validateVerification(value);
   return { ok: true, value };
+}
+
+/** 소유 확인 값: 공개 문자열이지만 head 에 그대로 들어가므로 글자 종류를 좁힌다 */
+const VERIFICATION_VALUE = /^[A-Za-z0-9_\-+/=.:]{6,120}$/;
+
+/**
+ * 검색엔진 소유 확인 값 검사. 서비스가 주는 `<meta name="…" content="값">` 한 줄을 붙여 넣어도 content 만 꺼낸다.
+ * 저장하는 값은 content 문자열이다.
+ */
+export function validateVerification(value: string): Validation {
+  const content = /content\s*=\s*["']([^"']*)["']/i.exec(value)?.[1]?.trim() ?? (value.startsWith("<") ? "" : value);
+  if (!content || !VERIFICATION_VALUE.test(content)) return { ok: false, error: "소유 확인 값 형식이 아닙니다. 서비스가 준 메타 태그 한 줄 또는 content 값만 붙여 넣어 주세요." };
+  return { ok: true, value: content };
 }
 
 /**

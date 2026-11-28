@@ -28,6 +28,14 @@ describe("검색엔진 소유 확인 (verificationOf)", () => {
       other: { "naver-site-verification": "n1", "msvalidate.01": "b1" },
     });
   });
+
+  it("어드민 사이트 설정 값이 환경변수보다 먼저이고, 비어 있으면 환경변수를 쓴다", () => {
+    const env = { GOOGLE_SITE_VERIFICATION: "g-env", NAVER_SITE_VERIFICATION: "n-env" };
+    expect(verificationOf(env, { "seo.verify.google": "g-admin", "seo.verify.naver": "", "seo.verify.bing": "b-admin" })).toEqual({
+      google: "g-admin",
+      other: { "naver-site-verification": "n-env", "msvalidate.01": "b-admin" },
+    });
+  });
 });
 
 describe("인물 구조화 데이터 (personLd)", () => {
