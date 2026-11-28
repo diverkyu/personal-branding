@@ -23,7 +23,10 @@ test("홈이 열리고 제목이 보인다", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Dive deeper.");
 });
 
-test("색인 금지(noindex)와 기본 보안 헤더", async ({ request }) => {
+/** 검색 노출이 켜진 운영 사이트를 점검할 때는 REMOTE_EXPECT_INDEXING=on (기본은 프리뷰처럼 막혀 있어야 한다) */
+const expectIndexing = process.env.REMOTE_EXPECT_INDEXING === "on";
+
+test("색인 허용 표시와 기본 보안 헤더", async ({ request }) => {
   const res = await request.get(url("/"));
   expect(res.status()).toBe(200);
   const h = res.headers();
@@ -32,12 +35,20 @@ test("색인 금지(noindex)와 기본 보안 헤더", async ({ request }) => {
   expect(h["referrer-policy"]).toBe("strict-origin-when-cross-origin");
   expect(h["x-powered-by"]).toBeUndefined();
   const html = await res.text();
-  expect(html).toMatch(/<meta name="robots" content="noindex/);
+  if (expectIndexing) expect(html).toMatch(/<meta name="robots" content="index, follow/);
+  else expect(html).toMatch(/<meta name="robots" content="noindex/);
 });
 
-test("robots.txt 는 모두 막고, 개발용 쇼케이스는 열리지 않는다", async ({ request }) => {
+test("robots.txt 는 노출 상태에 맞고, 개발용 쇼케이스는 열리지 않는다", async ({ request }) => {
   const robots = await (await request.get(url("/robots.txt"))).text();
-  expect(robots).toContain("Disallow: /");
+  if (expectIndexing) {
+    expect(robots).toContain("Disallow: /admin/");
+    expect(robots).toContain("Sitemap: ");
+    expect(robots).not.toMatch(/^Disallow: \/$/m);
+  } else {
+    expect(robots).toMatch(/^Disallow: \/$/m);
+    expect(robots).not.toContain("Sitemap: ");
+  }
   expect((await request.get(url("/dev/components"))).status()).toBe(404);
 });
 

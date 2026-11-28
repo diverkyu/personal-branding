@@ -4,6 +4,7 @@
  */
 import { BUILTIN_VERSION } from "@/settings/consent";
 import { contactConfig } from "@/config/site";
+import { indexingDecision, type IndexingReason } from "@/config/env";
 
 export type ReadinessStatus = "todo" | "ok" | "info";
 
@@ -109,12 +110,38 @@ export function readinessChecks({ env, settings, privacyPublished, formsOpen, co
       : { id: "domain", label: "사이트 주소", status: "ok", detail: `${host} 로 설정되어 있습니다.`, where: "domain" },
   );
 
-  const indexing = env.SITE_INDEXING === "on";
+  const decision = indexingDecision(env, settings["seo.indexing"]);
+  const INDEXING_DETAIL: Record<IndexingReason, Omit<ReadinessItem, "id" | "label">> = {
+    on: { status: "ok", detail: "켜져 있습니다. robots.txt 가 검색엔진을 허용하고 사이트맵을 알립니다.", href: "/admin/settings", where: "admin" },
+    "forced-on": { status: "info", detail: "Vercel 환경변수 SITE_INDEXING=on 으로 켜져 있습니다. 어드민 스위치로 끄려면 이 환경변수를 지우고 다시 배포하세요.", where: "vercel" },
+    "forced-off": { status: "info", detail: "Vercel 환경변수 SITE_INDEXING=off 로 막혀 있습니다(비상 차단). 어드민 스위치보다 먼저 적용됩니다.", where: "vercel" },
+    "not-production": { status: "info", detail: "운영 배포가 아니라서(프리뷰·로컬) 항상 막혀 있습니다. 운영 사이트에서만 켜집니다.", where: "admin" },
+    "temporary-host": { status: "info", detail: "사이트 주소가 임시 주소라서 막혀 있습니다. SITE_URL 을 실제 도메인으로 바꾼 뒤 켤 수 있습니다.", where: "domain" },
+    "setting-off": { status: "info", detail: "꺼져 있습니다(검색엔진에 노출되지 않음). 공개할 때 사이트 설정 > 검색·공유 > 검색엔진에 노출을 \"켜기\"로 바꿉니다.", href: "/admin/settings", where: "admin" },
+  };
   items.push(
-    indexing
-      ? { id: "indexing", label: "검색 노출", status: temporary ? "todo" : "info", detail: temporary ? "검색 노출이 켜져 있는데 임시 주소입니다. 공개 전에는 SITE_INDEXING을 끄세요." : "검색엔진 노출이 켜져 있습니다(공개 상태).", where: "vercel" }
-      : { id: "indexing", label: "검색 노출", status: "info", detail: `꺼져 있습니다(검색엔진에 노출되지 않음). 공개 직전에 SITE_INDEXING=on 으로 켭니다.`, where: "vercel" },
+    decision.allowed && temporary
+      ? { id: "indexing", label: "검색 노출", status: "todo", detail: "검색 노출이 켜져 있는데 임시 주소입니다. 공개 전에는 SITE_INDEXING 환경변수를 지우거나 off 로 바꾸세요.", where: "vercel" }
+      : { id: "indexing", label: "검색 노출", ...INDEXING_DETAIL[decision.reason] },
   );
+
+  const verified = [
+    ["구글", "seo.verify.google", "GOOGLE_SITE_VERIFICATION"],
+    ["네이버", "seo.verify.naver", "NAVER_SITE_VERIFICATION"],
+    ["빙", "seo.verify.bing", "BING_SITE_VERIFICATION"],
+  ].map(([name, key, envKey]) => ({ name: name!, set: has(settings[key!]) || has(env[envKey!]) }));
+  const missing = verified.filter((v) => !v.set).map((v) => v.name);
+  items.push({
+    id: "verification",
+    label: "검색엔진 소유 확인",
+    status: missing.length === 0 ? "ok" : "info",
+    detail:
+      missing.length === 0
+        ? "구글·네이버·빙 소유 확인 태그가 모두 들어가 있습니다."
+        : `태그가 없는 곳: ${missing.join(", ")}. 각 서비스에서 받은 메타 태그를 사이트 설정 > 검색·공유에 붙여 넣으세요. 빙은 구글에서 가져오기로 등록하면 비워 둬도 됩니다.`,
+    href: "/admin/settings",
+    where: "admin",
+  });
 
   return items;
 }

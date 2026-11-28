@@ -34,6 +34,33 @@ beforeEach(async () => {
 
 const def = (key: string) => SETTINGS_BY_KEY[key]!;
 
+describe("검색·공유: 검색 노출 스위치와 소유 확인 값", () => {
+  const d = (k: string) => SETTINGS_BY_KEY[k]!;
+  it("검색 노출은 on/off 만 받고 기본은 off 다", () => {
+    expect(defaultSettings()["seo.indexing"]).toBe("off");
+    expect(validateSetting(d("seo.indexing"), "on")).toEqual({ ok: true, value: "on" });
+    expect(validateSetting(d("seo.indexing"), "yes")).toMatchObject({ ok: false });
+  });
+
+  it("서비스가 준 메타 태그 한 줄을 붙여 넣어도 content 값만 저장한다", () => {
+    expect(validateSetting(d("seo.verify.google"), '<meta name="google-site-verification" content="AbC-123_xyz.Q" />')).toEqual({ ok: true, value: "AbC-123_xyz.Q" });
+    expect(validateSetting(d("seo.verify.naver"), "<meta name='naver-site-verification' content='0123456789abcdef0123456789abcdef01234567'/>")).toEqual({ ok: true, value: "0123456789abcdef0123456789abcdef01234567" });
+    expect(validateSetting(d("seo.verify.bing"), "  ABCDEF0123456789ABCDEF0123456789 ")).toEqual({ ok: true, value: "ABCDEF0123456789ABCDEF0123456789" });
+  });
+
+  it("head 에 들어가므로 따옴표·꺾쇠·공백이 든 값과 content 없는 태그는 거부한다", () => {
+    for (const bad of ['"><script>', "abc def ghi", '<meta name="x">', "<script>alert(1)</script>", "short"]) {
+      expect(validateSetting(d("seo.verify.google"), bad), bad).toMatchObject({ ok: false });
+    }
+    expect(validateSetting(d("seo.verify.google"), '<meta content="a\"onload=x">')).toMatchObject({ ok: false });
+  });
+
+  it("비우면 저장된 값을 지운다(태그 없음)", () => {
+    expect(validateSetting(d("seo.verify.google"), "  ")).toEqual({ ok: true, value: "" });
+    expect(resolveSettings({ "seo.verify.google": "<bad>" })["seo.verify.google"]).toBe("");
+  });
+});
+
 describe("설정 규칙", () => {
   it("모든 설정의 기본값이 자기 규칙을 통과한다", () => {
     for (const s of SETTINGS) expect(validateSetting(s, s.default), s.key).toEqual({ ok: true, value: s.default });

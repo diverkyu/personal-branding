@@ -41,7 +41,26 @@ export function resolveSiteUrl(env: EnvSource): SiteUrlResult {
   return { url, source: "env", problem };
 }
 
-/** 검색엔진 색인 허용 여부. 공개 전 미리보기가 색인되지 않도록 기본은 꺼짐이다. */
-export function isIndexingAllowed(env: EnvSource): boolean {
-  return env.SITE_INDEXING === "on";
+export type IndexingReason = "forced-off" | "forced-on" | "not-production" | "temporary-host" | "setting-off" | "on";
+
+/** 임시 주소(vercel.app·localhost)인지. 이런 주소는 검색엔진에 알리지 않는다 */
+export function isTemporaryHost(env: EnvSource): boolean {
+  const host = resolveSiteUrl(env).url.hostname.toLowerCase();
+  return host.endsWith(".vercel.app") || host === "localhost" || host === "127.0.0.1";
+}
+
+/**
+ * 검색엔진 색인 허용 여부 (SEO-GEO §3·§4 D). 순서대로 본다.
+ * 1. 환경변수 SITE_INDEXING=off → 강제 차단(비상용), =on → 강제 허용(예전 방식 호환)
+ * 2. Vercel 운영 배포(VERCEL_ENV=production)가 아니면 차단 — 프리뷰는 dev DB 를 쓰므로 어드민 스위치와 관계없이 막는다
+ * 3. SITE_URL 이 임시 주소면 차단
+ * 4. 어드민 사이트 설정 > 검색·공유 > "검색엔진에 노출"(seo.indexing)이 on 일 때만 허용
+ */
+export function indexingDecision(env: EnvSource, setting: string | undefined): { allowed: boolean; reason: IndexingReason } {
+  if (env.SITE_INDEXING === "off") return { allowed: false, reason: "forced-off" };
+  if (env.SITE_INDEXING === "on") return { allowed: true, reason: "forced-on" };
+  if (env.VERCEL_ENV !== "production") return { allowed: false, reason: "not-production" };
+  if (isTemporaryHost(env)) return { allowed: false, reason: "temporary-host" };
+  if (setting !== "on") return { allowed: false, reason: "setting-off" };
+  return { allowed: true, reason: "on" };
 }

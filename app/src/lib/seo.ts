@@ -27,12 +27,14 @@ export function pageMeta(path: string, meta: Omit<Metadata, "alternates"> & { op
 
 /**
  * 검색엔진 소유 확인 태그 (구글 서치콘솔·네이버 서치어드바이저·빙). 값은 각 서비스가 주는 공개 문자열이지만
- * 계정마다 다르므로 코드에 쓰지 않고 환경변수로 받는다. 없으면 태그를 넣지 않는다.
+ * 계정마다 다르므로 코드에 쓰지 않는다. 어드민 사이트 설정 > 검색·공유(seo.verify.*)가 먼저이고,
+ * 비어 있으면 환경변수(GOOGLE_/NAVER_/BING_SITE_VERIFICATION)를 쓴다. 둘 다 없으면 태그를 넣지 않는다.
  */
-export function verificationOf(env: Record<string, string | undefined>): Metadata["verification"] | undefined {
-  const google = env.GOOGLE_SITE_VERIFICATION?.trim();
-  const naver = env.NAVER_SITE_VERIFICATION?.trim();
-  const bing = env.BING_SITE_VERIFICATION?.trim();
+export function verificationOf(env: Record<string, string | undefined>, settings: Record<string, string> = {}): Metadata["verification"] | undefined {
+  const pick = (key: string, envKey: string) => settings[key]?.trim() || env[envKey]?.trim() || undefined;
+  const google = pick("seo.verify.google", "GOOGLE_SITE_VERIFICATION");
+  const naver = pick("seo.verify.naver", "NAVER_SITE_VERIFICATION");
+  const bing = pick("seo.verify.bing", "BING_SITE_VERIFICATION");
   const other: Record<string, string> = {};
   if (naver) other["naver-site-verification"] = naver;
   if (bing) other["msvalidate.01"] = bing;

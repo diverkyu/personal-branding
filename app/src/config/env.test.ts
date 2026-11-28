@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_SITE_URL, isIndexingAllowed, resolveSiteUrl } from "./env";
+import { DEFAULT_SITE_URL, indexingDecision, resolveSiteUrl } from "./env";
 
 describe("resolveSiteUrl", () => {
   it("SITE_URL 이 없으면 로컬 주소를 쓰고, 개발에서는 문제로 보지 않는다", () => {
@@ -35,13 +35,31 @@ describe("resolveSiteUrl", () => {
   });
 });
 
-describe("isIndexingAllowed", () => {
+describe("indexingDecision (검색 노출)", () => {
+  const PROD = { VERCEL_ENV: "production", SITE_URL: "https://www.diverkyu.com" };
+
   it("기본은 색인을 허용하지 않는다", () => {
-    expect(isIndexingAllowed({})).toBe(false);
-    expect(isIndexingAllowed({ SITE_INDEXING: "off" })).toBe(false);
+    expect(indexingDecision({}, undefined)).toEqual({ allowed: false, reason: "not-production" });
+    expect(indexingDecision(PROD, undefined)).toEqual({ allowed: false, reason: "setting-off" });
+    expect(indexingDecision(PROD, "off").allowed).toBe(false);
   });
 
-  it("SITE_INDEXING=on 일 때만 허용한다", () => {
-    expect(isIndexingAllowed({ SITE_INDEXING: "on" })).toBe(true);
+  it("운영 배포 + 실제 주소 + 어드민 스위치 on 일 때만 허용한다", () => {
+    expect(indexingDecision(PROD, "on")).toEqual({ allowed: true, reason: "on" });
+  });
+
+  it("프리뷰·로컬은 어드민 스위치가 켜져 있어도 막는다 (프리뷰는 dev DB 를 쓴다)", () => {
+    expect(indexingDecision({ ...PROD, VERCEL_ENV: "preview" }, "on")).toEqual({ allowed: false, reason: "not-production" });
+    expect(indexingDecision({ SITE_URL: "https://www.diverkyu.com" }, "on").allowed).toBe(false);
+  });
+
+  it("임시 주소(vercel.app·localhost)는 막는다", () => {
+    expect(indexingDecision({ ...PROD, SITE_URL: "https://x.vercel.app" }, "on")).toEqual({ allowed: false, reason: "temporary-host" });
+    expect(indexingDecision({ VERCEL_ENV: "production" }, "on")).toEqual({ allowed: false, reason: "temporary-host" });
+  });
+
+  it("환경변수 SITE_INDEXING 이 어드민 스위치보다 먼저다: off 는 비상 차단, on 은 예전 방식 호환", () => {
+    expect(indexingDecision({ ...PROD, SITE_INDEXING: "off" }, "on")).toEqual({ allowed: false, reason: "forced-off" });
+    expect(indexingDecision({ SITE_INDEXING: "on" }, "off")).toEqual({ allowed: true, reason: "forced-on" });
   });
 });
