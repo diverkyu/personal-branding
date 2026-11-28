@@ -109,3 +109,7 @@ PRD **W-4**(SEO: 페이지별 title/description/OG, sitemap, 구조화 데이터
 
 - **geo-text**, **geo-index**: 스폰지클럽 스타트킷(이니) 스킬. 작업자 컴퓨터의 `~/.claude/skills/`에만 설치하고 **저장소에는 넣지 않는다**(재배포 금지 조건, PRD §10).
 - Vitest(`lib/seo.test.ts`, `lib/structured.test.ts`), Playwright(`tests/e2e/foundation.spec.ts`의 정규 주소·인물 정보 시험).
+
+### 2026-11-28 자동 점검 구현
+
+작업 가이드 §4.1·4.2의 E2E 검사와 운영 HTML 점검 명령을 추가했다. 현재 설명 중복·공유 이미지·작성자 연결은 경고로 기록하며 B 단계에서 보완한다. 상세 실행 결과와 등록 진행 상황은 작업 가이드 끝의 실행 기록을 따른다.
