@@ -8,9 +8,10 @@ import type { AdminSession } from "@/lib/auth/types";
 import { logger } from "@/lib/logger";
 import type { AdminDb } from "./db";
 
-export type AuditAction = "inquiry.view" | "inquiry.status_change" | "inquiry.memo_update" | "inquiry.delete" | "inquiry.export" | "settings.update" | "consent.publish" | "media.upload" | "media.alt_update" | "media.delete" | "content.create" | "content.save" | "content.transition" | "content.discard_draft" | "content.publish_draft" | "content.recruit_status" | "review.create" | "review.save" | "review.status" | "review.withdraw" | "review.delete" | "content.delete" | "content.retry_job" | "content.publish_scheduled" | "trash.restore" | "trash.purge" | "about.save" | "about.publish" | "about.discard" | "about.unpublish" | "taxonomy.rename" | "taxonomy.remove" | "taxonomy.add" | "taxonomy.unregister" | "hero.save" | "hero.publish" | "hero.discard" | "hero.reset";
+export type AuditAction = "seo.journal.create" | "seo.journal.save" | "seo.journal.delete" | "seo.field.save" | "inquiry.view" | "inquiry.status_change" | "inquiry.memo_update" | "inquiry.delete" | "inquiry.export" | "settings.update" | "consent.publish" | "media.upload" | "media.alt_update" | "media.delete" | "content.create" | "content.save" | "content.transition" | "content.discard_draft" | "content.publish_draft" | "content.recruit_status" | "review.create" | "review.save" | "review.status" | "review.withdraw" | "review.delete" | "content.delete" | "content.retry_job" | "content.publish_scheduled" | "trash.restore" | "trash.purge" | "about.save" | "about.publish" | "about.discard" | "about.unpublish" | "taxonomy.rename" | "taxonomy.remove" | "taxonomy.add" | "taxonomy.unregister" | "hero.save" | "hero.publish" | "hero.discard" | "hero.reset";
 
 export const AUDIT_LABELS: Record<AuditAction, string> = {
+  "seo.journal.create": "SEO 점검 등록", "seo.journal.save": "SEO 점검 수정", "seo.journal.delete": "SEO 점검 삭제", "seo.field.save": "SEO 분야 지정",
   "inquiry.view": "신청·문의 열람",
   "inquiry.status_change": "신청·문의 상태 변경",
   "inquiry.memo_update": "신청·문의 메모 수정",

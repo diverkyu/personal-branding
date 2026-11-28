@@ -19,6 +19,7 @@
     "db:migrate": "node --env-file-if-exists=.env.local node_modules/drizzle-kit/bin.cjs migrate",
     "test:remote": "playwright test -c playwright.remote.config.ts",
     "db:status": "node --env-file-if-exists=.env.local scripts/db-status.mjs",
+    "seo:dev-smoke": "tsx --env-file-if-exists=.env.local scripts/seo-dev-smoke.ts",
     "db:cleanup-smoke": "node --env-file-if-exists=.env.local scripts/cleanup-smoke.mjs",
     "admin:create": "tsx --env-file-if-exists=.env.local scripts/admin-account.ts create",
     "admin:reset-password": "tsx --env-file-if-exists=.env.local scripts/admin-account.ts reset-password",

@@ -1,0 +1,71 @@
+import { PGlite } from "@electric-sql/pglite";
+import { drizzle } from "drizzle-orm/pglite";
+import { migrate } from "drizzle-orm/pglite/migrator";
+import path from "node:path";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import type { AdminDb } from "@/data/admin/db";
+import { seoSync, seoJournal } from "@/db/schema";
+import { claimSync, finishSync, saveJournal, deleteJournal, readSeo, saveField } from "./store";
+import type { JournalInput, Snapshot } from "@/seo/model";
+const admin = { userId: "seo-test", name: "가상 관리자", email: "seo@example.com" };
+const input: JournalInput = { title: "점검", engine: "google", url: "/", observedOn: "2026-01-01", sourceUrl: "", note: "", periodStart: "", periodEnd: "", clicks: "", impressions: "" };
+const snapshot: Snapshot = { start: "2026-01-01", end: "2026-01-01", rows: [{ date: "2026-01-01", dimension: "date", key: "", clicks: 0, impressions: 4, position: 2 }], truncated: false };
+let client: PGlite, db: AdminDb;
+beforeAll(async () => { client = new PGlite(); const d = drizzle({ client }); await migrate(d, { migrationsFolder: path.resolve(__dirname, "../../../drizzle") }); db = d as unknown as AdminDb; });
+afterAll(async () => { await client.close(); });
+describe("마이그레이션·점검 CRUD", () => {
+  it("등록·허용 전이·충돌·삭제 확인·활동 기록", async () => {
+    const row = await saveJournal(db, admin, input, "https://example.com");
+    expect(row.status).toBe("needed");
+    await expect(saveJournal(db, admin, input, "https://example.com", row.id, 1, "resolved")).rejects.toThrow("재검사");
+    await saveJournal(db, admin, input, "https://example.com", row.id, 1, "fixed");
+    await expect(saveJournal(db, admin, input, "https://example.com", row.id, 1, "fixed")).rejects.toThrow("다른 곳");
+    await saveJournal(db, admin, input, "https://example.com", row.id, 2, "retest");
+    await saveJournal(db, admin, input, "https://example.com", row.id, 3, "further");
+    await saveJournal(db, admin, input, "https://example.com", row.id, 4, "fixed");
+    await saveJournal(db, admin, input, "https://example.com", row.id, 5, "retest");
+    await saveJournal(db, admin, input, "https://example.com", row.id, 6, "resolved");
+    await expect(deleteJournal(db, admin, row.id, 7, false)).rejects.toThrow("삭제 확인");
+    await deleteJournal(db, admin, row.id, 7, true);
+    expect((await readSeo(db, admin, ["none"])).journal).toHaveLength(0);
+    expect((await db.select().from(seoJournal))[0]?.deletedAt).toBeInstanceOf(Date);
+  });
+  it("분야 upsert는 경로를 정규화하고 외부 도메인을 거부", async () => {
+    await saveField(db, admin, "/story/one/", "ai", "https://example.com");
+    await saveField(db, admin, "/story/one?utm=x", "brand", "https://example.com");
+    expect((await readSeo(db, admin, ["none"])).fields).toEqual({ "/story/one": "brand" });
+    await expect(saveField(db, admin, "https://evil.test/", "ai", "https://example.com")).rejects.toThrow();
+  });
+});
+describe("동기화 잠금·마지막 성공 보존", () => {
+  it("중복 성공·동시 요청 차단, 실패 후 스냅샷 보존, 다음 날 교체", async () => {
+    const now = new Date("2026-01-02T04:00:00Z");
+    const claims = await Promise.all([claimSync(db, "scope1", "google", now), claimSync(db, "scope1", "google", now)]);
+    const lease = claims.find(Boolean)!;
+    expect(claims.filter(Boolean)).toHaveLength(1);
+    expect(await finishSync(db, "scope1", lease, { snapshot }, now)).toBe(true);
+    expect(await claimSync(db, "scope1", "google", new Date("2026-01-02T08:00:00Z"))).toBeNull();
+    const next = new Date("2026-01-03T04:00:00Z");
+    const nextLease = (await claimSync(db, "scope1", "google", next))!;
+    await finishSync(db, "scope1", nextLease, { error: "auth" }, next);
+    const state = (await readSeo(db, admin, ["scope1"])).sync[0]!;
+    expect(state.snapshot).toEqual(snapshot);
+    expect(state.errorCode).toBe("auth");
+    expect(state.succeededAt).toEqual(now);
+    expect(await claimSync(db, "scope1", "google", next)).toBeNull();
+    const retryAt = new Date(next.getTime() + 301_000);
+    const retryLease = (await claimSync(db, "scope1", "google", retryAt))!;
+    await finishSync(db, "scope1", retryLease, { snapshot: { ...snapshot, rows: [] } }, retryAt);
+    expect((await db.select().from(seoSync))).toHaveLength(1);
+    expect((await readSeo(db, admin, ["scope1"])).sync[0]?.snapshot?.rows).toEqual([]);
+    expect((await readSeo(db, admin, ["different-property"])).sync).toHaveLength(0);
+  });
+  it("만료된 실행은 새 실행 결과를 덮어쓸 수 없다", async () => {
+    const now = new Date("2026-02-01T00:00:00Z");
+    const old = (await claimSync(db, "scope2", "bing", now))!;
+    const later = new Date(now.getTime() + 601_000);
+    const fresh = (await claimSync(db, "scope2", "bing", later))!;
+    expect(await finishSync(db, "scope2", old, { snapshot }, later)).toBe(false);
+    expect(await finishSync(db, "scope2", fresh, { snapshot }, later)).toBe(true);
+  });
+});
