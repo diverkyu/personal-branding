@@ -2,11 +2,13 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.70.0** | 2026-11-25 | 검토 중 (규강 확인 대기) | 규강 + Claude |
+| **0.71.0** | 2026-11-28 | 검토 중 (규강 확인 대기) | 규강 + Claude + Codex |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [CONCEPT.md](CONCEPT.md)
 
 관련 문서: [화면 설계서](SCREEN-SPEC.md) · [디자인 시스템](DESIGN-SYSTEM.md) · [개발 설계 지침](DEVELOPMENT.md) · [보안 설계 지침](SECURITY.md) · [상표 확인](TRADEMARK-CHECK.md) · [화면 시안](mockup/README.md)
+
+2026-11-28 검토 자료: [전체 홈페이지 리디자인 시안](mockup/editorial-2026-11-28/README.md) · [완료한 작업·운영 적용 과제](../operations/2026-11-28-editorial-redesign-handoff.md). 별도 시안 보관이며 아래 운영 요구사항의 확정 변경이나 구현 완료를 뜻하지 않는다.
 
 > 이 문서는 요구사항을 정리한 초안이다. 스펀지클럽 스타터 키트는 검토를 마쳤고 결과는 §10, 저장소·브랜치 전략은 §11에 있다. 키트 파일은 저장소에 복사하지 않는다.
 
