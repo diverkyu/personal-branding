@@ -75,9 +75,10 @@ describe("공개되는 글의 기준", () => {
   });
 
   it("발행된 글을 고치는 중인 내용(draft 칸)은 공개에 새지 않는다", async () => {
-    await put("editing", { title: "공개 제목", draft: { title: "수정 중 제목", body: bodyFromPlainText("수정 중 본문") as unknown as Record<string, unknown> } });
+    await put("editing", { title: "공개 제목", updatedAt: new Date("2026-11-20T00:00:00Z"), draft: { title: "수정 중 제목", body: bodyFromPlainText("수정 중 본문") as unknown as Record<string, unknown> } });
     const s = await queryLiveStory(db, "editing", NOW);
     expect(s?.title).toBe("공개 제목");
+    expect(s?.publishedAtIso).not.toBe("2026-11-20T00:00:00.000Z");
     expect(JSON.stringify(s)).not.toContain("수정 중");
   });
 });
@@ -152,6 +153,7 @@ describe("대표 이미지(썸네일)", () => {
     const list = await queryLiveStories(db, NOW);
     expect(list.find((s) => s.slug === "with-cover")?.cover).toEqual({ src: "/media-dev/a.webp", alt: "바다 사진" });
     expect(list.find((s) => s.slug === "no-cover")?.cover).toBeUndefined();
+    expect((await queryLiveStory(db, "with-cover", NOW))?.cover).toEqual({ src: "/media-dev/a.webp", alt: "바다 사진" });
   });
 
   it("삭제된 이미지나 깨진 값은 대표에서 빠져 장식 배경으로 돌아간다", async () => {
@@ -161,6 +163,7 @@ describe("대표 이미지(썸네일)", () => {
     await put("broken-cover", { fields: { coverMediaId: "nope" } });
     const list = await queryLiveStories(db, NOW);
     expect(list.map((s) => s.cover)).toEqual([undefined, undefined]);
+    expect((await queryLiveStory(db, "deleted-cover", NOW))?.cover).toBeUndefined();
   });
 });
 

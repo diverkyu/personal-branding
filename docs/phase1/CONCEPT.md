@@ -6,6 +6,8 @@
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [PRD.md](PRD.md)
 
+2026-11-28 SEO 보완: [18개 공개 페이지 문구·감사 항목별 처리](../operations/2026-11-28-seo-content-review.md). 영문 메뉴·브랜드 톤 유지, 검색 제목/설명 분리, 확인된 AIDA 자격·경력·작성자 표시, 공유 이미지와 빈 목록 정책을 구현했다. PR 병합·배포 전 운영 미반영.
+
 ## 1. 한 줄 콘셉트
 
 > **Dive deeper. Create beyond.** — 바다에서 시작해 이야기로 이어지는, 규강의 공간.

@@ -2,9 +2,17 @@
 
 | 문서 버전 | 최종 수정 | 상태 | 작성 |
 | --- | --- | --- | --- |
-| **0.70.0** | 2026-11-25 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude |
+| **0.72.0** | 2026-11-28 | 초안 (규강 확인 대기, §12 결정 9개 확정 · **Films 화면(§5.14·5.15) 결정 9개(§12.1)는 Lucia가 확정, 규강 확인 대기**) | 규강 + Claude + Codex |
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 상위: [PRD.md](PRD.md) · [CONCEPT.md](CONCEPT.md) · 시각: [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) · 화면 시안: [mockup/](mockup/README.md) · 지침: [DEVELOPMENT.md](DEVELOPMENT.md) · [SECURITY.md](SECURITY.md)
+
+## 0.1 SEO 표시 보완 (0.72.0 · 2026-11-28)
+
+- About 본문 아래, 서명 앞에 확인된 자격·강습 시작 연도 표시. 원문은 유지한다.
+- Story·Films·여행 상세 제목 근처에 글/제작 · 이동규(KYU)와 About 링크 표시.
+- 코론 투어 본문 뒤에 확인된 방문 지역 표시. 집결 장소·도로명 주소로 표기하지 않는다.
+- 영문 내비게이션·화면 제목·히어로는 그대로, 검색용 제목/설명은 페이지 목적에 맞게 별도 정의한다.
+- [문구와 검증·배포 상태](../operations/2026-11-28-seo-content-review.md).
 
 ## 0. 이 문서는 무엇인가
 

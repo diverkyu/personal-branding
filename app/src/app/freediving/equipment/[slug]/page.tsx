@@ -28,7 +28,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const item = await getEquipment((await params).slug);
-  return item ? pageMeta(`/freediving/equipment/${item.slug}`, { title: item.seoTitle || item.name, description: item.seoDescription || item.reason }) : {};
+  return item ? pageMeta(`/freediving/equipment/${item.slug}`, { title: item.seoTitle || `${item.name} | 프리다이빙 장비 추천`, description: item.seoDescription || `${item.name} 추천 이유: ${item.reason}`, ...(item.cover?.src ? { openGraph: { images: [{ url: item.cover.src, alt: item.cover.alt }] } } : {}) }) : {};
 }
 
 /** EQ 상세 (SCREEN-SPEC §5.9). 행동 버튼은 장비 데이터의 행동 유형에 따른다. */

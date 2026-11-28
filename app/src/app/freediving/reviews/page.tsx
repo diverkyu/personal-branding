@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/Button";
 import { listReviews, reviewTourOptions } from "@/data/reviews";
 import { listOpenTours } from "@/data/tours";
 import pages from "../../pages.module.css";
-import { pageMeta } from "@/lib/seo";
+import { sectionMeta } from "@/lib/seo";
 
-export const metadata: Metadata = pageMeta("/freediving/reviews", { title: "수강 후기" });
+export async function generateMetadata(): Promise<Metadata> {
+  return sectionMeta("/freediving/reviews", (await listReviews()).length);
+}
 
 /** 후기는 어드민에서 공개·철회·삭제할 때 바로 갱신되고, 투어 종료 여부는 최대 5분 안에 반영된다 */
 export const revalidate = 300;

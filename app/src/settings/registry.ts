@@ -39,6 +39,8 @@ export const SETTING_GROUPS: { id: SettingGroup; title: string }[] = [
 
 import { filmsConfig } from "@/config/films";
 import { travelConfig } from "@/config/travel";
+import { siteConfig } from "@/config/site";
+import { legacyHomeSeo } from "@/config/pageSeo";
 
 export const SETTINGS: SettingDef[] = [
   {
@@ -222,16 +224,16 @@ export const SETTINGS: SettingDef[] = [
     usedAt: "검색 결과·브라우저 탭의 기본 제목 (홈)",
     type: "text",
     maxLength: 70,
-    default: "KYU — Dive deeper. Create beyond.",
+    default: siteConfig.defaultTitle,
   },
   {
     key: "seo.description",
     group: "seo",
-    label: "기본 설명",
-    usedAt: "검색 결과·공유 미리보기의 기본 설명",
+    label: "홈 검색 설명",
+    usedAt: "홈 검색 결과·공유 미리보기 (다른 페이지는 각 페이지 전용 설명)",
     type: "text",
     maxLength: 160,
-    default: "이동규 KYU — 프리다이빙 강사이자 AI 크리에이터. 바다의 깊이와 상상의 가능성을 탐험합니다.",
+    default: siteConfig.description,
   },
   {
     key: "seo.indexing",
@@ -356,6 +358,8 @@ export function resolveSettings(stored: Record<string, string>): ResolvedSetting
   for (const def of SETTINGS) {
     const value = stored[def.key];
     if (value === undefined) continue;
+    if (def.key === "seo.title" && value === legacyHomeSeo.title) continue;
+    if (def.key === "seo.description" && value === legacyHomeSeo.description) continue;
     const checked = validateSetting(def, value);
     if (checked.ok && checked.value) result[def.key] = checked.value;
   }

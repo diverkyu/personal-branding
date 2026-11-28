@@ -16,12 +16,14 @@ import { formatDate } from "@/lib/format";
 import { getSiteSettings } from "@/settings/read";
 import pages from "../pages.module.css";
 import styles from "./films.module.css";
-import { pageMeta } from "@/lib/seo";
+import { sectionMeta } from "@/lib/seo";
 
 /** 한 페이지에 보이는 작품 수 (대표 작품 제외, 결정 17) */
 const FILMS_PAGE_SIZE = 9;
 
-export const metadata: Metadata = pageMeta("/films", { title: "Films" });
+export async function generateMetadata(): Promise<Metadata> {
+  return sectionMeta("/films", (await listFilms()).length);
+}
 
 /** 발행·취소·삭제 때 바로 갱신되고, 예약 시각은 최대 5분 안에 반영된다 */
 export const revalidate = 300;

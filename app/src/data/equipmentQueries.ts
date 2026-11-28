@@ -61,6 +61,7 @@ function toItem(row: { slug: string; title: string; summary: string; liveAt: Dat
     thumbVariant: thumbVariantFor(row.slug),
     sortOrder: f.sortOrder,
     liveAtIso: at(row.liveAt).toISOString(),
+    publishedAtIso: at(row.liveAt).toISOString(),
   };
 }
 

@@ -6,6 +6,8 @@
 
 변경 이력: [CHANGELOG.md](CHANGELOG.md) · 짝 문서: [CONCEPT.md](CONCEPT.md)
 
+2026-11-28 SEO 보완: [18개 공개 페이지 문구·감사 항목별 처리](../operations/2026-11-28-seo-content-review.md). 영문 메뉴·브랜드 톤 유지, 검색 제목/설명 분리, 확인된 AIDA 자격·경력·작성자 표시, 공유 이미지와 빈 목록 정책을 구현했다. PR 병합·배포 전 운영 미반영.
+
 관련 문서: [화면 설계서](SCREEN-SPEC.md) · [디자인 시스템](DESIGN-SYSTEM.md) · [개발 설계 지침](DEVELOPMENT.md) · [보안 설계 지침](SECURITY.md) · [상표 확인](TRADEMARK-CHECK.md) · [화면 시안](mockup/README.md)
 
 2026-11-28 검토 자료: [전체 홈페이지 리디자인 시안](mockup/editorial-2026-11-28/README.md) · [완료한 작업·운영 적용 과제](../operations/2026-11-28-editorial-redesign-handoff.md). 별도 시안 보관이며 아래 운영 요구사항의 확정 변경이나 구현 완료를 뜻하지 않는다.

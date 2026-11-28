@@ -4,11 +4,15 @@
  */
 import type { Story, Tour } from "@/types/content";
 import { siteConfig } from "@/config/site";
+import { profile } from "@/config/profile";
+import { tourLocations } from "@/config/tourLocations";
 import { isoDuration, parseVideoUrl } from "@/lib/video";
 
 type Json = Record<string, unknown>;
 
 const abs = (origin: string, path: string) => new URL(path, origin).toString();
+
+export const authorIdentity = (origin: string) => ({ "@type": "Person", "@id": abs(origin, "/about#person"), name: siteConfig.ownerName, alternateName: siteConfig.name, url: abs(origin, "/about") });
 
 export function websiteLd(origin: string): Json {
   return {
@@ -18,7 +22,7 @@ export function websiteLd(origin: string): Json {
     url: abs(origin, "/"),
     description: siteConfig.description,
     inLanguage: "ko",
-    publisher: { "@type": "Person", "@id": abs(origin, "/about#person"), name: siteConfig.ownerName, alternateName: siteConfig.name },
+    publisher: authorIdentity(origin),
   };
 }
 
@@ -35,28 +39,31 @@ export function personLd(origin: string, sameAs: string[]): Json {
     alternateName: siteConfig.name,
     url: abs(origin, "/about"),
     jobTitle: [...siteConfig.jobTitles],
-    description: siteConfig.description,
+    description: `${profile.teachingSince}년부터 프리다이빙을 가르치는 ${siteConfig.ownerName}(KYU). AIDA 마스터 강사·유소년 강사이자 AI 영상 크리에이터입니다.`,
+    hasCredential: profile.credentials.map((name) => ({ "@type": "EducationalOccupationalCredential", name, credentialCategory: "강사 자격", recognizedBy: { "@type": "Organization", name: "AIDA" } })),
     ...(sameAs.length > 0 ? { sameAs } : {}),
   };
 }
 
-export function articleLd(origin: string, story: Pick<Story, "slug" | "title" | "summary" | "publishedAt" | "tags">): Json {
+export function articleLd(origin: string, story: Pick<Story, "slug" | "title" | "summary" | "publishedAt" | "tags"> & { publishedAtIso?: string; cover?: { src: string } }, path = `/story/${story.slug}`): Json {
   return {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: story.title,
     description: story.summary,
-    datePublished: story.publishedAt,
+    datePublished: story.publishedAtIso || story.publishedAt,
+    // 현재 CMS는 재발행 때 publishedAt을 갱신한다. 임시 저장 updatedAt은 절대로 쓰지 않는다.
+    dateModified: story.publishedAtIso || story.publishedAt,
     inLanguage: "ko",
-    mainEntityOfPage: abs(origin, `/story/${story.slug}`),
-    author: { "@type": "Person", name: siteConfig.ownerName },
+    mainEntityOfPage: abs(origin, path),
+    author: authorIdentity(origin),
+    ...(story.cover?.src ? { image: abs(origin, story.cover.src) } : {}),
     keywords: story.tags.join(", "),
   };
 }
 
 /** 투어는 일정·장소만 담는다. 가격·결제 정보는 이 사이트에 없으므로 offers 를 만들지 않는다. */
-export function eventLd(origin: string, tour: Tour): Json {
-  const cancelled = false;
+export function eventLd(origin: string, tour: Tour & { cover?: { src: string } }): Json {
   return {
     "@context": "https://schema.org",
     "@type": "Event",
@@ -64,10 +71,13 @@ export function eventLd(origin: string, tour: Tour): Json {
     description: tour.summary,
     startDate: tour.startDate,
     endDate: tour.endDate,
-    eventStatus: cancelled ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
-    location: { "@type": "Place", name: tour.place },
+    // 모집 마감(closed)은 행사 취소가 아니다. 취소된 투어는 현재 CMS에서 비공개 처리한다.
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location: tourLocations[tour.slug]?.map((place) => ({ "@type": "Place", name: place.name, address: { "@type": "PostalAddress", addressLocality: place.locality, addressRegion: place.region, addressCountry: place.country } })) ?? { "@type": "Place", name: tour.place },
     url: abs(origin, `/freediving/tours/${tour.slug}`),
-    organizer: { "@type": "Person", name: siteConfig.ownerName },
+    organizer: authorIdentity(origin),
+    ...(tour.cover?.src ? { image: abs(origin, tour.cover.src) } : {}),
   };
 }
 
@@ -105,6 +115,6 @@ export function videoLd(
     ...(duration ? { duration } : {}),
     ...(source ? { embedUrl: source.embedUrl } : {}),
     url: abs(origin, `/films/${film.slug}`),
-    author: { "@type": "Person", name: siteConfig.ownerName },
+    author: authorIdentity(origin),
   };
 }
