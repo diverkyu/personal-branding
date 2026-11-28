@@ -2,7 +2,7 @@
 
 2026-11-28 KST · 개정 2. 도구/파일 계약 구현, **어드민 접합 방향 사용자 승인**. 1차 구현 단계와 2차 키워드 확장 경계를 확정했다. 승인과 기능 구현 완료는 별개다.
 
-**개정 3 — 1-1 착수:** 사용자 #77 병합 후 main `313d643`에 기존 `51eaeb0`을 `feat/seo-admin-integration`에서 통합했다. 기존 dev 0009를 수정하거나 재적용하지 않았으며 마이그레이션 해시·일지 CRUD를 재검증했다. [현재 검증·실제 로그인 대기·배포 경계](../operations/2026-11-28-seo-admin-integration.md). 아래 최초 도구 도입 시점의 상태와 구분한다. 1-2~1-5는 아직 후속 단계다.
+**개정 3 — 1-1 통합·dev 검증:** 사용자 #77 병합 후 main `313d643`에 기존 `51eaeb0`을 `feat/seo-admin-integration`에서 통합했다. 기존 dev 0009를 수정하거나 재적용하지 않았으며 마이그레이션 해시·일지 CRUD를 재검증했다. 기존 Preview에서 로그인·TOTP, 일지·필터·상태 전이·정리 및 SITE_URL 보완 후 주소 저장 재검증을 완료했다. [현재 검증·운영 배포 경계](../operations/2026-11-28-seo-admin-integration.md). PR #78은 운영 DB 확인을 별도로 남기며, 아래 최초 도구 도입 시점의 상태와 구분한다. 1-2~1-5는 아직 후속 단계다.
 
 ## 검토 시작점 — 완료 여부와 다음 순서
 
@@ -38,7 +38,7 @@
 | 원격 main | 최초 70d1947 → #75/#76 병합 후 6029acb | 독립 작업 트리 `seo-intelligence`, `feat/seo-intelligence-tooling`에 통합 |
 | SEO 어드민 | 로컬 `51eaeb0853aaa712662500948d49e050cad8a1ce`, `feat/seo-admin-phase12`, 깨끗한 트리 | 코드와 `docs/phase1/SEO-INTEGRATION.md`를 접합 기준으로 사용. 원격 push/배포로 간주하지 않음 |
 | DB | 0009 dev 적용·CRUD 검증 기록 있음, 운영 미적용 | SQL/메타/이름 변경 없음, 이번 작업 DB 접속 없음 |
-| 인증 | Better Auth/TOTP. dev 브라우저 로그인은 기존 BETTER_AUTH_SECRET 미설정으로 대기 | 기존 계정/키 교체 없음 |
+| 인증 | Better Auth/TOTP. 기존 Preview 인증으로 dev 브라우저 로그인과 서버 액션 검증 완료 | 기존 계정/키 교체 없음. 로컬 키 복구 불필요 |
 | 공개 SEO 검사 | `feat/seo-audit` 5996665 / PR #75: sitemap HTML 검사+E2E | 새 크롤러 대신 기존 검사 확장 계획 |
 | 페이지 SEO 보완 | `feat/seo-page-content` a3d3798 / PR #76 | 메타·인물·공유 이미지 작업 보존 |
 | 성과 수집 | Google 읽기 전용 Search Analytics, Bing 일별 클릭/노출 구현, Naver 수동 | 코드 구현과 실제 인증/데이터 수집을 구분 |
